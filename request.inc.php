@@ -4,37 +4,41 @@
 // (c) Gustaf Mossakowski, <gustaf@koenige.org> 2009
 // requests
 
-/*	Available functions:
-	- brick_request()
-		- brick_request_params()
-*/
 
+/** requests function which returns database content in a $page-Array
+ * 
+ * files: zzbrick_request/_common.inc.php, zzbrick_request/{request}.inc.php
+ * functions: cms_{$request}()
+ * settings: brick_request_shortcuts
+ * example: 
+ *		%%% request news %%%
+ *		%%% request news * %%% -- URL-parameters take place of asterisk
+ *		%%% request news 2004 %%%
+ * @param $brick(array)	Array from zzbrick
+ * @return $brick
+ * @author Gustaf Mossakowski <gustaf@koenige.org>
+ */
 function brick_request($brick) {
 	// shortcuts
-	if (empty($brick['subtype'])) $brick['subtype'] = '';
-	switch ($brick['subtype']) {
-		case 'bild': 
-		case 'image':
-			array_unshift($brick['vars'], $brick['subtype']);
-			$brick['vars'][] = '*';
-			// to transport additional variables which are needed
-			// so %%% image 23 %%% may be as small as possible
-			break;
-		case 'partien': // TODO: put this into settings 
-		case 'diagramm': // TODO: put this into settings 
-		case 'swiss_eins': // TODO: put this into settings 
-		case 'swiss_tabellen': // TODO: put this into settings 
-			array_unshift($brick['vars'], $brick['subtype']);
+	if (empty($brick['subtype'])) 
+		$brick['subtype'] = '';
+	if (empty($brick['setting']['brick_request_shortcuts'])) 
+		$brick['setting']['brick_request_shortcuts'] = array();
+	if (in_array($brick['subtype'], $brick['setting']['brick_request_shortcuts'])) {
+		array_unshift($brick['vars'], $brick['subtype']);
+		// to transport additional variables which are needed
+		// so %%% image 23 %%% may be as small as possible
+		$brick['vars'][] = '*';
 	}
-	if (file_exists($brick['path'].'/common.inc.php'))
-		require_once $brick['path'].'/common.inc.php';
+	if (file_exists($brick['path'].'/_common.inc.php'))
+		require_once $brick['path'].'/_common.inc.php';
 
 	// get name of function to be called
-	$func = array_shift($brick['vars']);
+	$func = str_replace('-', '_', array_shift($brick['vars']));
 	$request = 'cms_'.strtolower($func);
 
 	// include function file and check if function exists
-	$script_filename = 'cms-'.substr(strtolower($func), 0, strpos($func.'_', '_')).'.inc.php';
+	$script_filename = substr(strtolower($func), 0, strpos($func.'_', '_')).'.inc.php';
 	if (file_exists($brick['path'].'/'.$script_filename))
 		require_once $brick['path'].'/'.$script_filename;
 	if (!function_exists($request)) {
