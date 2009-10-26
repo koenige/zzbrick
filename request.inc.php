@@ -34,25 +34,30 @@ function brick_request($brick) {
 		require_once $brick['path'].'/_common.inc.php';
 
 	// get name of function to be called
-	$func = str_replace('-', '_', array_shift($brick['vars']));
-	$request = 'cms_'.strtolower($func);
-
-	// include function file and check if function exists
-	$script_filename = substr(strtolower($func), 0, strpos($func.'_', '_')).'.inc.php';
-	if (file_exists($brick['path'].'/'.$script_filename))
-		require_once $brick['path'].'/'.$script_filename;
-	if (!function_exists($request)) {
-		$brick['error']['level'] = E_USER_WARNING;
-		$brick['error']['msg_text'] = 'The function "%s" is not supported by the CMS.';
-		$brick['error']['msg_vars'] = array($request);
-		return $brick;
-	}
-
+	$func = strtolower(str_replace('-', '_', array_shift($brick['vars'])));
 	// get parameter for function
 	$function_params = brick_request_params($brick['vars'], $brick['parameter']);
 
-	// call function
-	$content = $request($function_params);
+	if (!empty($brick['setting']['brick_request_cms'])) {
+		// call function
+		$content = brick_request_cms($func, $function_params, $brick);
+	} else {
+		$request = 'cms_'.$func;
+
+		// include function file and check if function exists
+		$script_filename = substr(strtolower($func), 0, strpos($func.'_', '_')).'.inc.php';
+		if (file_exists($brick['path'].'/'.$script_filename))
+			require_once $brick['path'].'/'.$script_filename;
+		if (!function_exists($request)) {
+			$brick['error']['level'] = E_USER_WARNING;
+			$brick['error']['msg_text'] = 'The function "%s" is not supported by the CMS.';
+			$brick['error']['msg_vars'] = array($request);
+			return $brick;
+		}
+		// call function
+		$content = $request($function_params);
+	}
+
 	if (empty($content)) {
 		$brick['text'] = false;
 		$brick['page']['status'] = 404;
@@ -87,7 +92,8 @@ function brick_request($brick) {
 	// get some content from the function and overwrite existing values
 	$overwrite_bricks = array('title', 'dont_show_h1', 'language_link',
 		'extra', 'no_page_head', 'no_page_foot', 'last_update',
-		'head_addition', 'style', 'breadcrumbs', 'meta', 'project', 'created', 'link');
+		'head_addition', 'style', 'breadcrumbs', 'meta', 'project', 'created', 
+		'link', 'url_ending', 'no_output');
 	// extra: for all individual needs, not standardized
 	foreach ($overwrite_bricks as $part) {
 		if (!empty($content[$part]))
@@ -140,6 +146,104 @@ function brick_request_params($variables, $parameter) {
 		}
 	}
 	return $parameter_for_function;
+}
+
+/** Replacement for compound cms_-functions, lets you use a webservice
+ * 
+ * e. g. instead of cms_calendar($params) request is sent to 
+ * $data = cms_get_calendar($params) and cms_htmlout_calendar($data, $params)
+ * the return value of cms_get-functions might as well be output to xml or json
+ * the $data-input array of cms_htmlout-functions might as well be output of
+ * getxml- or getjson-functions
+ *
+ * examples:
+ * 		%%% xml news 2004 %%% (xml is alias of 'request')
+ * 		%%% json news 2004 %%% (json is alias of 'request')
+ * 		%%% request news 2004 %%% (no alias needed)
+ *
+ * @param $script(string) - script name ('func') for brick_request
+ * @param $params(array) - parameter from URL
+ * @param $brick(array) - settings for brick-scripts, here:
+ 	- cms_input = db, xml, json (defaults to db)
+ 	- export_formats = html, xml, json (set via first parameter)
+ * @return output of function (html: $page; other cases: direct output, headers
+ * @author Gustaf Mossakowski <gustaf@koenige.org>
+ */
+function brick_request_cms($script, $params, $brick) {
+	// cms_input is variable to check where input comes from
+	if (empty($brick['setting']['cms_input'])) 
+		$brick['setting']['cms_input'] = '';
+
+	// supported export formats
+	if (empty($brick['setting']['export_formats']))
+		$brick['setting']['export_formats'] = array('html', 'xml', 'json');
+	if (!is_array($brick['setting']['export_formats']))
+		$brick['setting']['export_formats'] = array($brick['setting']['export_formats']);
+
+	if (in_array($brick['subtype'], $brick['setting']['export_formats']) {
+		$output_format = $brick['subtype'];
+	} else {
+		$output_format = false;
+	}
+	$webservice_functions_file = dirname(__FILE__).'/'.$brick['type'].'-webservice.inc.php';
+	
+	// get data for input, depending on settings
+	switch ($brick['setting']['cms_input']) {
+	case 'xml':
+		require_once $webservice_functions_file
+			OR die(cms_text('File request-webservice required, but missing!'));
+		$data = brick_request_getxml($script, $params, $brick['setting']);
+		break;
+	case 'json':
+		require_once $webservice_functions_file
+			OR die(cms_text('File request-webservice required, but missing!'));
+		$data = brick_request_getjson($script, $params, $brick['setting']);
+		break;
+	case 'db':
+	default:
+		$request = 'cms_get_'.$script;
+		// include function file and check if function exists
+		$script_filename = substr(strtolower($func), 0, strpos($func.'_', '_')).'.inc.php';
+		if (file_exists($brick['path'].'/'.$script_filename))
+			require_once $brick['path'].'/'.$script_filename;
+		if (!function_exists($request)) {
+			$brick['error']['level'] = E_USER_WARNING;
+			$brick['error']['msg_text'] = 'The function "%s" is not supported by the CMS.';
+			$brick['error']['msg_vars'] = array($request);
+			return $brick;
+		}
+		$data = $request($params);
+		break;
+	}
+
+	// return false, if there's no input
+	if (!$data) return false;
+	
+	// output data, depending on parameter
+	switch ($output_format) {
+	case 'xml':
+		require_once $webservice_functions_file
+			OR die(cms_text('File request-webservice required, but missing!'));
+		return brick_request_xmlout($script, $data, $params);
+	case 'json':
+		require_once $webservice_functions_file
+			OR die(cms_text('File request-webservice required, but missing!'));
+		return brick_request_jsonout($script, $data, $params);
+	case 'html':
+	default:
+		$request = 'cms_htmlout_'.$script;
+		// include function file and check if function exists
+		$script_filename = substr(strtolower($func), 0, strpos($func.'_', '_')).'.inc.php';
+		if (file_exists($brick['path'].'_get/'.$script_filename))
+			require_once $brick['path'].'_get/'.$script_filename;
+		if (!function_exists($request)) {
+			$brick['error']['level'] = E_USER_WARNING;
+			$brick['error']['msg_text'] = 'The function "%s" is not supported by the CMS.';
+			$brick['error']['msg_vars'] = array($request);
+			return $brick;
+		}
+		return $request($data, $params);
+	}
 }
 
 ?>

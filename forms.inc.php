@@ -36,9 +36,9 @@ function brick_forms($brick) {
 	if (!isset($brick['setting']['brick_authentification_file']))
 		$brick['setting']['brick_authentification_file'] = $brick['setting']['core'].'/auth.inc.php';
 	// to translate error messages, you might use a translation function
-	// default: use cms_text() from core/language.inc.php from zzwrap
+	// default: use wrap_text() from core/language.inc.php from zzwrap
 	if (!isset($brick['setting']['brick_translate_text_function']))
-		$brick['setting']['brick_translate_text_function'] = 'cms_text';
+		$brick['setting']['brick_translate_text_function'] = 'wrap_text';
 
 	// directory depending on subtype
 	if (empty($brick['subtype'])) $brick['subtype'] = 'forms';

@@ -49,7 +49,7 @@ Variabes in $setting:
 		authentification is needed for accessing the zzform scripts. might be 
 		false, then no file will be included. zzwrap sets this automatically
 	- 'brick_translate_text_function': Name of function to translate text; 
-		zzwrap sets this to cms_text
+		zzwrap sets this to wrap_text
 	- 'brick_fulltextformat': name of function to format the complete output of
 		brick_format instead of formatting each paragraph separately with 
 		markdown
@@ -68,7 +68,7 @@ Files where customisation will take place
 	- zzbrick_tables/{tables}.inc.php
 
 Functions that contain customisations
-	- cms_access_rights() - returns true if access is granted or false if no
+	- wrap_access_rights() - returns true if access is granted or false if no
 		access is granted
 	- cms_{request}() - returns $page-Array as defined in brick_format()
 
@@ -107,7 +107,7 @@ Available modules:
 		'no_page_head' => (bool) zzwrap: do not output page head
 		'no_page_foot' => (bool) zzwrap: do not output page foot
  		'authors' => (array) IDs of page authors, zzwrap will post process
- 			this ID list in cms_get_authors()
+ 			this ID list in wrap_get_authors()
 		'last_update' => (date) last update of page, might be used for 
 			last-modified header
 		'created' => (date) creation date of page

@@ -19,12 +19,17 @@
  * 		%%% ipfilter {IP from}-{IP to} {IP from}-{IP to} %%%
  * 		%%% ipfilter = {IP from}-{IP to} {IP from}-{IP to} %%%
  * 		%%% ipfilter : %%% -- if not in range(s), this content will be shown
- * 		%%% ipfilter - %%% -- presume normal operations (end)
+ * 		%%% ipfilter - %%% -- resume normal operations (end)
  * @param $brick(array)	Array from zzbrick
  * @return $brick
  * @author Gustaf Mossakowski <gustaf@koenige.org>
  */
 function brick_ipfilter($brick) {
+	// if one of the other access modules already blocks access, ignore this brick
+	if (!isset($brick['access_blocked'])) $brick['access_blocked'] = false;
+	if ($brick['access_blocked'] AND $brick['access_blocked'] != 'ipfilter') {
+		return $brick;
+	}
 	// default translations, cannot be changed
 	$brick['setting']['brick_ipfilter_translated']['on'] = '=';
 	$brick['setting']['brick_ipfilter_translated']['elseif'] = '=';
@@ -87,6 +92,10 @@ function brick_ipfilter($brick) {
 			$brick['position'] = $brick['position_old'];
 			$brick['position_old'] = '';
 		}
+		// unblock access
+		if ($brick['access_blocked'] == 'ipfilter') {
+			$brick['access_blocked'] = false;		
+		}
 	} else {
 		// set current position to _hidden_
 		if ($brick['position'] != '_hidden_')
@@ -98,6 +107,8 @@ function brick_ipfilter($brick) {
 		// mark it as forbidden, so if nothing will be shown, we can
 		// answer with 403 forbidden
 		$brick['access_forbidden'] = true;
+		// block access scripts until this script unblocks access
+		$brick['access_blocked'] = 'ipfilter';
 	}
 	return $brick;
 }
