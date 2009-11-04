@@ -33,19 +33,19 @@ function brick_request($brick) {
 	if (file_exists($brick['path'].'/_common.inc.php'))
 		require_once $brick['path'].'/_common.inc.php';
 
-	// get name of function to be called
-	$func = strtolower(str_replace('-', '_', array_shift($brick['vars'])));
 	// get parameter for function
 	$function_params = brick_request_params($brick['vars'], $brick['parameter']);
+	// get name of function to be called
+	$script = strtolower(str_replace('-', '_', array_shift($function_params)));
 
 	if (!empty($brick['setting']['brick_request_cms'])) {
 		// call function
-		$content = brick_request_cms($func, $function_params, $brick);
+		$content = brick_request_cms($script, $function_params, $brick);
 	} else {
-		$request = 'cms_'.$func;
+		$request = 'cms_'.$script;
 
 		// include function file and check if function exists
-		$script_filename = substr(strtolower($func), 0, strpos($func.'_', '_')).'.inc.php';
+		$script_filename = substr(strtolower($script), 0, strpos($script.'_', '_')).'.inc.php';
 		if (file_exists($brick['path'].'/'.$script_filename))
 			require_once $brick['path'].'/'.$script_filename;
 		if (!function_exists($request)) {
@@ -164,23 +164,23 @@ function brick_request_params($variables, $parameter) {
  * @param $script(string) - script name ('func') for brick_request
  * @param $params(array) - parameter from URL
  * @param $brick(array) - settings for brick-scripts, here:
- 	- cms_input = db, xml, json (defaults to db)
- 	- export_formats = html, xml, json (set via first parameter)
+ 	- brick_cms_input = db, xml, json (defaults to db)
+ 	- brick_export_formats = html, xml, json (set via first parameter)
  * @return output of function (html: $page; other cases: direct output, headers
  * @author Gustaf Mossakowski <gustaf@koenige.org>
  */
 function brick_request_cms($script, $params, $brick) {
-	// cms_input is variable to check where input comes from
-	if (empty($brick['setting']['cms_input'])) 
-		$brick['setting']['cms_input'] = '';
+	// brick_cms_input is variable to check where input comes from
+	if (empty($brick['setting']['brick_cms_input'])) 
+		$brick['setting']['brick_cms_input'] = '';
 
 	// supported export formats
-	if (empty($brick['setting']['export_formats']))
-		$brick['setting']['export_formats'] = array('html', 'xml', 'json');
-	if (!is_array($brick['setting']['export_formats']))
-		$brick['setting']['export_formats'] = array($brick['setting']['export_formats']);
+	if (empty($brick['setting']['brick_export_formats']))
+		$brick['setting']['brick_export_formats'] = array('html', 'xml', 'json');
+	if (!is_array($brick['setting']['brick_export_formats']))
+		$brick['setting']['brick_export_formats'] = array($brick['setting']['brick_export_formats']);
 
-	if (in_array($brick['subtype'], $brick['setting']['export_formats']) {
+	if (in_array($brick['subtype'], $brick['setting']['brick_export_formats'])) {
 		$output_format = $brick['subtype'];
 	} else {
 		$output_format = false;
@@ -188,24 +188,22 @@ function brick_request_cms($script, $params, $brick) {
 	$webservice_functions_file = dirname(__FILE__).'/'.$brick['type'].'-webservice.inc.php';
 	
 	// get data for input, depending on settings
-	switch ($brick['setting']['cms_input']) {
+	switch ($brick['setting']['brick_cms_input']) {
 	case 'xml':
-		require_once $webservice_functions_file
-			OR die(cms_text('File request-webservice required, but missing!'));
+		require_once $webservice_functions_file;
 		$data = brick_request_getxml($script, $params, $brick['setting']);
 		break;
 	case 'json':
-		require_once $webservice_functions_file
-			OR die(cms_text('File request-webservice required, but missing!'));
+		require_once $webservice_functions_file;
 		$data = brick_request_getjson($script, $params, $brick['setting']);
 		break;
 	case 'db':
 	default:
 		$request = 'cms_get_'.$script;
 		// include function file and check if function exists
-		$script_filename = substr(strtolower($func), 0, strpos($func.'_', '_')).'.inc.php';
-		if (file_exists($brick['path'].'/'.$script_filename))
-			require_once $brick['path'].'/'.$script_filename;
+		$script_filename = substr(strtolower($script), 0, strpos($script.'_', '_')).'.inc.php';
+		if (file_exists($brick['path'].'_get/'.$script_filename))
+			require_once $brick['path'].'_get/'.$script_filename;
 		if (!function_exists($request)) {
 			$brick['error']['level'] = E_USER_WARNING;
 			$brick['error']['msg_text'] = 'The function "%s" is not supported by the CMS.';
@@ -222,20 +220,18 @@ function brick_request_cms($script, $params, $brick) {
 	// output data, depending on parameter
 	switch ($output_format) {
 	case 'xml':
-		require_once $webservice_functions_file
-			OR die(cms_text('File request-webservice required, but missing!'));
+		require_once $webservice_functions_file;
 		return brick_request_xmlout($script, $data, $params);
 	case 'json':
-		require_once $webservice_functions_file
-			OR die(cms_text('File request-webservice required, but missing!'));
+		require_once $webservice_functions_file;
 		return brick_request_jsonout($script, $data, $params);
 	case 'html':
 	default:
 		$request = 'cms_htmlout_'.$script;
 		// include function file and check if function exists
-		$script_filename = substr(strtolower($func), 0, strpos($func.'_', '_')).'.inc.php';
-		if (file_exists($brick['path'].'_get/'.$script_filename))
-			require_once $brick['path'].'_get/'.$script_filename;
+		$script_filename = substr(strtolower($script), 0, strpos($script.'_', '_')).'.inc.php';
+		if (file_exists($brick['path'].'/'.$script_filename))
+			require_once $brick['path'].'/'.$script_filename;
 		if (!function_exists($request)) {
 			$brick['error']['level'] = E_USER_WARNING;
 			$brick['error']['msg_text'] = 'The function "%s" is not supported by the CMS.';

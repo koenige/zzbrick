@@ -59,6 +59,7 @@ Variabes in $setting:
 		no address is set in ipfilter
 	- 'brick_rights_translated': similar to brick_types_translated, here
 		you can translate '=', ':' and '-' to different text
+	- 'lang': language code for HTML lang attribute of HEAD
 
 Files where customisation will take place
 	- zzbrick_rights/access_rights.inc.php
@@ -315,6 +316,16 @@ function brick_textformat($string, $type, $fulltextformat) {
 			return $string;
 		}
 	}
+}
+
+/** Returns HTML as unchanged HTML
+ * 
+ * @param $string(string) original string
+ * @return string unmodified string
+ * @author Gustaf Mossakowski <gustaf@koenige.org>
+ */
+function brick_textformat_html($string) {
+	return $string;
 }
 
 ?>

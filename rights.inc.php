@@ -16,12 +16,17 @@
  * 		%%% rights "Group 1" "Group 2" Group-3 %%%
  * 		%%% rights = "Group 1" "Group 2" Group-3 %%%
  * 		%%% rights : %%% -- if not in group, this content will be shown
- * 		%%% rights - %%% -- presume normal operations (end) 
+ * 		%%% rights - %%% -- resume normal operations (end) 
  * @param $brick(array)	Array from zzbrick
  * @return $brick
  * @author Gustaf Mossakowski <gustaf@koenige.org>
  */
 function brick_rights($brick) {
+	// if one of the other access modules already blocks access, ignore this brick
+	if (!isset($brick['access_blocked'])) $brick['access_blocked'] = false;
+	if ($brick['access_blocked'] AND $brick['access_blocked'] != 'rights') {
+		return $brick;
+	}
 	// default translations, cannot be changed
 	$brick['setting']['brick_rights_translated']['on'] = '=';
 	$brick['setting']['brick_rights_translated']['elseif'] = '=';
@@ -67,11 +72,16 @@ function brick_rights($brick) {
 		break;
 	}
 	
+	// almost the same as in brick_language
 	if ($access) {
 		// reset to old brick_position
 		if (!empty($brick['position_old'])) {
 			$brick['position'] = $brick['position_old'];
 			$brick['position_old'] = '';
+		}
+		// unblock access
+		if ($brick['access_blocked'] == 'rights') {
+			$brick['access_blocked'] = false;		
 		}
 	} else {
 		// set current position to _hidden_
@@ -84,6 +94,8 @@ function brick_rights($brick) {
 		// mark it as forbidden, so if nothing will be shown, we can
 		// answer with 403 forbidden
 		$brick['access_forbidden'] = true; 
+		// block access scripts until this script unblocks access
+		$brick['access_blocked'] = 'rights';
 	}
 	return $brick;
 }
