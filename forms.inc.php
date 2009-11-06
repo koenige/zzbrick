@@ -77,6 +77,9 @@ function brick_forms($brick) {
 	// script path must be first variable
 	$scriptpath = array_shift($brick['vars']);
 
+	if (file_exists($brick['path'].'/_common.inc.php'))
+		require_once $brick['path'].'/_common.inc.php';
+
 	// start zzform scripts
 	if (file_exists($tables = $brick['path'].'/'.$scriptpath.'.php')) {
 		// TODO: generalize this part if needed
@@ -84,12 +87,20 @@ function brick_forms($brick) {
 		if (empty($brick['vars']) OR array_pop($brick['vars']) != 'public') {
 			if (!empty($brick['setting']['brick_authentification_file']))
 				require_once $brick['setting']['brick_authentification_file'];
-			if (!empty($_SESSION)) 
+			if (!empty($_SESSION) AND empty($zz_conf['user']))
 				$zz_conf['user'] = $_SESSION[$brick['setting']['brick_username_in_session']];
 		}
 		require_once $zz_conf['dir'].'/zzform.php';
 		// TODO: end generalize this part
 		require_once $tables;
+		if (empty($zz)) {
+			// no defintions for zzform, this will not work
+			$brick['error']['level'] = E_USER_WARNING;
+			$brick['error']['msg_text'] = 'No table definition for zzform found ($zz).';
+			$brick['error']['msg_vars'] = array($tables);
+			$brick['page']['status'] = 403; // no access
+			return $brick;
+		}
 		$zz_conf['show_output'] = false;
 		zzform();
 		// replace %%% placeholders from zzbrick just in case the whole output
