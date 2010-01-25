@@ -78,6 +78,14 @@ Available functions in this file:
 		- brick_get_variables()
 		- brick_textformat()
 
+Always installed modules:
+	- loop - will do a loop and repeat parts of the brick
+		%%% loop start "optional HTML if content" "optional HTML if no content" %%%
+		%%% loop end %%%
+		»subloops«:
+		%%% loop subcategory %%%
+		%%% loop end %%%
+	
 Available modules:
 	- comment - comment blocks, won't be displayed
 	- forms - includes zzform scripts via brick_format()
@@ -173,31 +181,96 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 	// cut content and query blocks
 	$blocks = explode('%%%', $block); 
 	unset($block);
-
-	foreach ($blocks as $index => $block) {
+	
+	$i = 0;
+	$loop_start = array();
+	$fast_forward = false;
+	$loop_parameter = array();
+	while (is_numeric(key($blocks))) { // used instead of foreach because we would like to jump back
+		$index = key($blocks);
+		$block = $blocks[$index];
 		if ($index & 1) {	// even index values: textblock
 							// uneven index values: %%%-blocks
 			$brick['vars'] = brick_get_variables($block);
 			$brick['type'] = array_shift($brick['vars']);
-			$brick['cut_next_paragraph'] = false;
-			// check whether $blocktype needs to be translated
-			if (in_array($brick['type'], array_keys($brick['setting']['brick_types_translated']))) {
-				$brick['subtype'] = $brick['type'];
-				$brick['type'] = $brick['setting']['brick_types_translated'][$brick['type']];
-			}
-			$brick['type'] = basename($brick['type']); // for security, allow only filenames
-			$bricktype_file = dirname(__FILE__).'/'.$brick['type'].'.inc.php';
-			$brick['path'] = $brick['setting']['brick_custom_dir'].$brick['type'];
-			if (file_exists($bricktype_file)) {
-				require_once $bricktype_file;
-				$function_name = 'brick_'.$brick['type'];
-				$brick = $function_name($brick);
+			if ($brick['type'] == 'loop') {
+				// loop means repeat a part of the block as long as there are still
+				// parameters left
+				if ($brick['vars'][0] != 'end') {
+					if ($fast_forward) next($blocks);
+					$loop_start[$i] = $index; // start with the next index again
+					if ($brick['vars'][0] == 'start') {
+						// main record
+						$loop_parameter[$i] = $brick['parameter'];
+					} else {
+						if (!empty($brick['loop_parameter'][$brick['vars'][0]])) {
+							// it's in the main record that is also in a loop
+							$loop_parameter[$i] = $brick['loop_parameter'][$brick['vars'][0]];
+						} elseif (!empty($brick['parameter'][$brick['vars'][0]])) {
+							// main record is not in a loop
+							$loop_parameter[$i] = $brick['parameter'][$brick['vars'][0]];
+						} else {
+							$loop_parameter[$i] = false;
+							if (!empty($brick['vars'][2])) {
+								// output no data text
+								$brick['page']['text'][$brick['position']] .= $brick['vars'][2];
+							}
+						}
+					}
+					if (!$loop_parameter[$i]) {
+						// ooh, no data!
+						// fast forward to loop end
+						$fast_forward = true;
+						next($blocks);
+					} else {
+						if (!empty($brick['vars'][1])) {
+							$brick['page']['text'][$brick['position']] .= $brick['vars'][1];
+						}
+						// set parameters for first loop, using most recently added loop parameters
+						$brick['loop_parameter'] = array_shift($loop_parameter[$i]);
+						// remove clutter
+						if (!$loop_parameter[$i]) unset($loop_parameter[$i]);
+						$i++; // if there are more loops
+					}
+				} else {
+					$fast_forward = false;
+					// set parameters for next loop
+					$last_block = end($loop_start);
+					if (!empty($loop_parameter[$i-1])) {
+						// there are parameters, so go on and get most recently ... see above
+						$brick['loop_parameter'] = array_shift($loop_parameter[$i-1]);
+						// remove clutter
+						if (!$loop_parameter[$i-1]) unset($loop_parameter[$i-1]);
+						while (key($blocks) != $last_block) prev($blocks); // rewind
+					} else {
+						array_pop($loop_start); // remove last loop
+						$i--;
+					}
+				}
 			} else {
-				// output error
-				$brick['page']['text'][$brick['position']].= '<p><strong class="error">Error: 
-					 '.$brick['type'].' is not a valid parameter.</strong></p>';
+				if ($fast_forward) next($blocks);
+				// no loop, go on and do something with the brick
+				$brick['cut_next_paragraph'] = false;
+				// check whether $blocktype needs to be translated
+				if (in_array($brick['type'], array_keys($brick['setting']['brick_types_translated']))) {
+					$brick['subtype'] = $brick['type'];
+					$brick['type'] = $brick['setting']['brick_types_translated'][$brick['type']];
+				}
+				$brick['type'] = basename($brick['type']); // for security, allow only filenames
+				$bricktype_file = dirname(__FILE__).'/'.$brick['type'].'.inc.php';
+				$brick['path'] = $brick['setting']['brick_custom_dir'].$brick['type'];
+				if (file_exists($bricktype_file)) {
+					require_once $bricktype_file;
+					$function_name = 'brick_'.$brick['type'];
+					$brick = $function_name($brick);
+				} else {
+					// output error
+					$brick['page']['text'][$brick['position']].= '<p><strong class="error">Error: 
+						 '.$brick['type'].' is not a valid parameter.</strong></p>';
+				}
 			}
 		} else {
+			if ($fast_forward) next($blocks);
 			// behind %%% -- %%% blocks, an additional newline will appear
 			// remove it, because we do not want it
 			if ($index AND substr($block, 0, 1) == "\n") $block = substr($block, 1);
@@ -211,6 +284,7 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 			$brick['page']['text'][$brick['position']] .= $text_to_add; // if wichtig, 
 				// sonst macht markdown auch aus leerer variable etwas
 		}
+		next($blocks);
 	}
 
 	$page = $brick['page'];

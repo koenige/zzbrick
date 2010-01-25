@@ -11,17 +11,28 @@ function brick_request_getxml($script, $params, $setting) {
 
 function brick_request_getjson($script, $params, $setting) {
 	// get from URL
-	
 	$params = implode('/', $params);
 	if (!empty($setting['brick_json_source_url'][$script])) {
 		$url = sprintf($setting['brick_json_source_url'][$script], $params);
 	} else {
 		$url = sprintf($setting['brick_json_source_url_default'], $script, $params);
 	}
-	$data = file_get_contents($url);
-//	$out = json_decode($data);			// Object
+	set_error_handler('brick_import_errors');
+	$data = file_get_contents($url); // do not log error here
+	restore_error_handler();
+
 	$object = json_decode($data, true);	// Array
 	return $object;
+}
+
+function brick_import_errors($errno, $errstr) {
+	// we do not care about 404 errors, they will be logged otherwise
+	if (trim($errstr)
+		AND substr(trim($errstr), -13) != '404 Not Found'
+		AND function_exists('wrap_error'))
+	{
+		wrap_error('JSON ['.$_SERVER['SERVER_ADDR'].']: '.$errstr, E_USER_ERROR);
+	}
 }
 
 function brick_request_xmlout($script, $data, $params) {

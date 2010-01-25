@@ -119,16 +119,19 @@ function brick_request($brick) {
 function brick_request_params($variables, $parameter) {
 	$parameter_for_function = false;
 	$var_safe = false;
+	
 	foreach ($variables as $var) {
 		if ($var == '*') {
+			if (!$parameter) continue; // no URL parameters, ignore *
 			$url_parameters = explode('/', $parameter);
-			if ($parameter_for_function)
+			if ($parameter_for_function AND count($url_parameters)) {
 				$parameter_for_function = array_merge($parameter_for_function, 
 				$url_parameters); // parameters transmitted via URL
 			// Attention: if there are more than one *-variables
 			// parameters will be inserted several times
-			else
+			} else {
 				$parameter_for_function = $url_parameters;
+			}
 		} else {
 			if (substr($var, 0, 1) == '"' && substr($var, -1) == '"')
 				$parameter_for_function[] = substr($var, 1, -1);
@@ -145,6 +148,7 @@ function brick_request_params($variables, $parameter) {
 				$parameter_for_function[] = $var;
 		}
 	}
+	
 	return $parameter_for_function;
 }
 
@@ -204,13 +208,12 @@ function brick_request_cms($script, $params, $brick) {
 		$script_filename = substr(strtolower($script), 0, strpos($script.'_', '_')).'.inc.php';
 		if (file_exists($brick['path'].'_get/'.$script_filename))
 			require_once $brick['path'].'_get/'.$script_filename;
-		if (!function_exists($request)) {
-			$brick['error']['level'] = E_USER_WARNING;
-			$brick['error']['msg_text'] = 'The function "%s" is not supported by the CMS.';
-			$brick['error']['msg_vars'] = array($request);
-			return $brick;
+		if (function_exists($request)) {
+			$data = $request($params);
+		} else {
+			// function does not exist, probably no database data is needed
+			$data = true; // do not return a 404
 		}
-		$data = $request($params);
 		break;
 	}
 
