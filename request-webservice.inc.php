@@ -37,7 +37,7 @@ function brick_import_errors($errno, $errstr) {
 
 function brick_request_xmlout($script, $data, $params) {
 	// TODO
-	// header('Content-Type: application/xml; charset=utf-8;');
+	// header('Content-Type: application/xml; charset=utf-8');
 	// header Content-Type, Content-Length, Last-Modified
 	// Output XML
 
@@ -47,8 +47,10 @@ function brick_request_xmlout($script, $data, $params) {
 function brick_request_jsonout($script, $data, $params) {
 	$out = json_encode($data);
 	if ($out) {
-		header('Content-Type: application/json; charset=utf-8;');
-//		header("Content-Length: ".strlen($out)."; ");
+		header('Content-Type: application/json; charset=utf-8');
+		header('Content-Length: '.strlen($out));
+	 	header('Accept-Ranges: bytes');
+		header('Content-Disposition: attachment; filename='.$script.'.json');
 		// TODO: Last-Modified
 		echo $out;
 		exit; // TODO: really exit here? maybe for error logging, continue

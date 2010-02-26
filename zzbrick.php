@@ -186,6 +186,7 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 	$loop_start = array();
 	$fast_forward = false;
 	$loop_parameter = array();
+
 	while (is_numeric(key($blocks))) { // used instead of foreach because we would like to jump back
 		$index = key($blocks);
 		$block = $blocks[$index];
@@ -196,12 +197,13 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 			if ($brick['type'] == 'loop') {
 				// loop means repeat a part of the block as long as there are still
 				// parameters left
-				if ($brick['vars'][0] != 'end') {
-					if ($fast_forward) next($blocks);
+				if ($brick['vars'][0] != 'end' AND !$fast_forward) {
 					$loop_start[$i] = $index; // start with the next index again
 					if ($brick['vars'][0] == 'start') {
 						// main record
 						$loop_parameter[$i] = $brick['parameter'];
+						foreach (array_keys($loop_parameter[$i]) AS $loop_index)
+							if (!is_numeric($loop_index)) unset($loop_parameter[$i][$loop_index]);
 					} else {
 						if (!empty($brick['loop_parameter'][$brick['vars'][0]])) {
 							// it's in the main record that is also in a loop
@@ -219,9 +221,10 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 					}
 					if (!$loop_parameter[$i]) {
 						// ooh, no data!
-						// fast forward to loop end
+						// set fast forward to true to go to loop end
 						$fast_forward = true;
-						next($blocks);
+						// there's nothing here in this loop, so remove it
+						array_pop($loop_start);
 					} else {
 						if (!empty($brick['vars'][1])) {
 							$brick['page']['text'][$brick['position']] .= $brick['vars'][1];
@@ -244,11 +247,11 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 						while (key($blocks) != $last_block) prev($blocks); // rewind
 					} else {
 						array_pop($loop_start); // remove last loop
+						unset($brick['loop_parameter']); // end of loop!
 						$i--;
 					}
 				}
-			} else {
-				if ($fast_forward) next($blocks);
+			} elseif (!$fast_forward) {
 				// no loop, go on and do something with the brick
 				$brick['cut_next_paragraph'] = false;
 				// check whether $blocktype needs to be translated
@@ -269,8 +272,7 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 						 '.$brick['type'].' is not a valid parameter.</strong></p>';
 				}
 			}
-		} else {
-			if ($fast_forward) next($blocks);
+		} elseif (!$fast_forward) {
 			// behind %%% -- %%% blocks, an additional newline will appear
 			// remove it, because we do not want it
 			if ($index AND substr($block, 0, 1) == "\n") $block = substr($block, 1);
