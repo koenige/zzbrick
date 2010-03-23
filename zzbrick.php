@@ -186,6 +186,7 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 	$loop_start = array();
 	$fast_forward = false;
 	$loop_parameter = array();
+	$params = array();
 
 	while (is_numeric(key($blocks))) { // used instead of foreach because we would like to jump back
 		$index = key($blocks);
@@ -198,16 +199,21 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 				// loop means repeat a part of the block as long as there are still
 				// parameters left
 				if ($brick['vars'][0] != 'end' AND !$fast_forward) {
+					// start loop
+					$i++; // there's a loop
 					$loop_start[$i] = $index; // start with the next index again
 					if ($brick['vars'][0] == 'start') {
-						// main record
+						// main record, numeric indizes
 						$loop_parameter[$i] = $brick['parameter'];
+						// parameters with non-numeric indizes are not interestign
+						// for loops, so get rid of them when handling with loops
 						foreach (array_keys($loop_parameter[$i]) AS $loop_index)
 							if (!is_numeric($loop_index)) unset($loop_parameter[$i][$loop_index]);
 					} else {
-						if (!empty($brick['loop_parameter'][$brick['vars'][0]])) {
-							// it's in the main record that is also in a loop
-							$loop_parameter[$i] = $brick['loop_parameter'][$brick['vars'][0]];
+						if (!empty($params[$i-1][$brick['vars'][0]])) {
+							// e. g. 2 -> categories -> 4 -> category
+							// it's in the main record (-1) that is also in a loop
+							$loop_parameter[$i] = $params[$i-1][$brick['vars'][0]];
 						} elseif (!empty($brick['parameter'][$brick['vars'][0]])) {
 							// main record is not in a loop
 							$loop_parameter[$i] = $brick['parameter'][$brick['vars'][0]];
@@ -223,36 +229,40 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 						// ooh, no data!
 						// set fast forward to true to go to loop end
 						$fast_forward = true;
-						// there's nothing here in this loop, so remove it
-						array_pop($loop_start);
 					} else {
 						if (!empty($brick['vars'][1])) {
 							$brick['page']['text'][$brick['position']] .= $brick['vars'][1];
 						}
 						// set parameters for first loop, using most recently added loop parameters
-						$brick['loop_parameter'] = array_shift($loop_parameter[$i]);
+						$params[$i] = array_shift($loop_parameter[$i]);
 						// remove clutter
 						if (!$loop_parameter[$i]) unset($loop_parameter[$i]);
-						$i++; // if there are more loops
 					}
 				} else {
+					// end loop
 					$fast_forward = false;
 					// set parameters for next loop
 					$last_block = end($loop_start);
-					if (!empty($loop_parameter[$i-1])) {
+					if (!empty($loop_parameter[$i])) {
 						// there are parameters, so go on and get most recently ... see above
-						$brick['loop_parameter'] = array_shift($loop_parameter[$i-1]);
+						$params[$i] = array_shift($loop_parameter[$i]);
 						// remove clutter
-						if (!$loop_parameter[$i-1]) unset($loop_parameter[$i-1]);
+						if (!$loop_parameter[$i]) unset($loop_parameter[$i]);
 						while (key($blocks) != $last_block) prev($blocks); // rewind
 					} else {
 						array_pop($loop_start); // remove last loop
-						unset($brick['loop_parameter']); // end of loop!
+						if (!empty($params[$i])) unset($params[$i]); // end of loop!
 						$i--;
 					}
 				}
 			} elseif (!$fast_forward) {
 				// no loop, go on and do something with the brick
+				// if there are parameters from the loop, get them!
+				if (!empty($params[$i])) {
+					$brick['loop_parameter'] = $params[$i];
+				} else {
+					$brick['loop_parameter'] = false;
+				}
 				$brick['cut_next_paragraph'] = false;
 				// check whether $blocktype needs to be translated
 				if (in_array($brick['type'], array_keys($brick['setting']['brick_types_translated']))) {

@@ -80,21 +80,21 @@ function brick_is_url($url) {
 	if (empty($parts['scheme']) OR !in_array($parts['scheme'], $possible_schemes))
 		return false;
 	elseif (empty($parts['host']) 
-		OR (!eregi("^[0-9a-z]([-.]?[0-9a-z])*\.[a-z]{2,6}$", $parts['host'], $regs)
+		OR (!preg_match("/^[0-9a-z]([-.]?[0-9a-z])*\.[a-z]{2,6}$/", $parts['host'])
 		AND !preg_match('/[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}/', $parts['host'])))
 		return false;
 	elseif (!empty($parts['user']) 
-		AND !eregi( "^([0-9a-z-]|[\_])*$", $parts['user'], $regs))
+		AND !preg_match("/^([0-9a-z-]|[\_])*$/", $parts['user']))
 		return false;
 	elseif (!empty($parts['pass']) 
-		AND !eregi( "^([0-9a-z-]|[\_])*$", $parts['pass'], $regs))
+		AND !preg_match("/^([0-9a-z-]|[\_])*$/", $parts['pass']))
 		return false;
 	elseif (!empty($parts['path']) 
-		AND !preg_match("/^[0-9a-z\/_\.@~\-,=]*$/i", $parts['path']))
+		AND !preg_match("/^[0-9a-z\/_\.@~\-,=%]*$/i", $parts['path']))
 		return false;
 	elseif (!empty($parts['query'])
-		AND !eregi("^[A-Za-z0-9\-\._~!$&'\(\)\*+,;=:@?\/%]*$", $parts['query'], $regs))
-		// not 100% correct: % must only appear in front of HEXDIG, e. g. %2F
+		AND !preg_match("/^[A-Za-z0-9\-\._~!$&'\(\)\*+,;=:@?\/%]*$/", $parts['query']))
+		// not 100% correct: % may only appear in front of HEXDIG, e. g. %2F
 		// here it may appear in front of any other sign
 		// see 
 		// http://www.ietf.org/rfc/rfc3986.txt and 
