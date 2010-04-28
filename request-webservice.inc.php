@@ -22,6 +22,14 @@ function brick_request_getjson($script, $params, $setting) {
 	restore_error_handler();
 
 	$object = json_decode($data, true);	// Array
+	if (!$object) {
+		// maybe this PHP version does not know how to handle strings
+		// so convert it into an array
+		$object = json_decode('['.$data.']', true);
+		// convert it back to a string
+		if (count($object) == 1 AND isset($object[0]))
+			$object = $object[0];
+	}
 	return $object;
 }
 

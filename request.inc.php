@@ -91,9 +91,9 @@ function brick_request($brick) {
 
 	// get some content from the function and overwrite existing values
 	$overwrite_bricks = array('title', 'dont_show_h1', 'language_link',
-		'extra', 'no_page_head', 'no_page_foot', 'last_update',
-		'head_addition', 'style', 'breadcrumbs', 'meta', 'project', 'created', 
-		'link', 'url_ending', 'no_output');
+		'no_page_head', 'no_page_foot', 'last_update',
+		'style', 'breadcrumbs', 'project', 'created', 
+		'url_ending', 'no_output');
 	// extra: for all individual needs, not standardized
 	foreach ($overwrite_bricks as $part) {
 		if (!empty($content[$part]))
@@ -101,10 +101,17 @@ function brick_request($brick) {
 	}
 
 	// get even more content from the function and merge with existing values
-	$merge_bricks = array('authors', 'media');
+	$merge_bricks = array('authors', 'media', 'head', 'extra', 'meta', 'link');
 	foreach ($merge_bricks as $part) {
-		if (!empty($content[$part]) AND is_array($content[$part]))
+		if (!empty($content[$part]) AND is_array($content[$part])) {
+			if (empty($brick['page'][$part])) $brick['page'][$part] = array();
 			$brick['page'][$part] = array_merge($brick['page'][$part], $content[$part]);
+		} elseif (!empty($content[$part])) {
+			if (empty($brick['page'][$part])) $brick['page'][$part] = '';
+			// check if part of that string is already on page, then don't repeat it!
+			if (stripos($brick['page'][$part], $content[$part]) === false)
+				$brick['page'][$part] .= $content[$part];
+		}
 	}
 	return $brick;
 }

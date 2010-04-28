@@ -123,17 +123,16 @@ Available modules:
 		'project' => (string) project title; zzwrap: this will be output in
 			TITLE instead of $zz_conf['project']
  		'status' => (int) http status code
-		'head_addition' => (array) array of lines, html formatted, that will 
-			be added in the HEAD section of the HTML document (if set in the
-			template) - instead you can use the more specific:
-		'meta' => (array), may be put in <meta name="{$key}" content="{$value}">
-		'link' => (array), may be put in <link rel="{$key}" href="{$value}">
 		'style' => (string) defines style of page, might be used to include
 			different page heads or footers, separate css files and so on
+		'head' => (string) html formatted output, that will 
+			be added in the HEAD section of the HTML document (if set in the
+			template) - instead you can use the more specific:
+		- 'link' => (array), may be put in <link rel="" ...>
+			syntax: $page['link'][REL][n][ATTR]
+		- 'meta' => (array), may be put in <meta name="{$key}" content="{$value}">
 		'extra' => (array), here you might use variables as you want, e. g.
-			'headers' => (string) html formatted output for page HEAD
 			'body_attributes' =>(string) html formatted output for BODY element
-			'noindex' => (bool) decision whether to put a META noindex in HEAD
 			'lageplan' => (string) HTML block to be put somewhere on page
 			'zeige_letze_anderung' => (bool) decision whether to show some
 				block or not
@@ -160,6 +159,7 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 	// initialize page variables
 	$brick['page']['text'] = false;				// textbody
 	$brick['page']['title'] = false;			// page title and h1 element
+	$brick['page']['head'] = false;				// something for the head section
 	$brick['page']['breadcrumbs'] = false;		// additional breadcrumbs
 	$brick['page']['authors'] = array();		// authors of page
 	$brick['page']['media'] = array();			// media linked from page
@@ -243,7 +243,9 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 					$fast_forward = false;
 					// set parameters for next loop
 					$last_block = end($loop_start);
-					if (!empty($loop_parameter[$i])) {
+					// test if there is something AND if it's an array to avoid endless hanging in loop
+					// in case someone puts accidentally an identical loop into another loop
+					if (!empty($loop_parameter[$i]) AND is_array($loop_parameter[$i])) {
 						// there are parameters, so go on and get most recently ... see above
 						$params[$i] = array_shift($loop_parameter[$i]);
 						// remove clutter
@@ -330,6 +332,13 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 				$brick['setting']['brick_fulltextformat']);
 		}
 	}
+	// get stuff for page head in order
+	$page['head'] = brick_head_format($page, $brick['setting']);
+	// get simple access to extra-Array
+	if (!empty($page['extra'])) foreach ($page['extra'] as $key => $value) {
+		if (!is_array($value)) $page['extra_'.$key] = $value;
+		else $page['extra_'.$key] = true;
+	}
 	return $page;
 }
 
@@ -412,6 +421,51 @@ function brick_textformat($string, $type, $fulltextformat) {
  */
 function brick_textformat_html($string) {
 	return $string;
+}
+
+/** Formats values in $page that should go into the HTML head section
+ * 
+ * @param $page(array) $page-Array from zzbrick()
+ * @param $setting(array) $brick['setting']-Array from zzbrick()
+ * @return array modified $page['head']
+ * @author Gustaf Mossakowski <gustaf@koenige.org>
+ */
+function brick_head_format($page, $setting) {
+	$head = array();
+	$i = 0;
+	if (empty($page['head'])) $page['head'] = '';
+	// TODO: insert $setting['page_base']; ? or do this in functions 
+	if (!empty($page['link'])) foreach ($page['link'] AS $rel => $link) {
+		if (!in_array(ucfirst($rel), $setting['html_link_types'])) continue;
+		foreach ($link as $index) {
+			$head[$i] = '<link rel="'.$rel.'"';
+			foreach ($index as $attribute => $value) {
+				$head[$i] .= ' '.$attribute.'="'.$value.'"';
+			}
+			if (!empty($zz_setting['xml_close_empty_tags'])) $head[$i] .= ' /';
+			$head[$i] .= '>';
+			$i++;
+		}
+	}
+	if (!empty($page['meta'])) {
+		foreach ($page['meta'] as $index) {
+			if (!is_array($index)) continue;
+			$head[$i] = '<meta';
+			foreach ($index as $attribute => $value)
+				$head[$i] .= ' '.$attribute.'="'.$value.'"';
+			if (!empty($zz_setting['xml_close_empty_tags'])) $head[$i] .= ' /';
+			$head[$i] .= '>';
+			$i++;
+		}
+	}
+
+	if ($head) {
+		// add new lines to already defined head elements in $page['head']
+		$head = $page['head']."\t".implode("\n\t", $head)."\n";
+	} else {
+		$head = $page['head'];
+	}
+	return $head;
 }
 
 ?>
