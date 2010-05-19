@@ -5,7 +5,8 @@
 // Access rights depending on group membership
 
 
-/** depending on access rights, shows the following text or hides it
+/**
+ * depending on access rights, shows the following text or hides it
  * 
  * files: zzbrick_rights/access_rights.inc.php
  * functions: This function requires a customized function called
@@ -17,8 +18,8 @@
  * 		%%% rights = "Group 1" "Group 2" Group-3 %%%
  * 		%%% rights : %%% -- if not in group, this content will be shown
  * 		%%% rights - %%% -- resume normal operations (end) 
- * @param $brick(array)	Array from zzbrick
- * @return $brick
+ * @param array $brick	Array from zzbrick
+ * @return array $brick
  * @author Gustaf Mossakowski <gustaf@koenige.org>
  */
 function brick_rights($brick) {

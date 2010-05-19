@@ -5,7 +5,8 @@
 // redirect to another URL
 
 
-/** redirects to another URL after checking if it's syntactically valid
+/**
+ * redirects to another URL after checking if it's syntactically valid
  * 
  * files: -
  * functions: -
@@ -13,8 +14,8 @@
  * example: 
  *		%%% redirect http://www.example.org/ %%%
  *		%%% redirect /path/to/local.html %%%
- * @param $brick(array)	Array from zzbrick, in $brick['vars'][0] we need the new URL
- * @return $brick['error'] if false; this function exits if URL is correct
+ * @param array $brick	Array from zzbrick, in $brick['vars'][0] we need the new URL
+ * @return array $brick['error'] if false; this function exits if URL is correct
  * @author Gustaf Mossakowski <gustaf@koenige.org>
  */
 function brick_redirect($brick) {
@@ -36,10 +37,11 @@ function brick_redirect($brick) {
 	return $brick;
 }
 
-/** checks whether an input is a URL
+/**
+ * checks whether an input is a URL
  * 
  * This function is part of zzform, there it is called zz_check_url()
- * @param $url(string)	URL to be tested, may be a relative URL as well (starting with ../, /)
+ * @param string $url	URL to be tested, may be a relative URL as well (starting with ../, /)
  *		might add http:// in front of it if this generates a valid URL
  * @return string url if correct, or false
  * @author Gustaf Mossakowski <gustaf@koenige.org>
@@ -64,10 +66,11 @@ function brick_check_url($url) {
 		} else return $url;
 }
 
-/** checks whether an input is a URL
+/**
+ * checks whether an input is a URL
  * 
  * This function is part of zzform, there it is called zz_is_url()
- * @param $url(string)	URL to be tested, only absolute URLs
+ * @param string $url	URL to be tested, only absolute URLs
  * @return string url if correct, or false
  * @author Gustaf Mossakowski <gustaf@koenige.org>
  */

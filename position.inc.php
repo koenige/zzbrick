@@ -5,7 +5,8 @@
 // positions
 
 
-/** changes current position, and initalizes $text[position]
+/**
+ * changes current position, and initalizes $text[position]
  * 
  * files: -
  * functions: -
@@ -14,8 +15,8 @@
  *		%%% position A3 %%%
  *		%%% position A1-C3 %%%
  *		%%% position C 3 %%%
- * @param $brick(array)	Array from zzbrick
- * @return $brick
+ * @param array $brick	Array from zzbrick
+ * @return array $brick
  * @author Gustaf Mossakowski <gustaf@koenige.org>
  */
 function brick_position($brick) {

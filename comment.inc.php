@@ -5,7 +5,8 @@
 // comments
 
 
-/** deletes content, puts comment into 'comment'
+/**
+ * deletes content, puts comment into 'comment'
  * 
  * files: -
  * functions: -
@@ -13,7 +14,8 @@
  * examples: 
  * 		%%% comment here, there and everywhere %%% 
  * 		%%% comment "here, there and everywhere" may stretch multiple lines %%%
- * @return $brick
+ * @param array $brick
+ * @return array $brick
  * @author Gustaf Mossakowski <gustaf@koenige.org>
  */
 function brick_comment($brick) {

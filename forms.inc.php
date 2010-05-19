@@ -5,7 +5,8 @@
 // Domain 'tables' for zzform scripts
 
 
-/** includes zzform forms
+/**
+ * includes zzform forms
  * 
  * files: zzbrick_forms/{tables}.php, zzbrick_tables/{tables}.php
  * 		it is recommended to put the raw table definitions in zzbrick_tables
@@ -23,8 +24,8 @@
  * This function needs the table definitions in a custom directory
  * either zzbrick_forms or zzbrick_tables
  * For the syntax of the table definition file, read the zzform documentation
- * @param $brick(array)	Array from zzbrick
- * @return $brick
+ * @param array $brick	Array from zzbrick
+ * @return array $brick
  * @author Gustaf Mossakowski <gustaf@koenige.org>
  */
 function brick_forms($brick) {

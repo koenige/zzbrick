@@ -5,7 +5,8 @@
 // Access rights depending on user IP address
 
 
-/** displays content only if user ip address is in allowed range
+/**
+ * displays content only if user ip address is in allowed range
  * 
  * files: -
  * functions: -
@@ -20,8 +21,8 @@
  * 		%%% ipfilter = {IP from}-{IP to} {IP from}-{IP to} %%%
  * 		%%% ipfilter : %%% -- if not in range(s), this content will be shown
  * 		%%% ipfilter - %%% -- resume normal operations (end)
- * @param $brick(array)	Array from zzbrick
- * @return $brick
+ * @param array $brick	Array from zzbrick
+ * @return array $brick
  * @author Gustaf Mossakowski <gustaf@koenige.org>
  */
 function brick_ipfilter($brick) {
@@ -113,12 +114,13 @@ function brick_ipfilter($brick) {
 	return $brick;
 }
 
-/** checks if given IP is in a range of other IPs
+/**
+ * checks if given IP is in a range of other IPs
  * 
- * @param $ip(string)	IPv4 address, separated with .
- * @param $range(array)	IPv4 addresses
- 		'127.0.0.1-127.0.0.255'
- 		array('127.0.0.1', '127.0.0.255')
+ * @param string $ip	IPv4 address, separated with .
+ * @param array $range	IPv4 addresses
+ *		'127.0.0.1-127.0.0.255'
+ *		array('127.0.0.1', '127.0.0.255')
  * @return bool true if in range, false if out of range or no ip address given
  * @author Gustaf Mossakowski <gustaf@koenige.org>
  */

@@ -5,7 +5,8 @@
 // requests
 
 
-/** requests function which returns database content in a $page-Array
+/**
+ * requests function which returns database content in a $page-Array
  * 
  * files: zzbrick_request/_common.inc.php, zzbrick_request/{request}.inc.php
  * functions: cms_{$request}()
@@ -14,8 +15,8 @@
  *		%%% request news %%%
  *		%%% request news * %%% -- URL-parameters take place of asterisk
  *		%%% request news 2004 %%%
- * @param $brick(array)	Array from zzbrick
- * @return $brick
+ * @param array $brick	Array from zzbrick
+ * @return array $brick
  * @author Gustaf Mossakowski <gustaf@koenige.org>
  */
 function brick_request($brick) {
@@ -65,7 +66,7 @@ function brick_request($brick) {
 	}
 
 	// check if there's some </p>text<p>, remove it for inline results of function
-	if (!is_array($content['text'])) if (substr($content['text'], 0, 1) != '<' 
+	if (!empty($content['text']) AND !is_array($content['text'])) if (substr($content['text'], 0, 1) != '<' 
 		AND substr($content['text'], -1) != '>') {
 		///echo substr(trim($brick['text'][$position]), -4);
 		if (substr(trim($brick['page']['text'][$brick['position']]), -4) == '</p>') {
@@ -80,20 +81,20 @@ function brick_request($brick) {
 		$brick['page']['text'][$brick['position']] = '';
 	}
 
-	if (is_array($content['text'])) {
+	if (!empty($content['text']) AND is_array($content['text'])) {
 		foreach (array_keys($content['text']) AS $pos) {
 			if (empty($brick['page']['text'][$pos])) 
 				$brick['page']['text'][$pos] = '';
 			$brick['page']['text'][$pos] .= $content['text'][$pos];
 		}
-	} else
+	} elseif (!empty($content['text']))
 		$brick['page']['text'][$brick['position']] .= $content['text'];
 
 	// get some content from the function and overwrite existing values
 	$overwrite_bricks = array('title', 'dont_show_h1', 'language_link',
 		'no_page_head', 'no_page_foot', 'last_update',
 		'style', 'breadcrumbs', 'project', 'created', 
-		'url_ending', 'no_output');
+		'url_ending', 'no_output', 'template');
 	// extra: for all individual needs, not standardized
 	foreach ($overwrite_bricks as $part) {
 		if (!empty($content[$part]))
@@ -116,11 +117,12 @@ function brick_request($brick) {
 	return $brick;
 }
 
-/** Merges parameter from brick and form URI
+/**
+ * Merges parameter from brick and form URI
  * 
- * @param $variables(array) = parameter from %%%-brick
- * @param $parameter(string) = parameter from URL
- * @return $parameter_for_function array
+ * @param array $variables = parameter from %%%-brick
+ * @param string $parameter = parameter from URL
+ * @return array $parameter_for_function
  * @author Gustaf Mossakowski <gustaf@koenige.org>
  */
 function brick_request_params($variables, $parameter) {
@@ -159,7 +161,8 @@ function brick_request_params($variables, $parameter) {
 	return $parameter_for_function;
 }
 
-/** Replacement for compound cms_-functions, lets you use a webservice
+/**
+ * Replacement for compound cms_-functions, lets you use a webservice
  * 
  * e. g. instead of cms_calendar($params) request is sent to 
  * $data = cms_get_calendar($params) and cms_htmlout_calendar($data, $params)
@@ -172,12 +175,12 @@ function brick_request_params($variables, $parameter) {
  * 		%%% json news 2004 %%% (json is alias of 'request')
  * 		%%% request news 2004 %%% (no alias needed)
  *
- * @param $script(string) - script name ('func') for brick_request
- * @param $params(array) - parameter from URL
- * @param $brick(array) - settings for brick-scripts, here:
- 	- brick_cms_input = db, xml, json (defaults to db)
- 	- brick_export_formats = html, xml, json (set via first parameter)
- * @return output of function (html: $page; other cases: direct output, headers
+ * @param string $script - script name ('func') for brick_request
+ * @param array $params - parameter from URL
+ * @param array $brick - settings for brick-scripts, here:
+ *	- brick_cms_input = db, xml, json (defaults to db)
+ *	- brick_export_formats = html, xml, json (set via first parameter)
+ * @return mixed output of function (html: $page; other cases: direct output, headers
  * @author Gustaf Mossakowski <gustaf@koenige.org>
  */
 function brick_request_cms($script, $params, $brick) {

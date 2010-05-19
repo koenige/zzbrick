@@ -97,10 +97,11 @@ Available modules:
 		following content is allowed or forbidden (e. g. will be shown or not)
 */
 
-/** Format database content from CMS
+/**
+ * Format database content from CMS
  * 
- * @param $text(string) = text field read from database
- * @param $parameters(array) = parameters, via URL or via function
+ * @param string $text = text field read from database
+ * @param array $parameters = parameters, via URL or via function
  * @return $page array
 	must have:
  		'text' => (string) textbody, html formatted
@@ -342,10 +343,11 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 	return $page;
 }
 
-/** Transforms string into array of variables
+/**
+ * Transforms string into array of variables
  * 
  * Example: request news "John Doe" => 'request', 'news', 'John Doe'
- * @param $block(string) original string
+ * @param string $block original string
  * @return array variables
  * @author Gustaf Mossakowski <gustaf@koenige.org>
  */
@@ -380,10 +382,11 @@ function brick_get_variables($block) {
 	return $variables;
 }
 
-/** Transforms string into array of variables
+/**
+ * Transforms string into array of variables
  * 
  * Example: request news "John Doe" => 'request', 'news', 'John Doe'
- * @param $block(string) original string
+ * @param string $block original string
  * @return array variables
  * @author Gustaf Mossakowski <gustaf@koenige.org>
  */
@@ -413,9 +416,11 @@ function brick_textformat($string, $type, $fulltextformat) {
 	}
 }
 
-/** Returns HTML as unchanged HTML
+/**
+ * Returns HTML as unchanged HTML
  * 
- * @param $string(string) original string
+ * this function seems to be pretty useless but it is not. ;-)
+ * @param string $string original string
  * @return string unmodified string
  * @author Gustaf Mossakowski <gustaf@koenige.org>
  */
@@ -423,10 +428,11 @@ function brick_textformat_html($string) {
 	return $string;
 }
 
-/** Formats values in $page that should go into the HTML head section
+/**
+ * Formats values in $page that should go into the HTML head section
  * 
- * @param $page(array) $page-Array from zzbrick()
- * @param $setting(array) $brick['setting']-Array from zzbrick()
+ * @param array $page $page-Array from zzbrick()
+ * @param array $setting $brick['setting']-Array from zzbrick()
  * @return array modified $page['head']
  * @author Gustaf Mossakowski <gustaf@koenige.org>
  */
