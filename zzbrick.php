@@ -354,27 +354,29 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 function brick_get_variables($block) {
 	$block = trim($block); // allow whitespace around '%%%'
 	$variables = explode("\n", $block); // separated by newline
-	if (count($variables) == 1)
+	if (count($variables) == 1) {
 		$variables = explode(" ", $block); // or by space
-	// put variables with spaces, but enclosed in "" back together
-	$paste = false;
-	foreach ($variables as $index => $var) {
-		if (!$paste AND substr($var, 0, 1) == '"'
-			// beginning and ending with "
-			AND substr($var, -1) == '"') {
-			$var = substr($var, 1, -1);
-			$variables[$index] = $var;
-		} elseif (!$paste AND substr($var, 0, 1) == '"') {
-			// beginning with "
-			$paste = substr($var, 1);
-			unset($variables[$index]);
-		} elseif ($paste AND substr($var, -1) == '"') {
-			// ending with "
-			$variables[$index] = $paste.' '.substr($variables[$index], 0, -1);
-			$paste = false;
-		} elseif ($paste) {
-			$paste .= ' '.$var;
-			unset($variables[$index]);
+		// put variables with spaces, but enclosed in "" back together
+		unset($paste);
+		foreach ($variables as $index => $var) {
+			if (!isset($paste) AND substr($var, 0, 1) == '"'
+				AND substr($var, -1) == '"'
+				AND strlen($var) > 1) {
+				// beginning and ending with "
+				$var = substr($var, 1, -1);
+				$variables[$index] = $var;
+			} elseif (!isset($paste) AND substr($var, 0, 1) == '"') {
+				// beginning with "
+				$paste = substr($var, 1);
+				unset($variables[$index]);
+			} elseif (isset($paste) AND substr($var, -1) == '"') {
+				// ending with "
+				$variables[$index] = $paste.' '.substr($variables[$index], 0, -1);
+				$paste = false;
+			} elseif (isset($paste)) {
+				$paste .= ' '.$var;
+				unset($variables[$index]);
+			}
 		}
 	}
 	// get keys without gaps
@@ -400,7 +402,18 @@ function brick_textformat($string, $type, $fulltextformat) {
 			// in case you close your standard box and try to open it again
 			if ($fulltextformat == 'markdown')
 				$string = '<div markdown="1">'.$string.'</div>';
+			// preserve forms, do not apply any formatting to them!
+			// this is useful for form elements because we do not want them to 
+			// be formatted in any way at all
+			$hash = 'someneverappearingsequenceofcharacters923skfjkdlxb';
+			preg_match_all('~(<form.+</form>)~sU', $string, $forms);
+			foreach ($forms[0] as $index => $form) {
+				$string = str_replace($form, $hash.$index, $string);
+			}
 			$text = $fulltextformat($string);
+			foreach ($forms[0] as $index => $form) {
+				$text = str_replace($hash.$index, $form, $text);
+			}
 			if ($fulltextformat == 'markdown')
 				$text = substr($text, 6, -7);
 			return $text;

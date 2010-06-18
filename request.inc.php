@@ -128,7 +128,7 @@ function brick_request($brick) {
 function brick_request_params($variables, $parameter) {
 	$parameter_for_function = false;
 	$var_safe = false;
-	
+
 	foreach ($variables as $var) {
 		if ($var == '*') {
 			if (!$parameter) continue; // no URL parameters, ignore *
@@ -152,12 +152,14 @@ function brick_request_params($variables, $parameter) {
 				$var_safe[] = substr($var, 0, -1);
 				$parameter_for_function[] = implode(" ", $var_safe);
 				$var_safe = false;
-			} else 
+			} elseif ($var) {
 				// parameter like given to function but newly indexed
+				// ignore empty parameters
 				$parameter_for_function[] = $var;
+			}
 		}
 	}
-	
+
 	return $parameter_for_function;
 }
 
