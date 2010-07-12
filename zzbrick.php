@@ -48,6 +48,8 @@ Variabes in $setting:
 	- 'brick_authentification_file': file that will be included if
 		authentification is needed for accessing the zzform scripts. might be 
 		false, then no file will be included. zzwrap sets this automatically
+	- 'brick_authentification_function': function to be called if
+		authentification is needed
 	- 'brick_translate_text_function': Name of function to translate text; 
 		zzwrap sets this to wrap_text
 	- 'brick_fulltextformat': name of function to format the complete output of
@@ -215,11 +217,12 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 							// e. g. 2 -> categories -> 4 -> category
 							// it's in the main record (-1) that is also in a loop
 							$loop_parameter[$i] = $params[$i-1][$brick['vars'][0]];
+
 						} elseif (!empty($brick['parameter'][$brick['vars'][0]])) {
 							// main record is not in a loop
 							$loop_parameter[$i] = $brick['parameter'][$brick['vars'][0]];
 						} else {
-							$loop_parameter[$i] = false;
+							$loop_parameter[$i] = array();
 							if (!empty($brick['vars'][2])) {
 								// output no data text
 								$brick['page']['text'][$brick['position']] .= $brick['vars'][2];

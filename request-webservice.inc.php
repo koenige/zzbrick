@@ -9,13 +9,17 @@ function brick_request_getxml($script, $params, $setting) {
 	// TODO
 }
 
-function brick_request_getjson($script, $params, $setting) {
+function brick_request_getjson($script, $params = array(), $setting = array()) {
 	// get from URL
 	$params = implode('/', $params);
-	if (!empty($setting['brick_json_source_url'][$script])) {
+	if (isset($setting['brick_json_source_url'][$script])) {
+		// set to: we don't need a JSON import
+		if (!$setting['brick_json_source_url'][$script]) return true;
 		$url = sprintf($setting['brick_json_source_url'][$script], $params);
-	} else {
+	} elseif (!empty($setting['brick_json_source_url_default'])) {
 		$url = sprintf($setting['brick_json_source_url_default'], $script, $params);
+	} else {
+		$url = $script;
 	}
 	set_error_handler('brick_import_errors');
 	$data = file_get_contents($url); // do not log error here

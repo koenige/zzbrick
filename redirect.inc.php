@@ -15,7 +15,7 @@
  *		%%% redirect http://www.example.org/ %%%
  *		%%% redirect /path/to/local.html %%%
  * @param array $brick	Array from zzbrick, in $brick['vars'][0] we need the new URL
- * @return array $brick['error'] if false; this function exits if URL is correct
+ * @return array $brick['page']['error'] if false; this function exits if URL is correct
  * @author Gustaf Mossakowski <gustaf@koenige.org>
  */
 function brick_redirect($brick) {
@@ -31,9 +31,9 @@ function brick_redirect($brick) {
 		exit;
 	}
 	// ok, it's not a URL, we do not care, send an error and return
-	$brick['error']['level'] = E_USER_NOTICE;
-	$brick['error']['msg_text'] = '"%s" is not a valid URI.';
-	$brick['error']['msg_vars'] = array($brick['vars'][0]);
+	$brick['page']['error']['level'] = E_USER_NOTICE;
+	$brick['page']['error']['msg_text'] = '"%s" is not a valid URI.';
+	$brick['page']['error']['msg_vars'] = array($brick['vars'][0]);
 	return $brick;
 }
 

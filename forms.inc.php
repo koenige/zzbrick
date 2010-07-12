@@ -1,7 +1,7 @@
 <?php 
 
 // zzbrick
-// (c) Gustaf Mossakowski, <gustaf@koenige.org> 2009
+// (c) Gustaf Mossakowski, <gustaf@koenige.org> 2009-2010
 // Domain 'tables' for zzform scripts
 
 
@@ -13,11 +13,13 @@
  * 		and the more sophisticated table scripts in zzbrick_forms
  * functions: -
  * settings: brick_username_in_session, brick_authentification_file, 
- *		brick_translate_text_function, $zz_conf['dir']
+ *		brick_authentification_function, brick_translate_text_function, 
+ *		$zz_conf['dir']
  * examples:
  *		%%% tables * %%% -- URL parameters take place of asterisk
  *		%%% tables *[2] %%% -- only 2nd URL parameter take place of asterisk
- *			(this is useful if 1st parameter is language)
+ *			(this is useful if 1st parameter is language); 
+ *			*[2+] second and further parameters
  *		%%% forms webpages %%%
  *		%%% forms webpages public %%% - script does not require authentification
  *		%%% forms * public %%% - script does not require authentification
@@ -40,6 +42,8 @@ function brick_forms($brick) {
 	// default: use core/auth.inc.php from zzwrap
 	if (!isset($brick['setting']['brick_authentification_file']))
 		$brick['setting']['brick_authentification_file'] = $brick['setting']['core'].'/auth.inc.php';
+	if (!isset($brick['setting']['brick_authentification_function']))
+		$brick['setting']['brick_authentification_function'] = 'wrap_auth';
 	// to translate error messages, you might use a translation function
 	// default: use wrap_text() from core/language.inc.php from zzwrap
 	if (!isset($brick['setting']['brick_translate_text_function']))
@@ -72,6 +76,11 @@ function brick_forms($brick) {
 		} elseif ($var == '*[3]') {
 			$parameter = explode('/', $brick['parameter']);
 			array_splice($brick['vars'], $index, 1, $parameter[2]);
+		} elseif ($var == '*[2+]') {
+			$parameter = explode('/', $brick['parameter']);
+			array_shift($parameter); // remove first element
+			$parameter = implode('/', $parameter);
+			array_splice($brick['vars'], $index, 1, $parameter);
 		}
 	}
 
@@ -86,8 +95,10 @@ function brick_forms($brick) {
 		// TODO: generalize this part if needed
 		// check whether script shall be made accessible from public
 		if (empty($brick['vars']) OR array_pop($brick['vars']) != 'public') {
-			if (!empty($brick['setting']['brick_authentification_file']))
+			if (!empty($brick['setting']['brick_authentification_file'])) {
 				require_once $brick['setting']['brick_authentification_file'];
+				$brick['setting']['brick_authentification_function']();
+			}
 			if (!empty($_SESSION) AND empty($zz_conf['user']))
 				$zz_conf['user'] = $_SESSION[$brick['setting']['brick_username_in_session']];
 		}
@@ -96,10 +107,9 @@ function brick_forms($brick) {
 		require_once $tables;
 		if (empty($zz)) {
 			// no defintions for zzform, this will not work
-			$brick['error']['level'] = E_USER_WARNING;
-			$brick['error']['msg_text'] = 'No table definition for zzform found ($zz).';
-			$brick['error']['msg_vars'] = array($tables);
-			$brick['page']['status'] = 403; // no access
+			$brick['page']['error']['level'] = E_USER_ERROR;
+			$brick['page']['error']['msg_text'] = 'No table definition for zzform found ($zz).';
+			$brick['page']['error']['msg_vars'] = array($tables);
 			return $brick;
 		}
 		$zz_conf['show_output'] = false;
@@ -123,7 +133,7 @@ function brick_forms($brick) {
 		if (empty($zz_conf['dont_show_title_as_breadcrumb']))
 			$brick['page']['breadcrumbs'][] = $brick['page']['title'];
 		$brick['page']['dont_show_h1'] = true;
-		if ($zz['mode'] == 'export') {
+		if (!empty($zz['mode']) AND $zz['mode'] == 'export') {
 			// in export mode, there is no html, just pdf, csv or something else
 			// output it directly
 			foreach ($zz['headers'] as $index) {

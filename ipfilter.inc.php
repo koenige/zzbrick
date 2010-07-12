@@ -60,11 +60,11 @@ function brick_ipfilter($brick) {
 	switch ($ipfilter) {
 	case '=': // test for ip in range
 		$ranges = $brick['vars'];
-		if (!$ranges AND !empty($brick['brick_ipv4_allowed_range']))
-			$ranges = array($brick['brick_ipv4_allowed_range']);
+		if (!$ranges AND !empty($brick['setting']['brick_ipv4_allowed_range']))
+			$ranges = $brick['setting']['brick_ipv4_allowed_range'];
 		if (!$ranges) {
-			$brick['error']['level'] = E_USER_WARNING;
-			$brick['error']['msg_text'] = 'No IP range defined';
+			$brick['page']['error']['level'] = E_USER_ERROR;
+			$brick['page']['error']['msg_text'] = 'No IP range defined';
 			$access = false;
 		} else {
 			$access = brick_check_if_in_ip_range($remote_ip, $ranges);

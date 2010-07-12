@@ -50,9 +50,10 @@ function brick_request($brick) {
 		if (file_exists($brick['path'].'/'.$script_filename))
 			require_once $brick['path'].'/'.$script_filename;
 		if (!function_exists($request)) {
-			$brick['error']['level'] = E_USER_WARNING;
-			$brick['error']['msg_text'] = 'The function "%s" is not supported by the CMS.';
-			$brick['error']['msg_vars'] = array($request);
+			$brick['page']['error']['level'] = E_USER_ERROR;
+			$brick['page']['error']['msg_text'] = 'The function "%s" is not supported by the CMS.';
+			$brick['page']['error']['msg_vars'] = array($request);
+			$brick['text'] = false;
 			return $brick;
 		}
 		// call function
@@ -248,9 +249,9 @@ function brick_request_cms($script, $params, $brick) {
 		if (file_exists($brick['path'].'/'.$script_filename))
 			require_once $brick['path'].'/'.$script_filename;
 		if (!function_exists($request)) {
-			$brick['error']['level'] = E_USER_WARNING;
-			$brick['error']['msg_text'] = 'The function "%s" is not supported by the CMS.';
-			$brick['error']['msg_vars'] = array($request);
+			$brick['page']['error']['level'] = E_USER_ERROR;
+			$brick['page']['error']['msg_text'] = 'The function "%s" is not supported by the CMS.';
+			$brick['page']['error']['msg_vars'] = array($request);
 			return $brick;
 		}
 		return $request($data, $params);
