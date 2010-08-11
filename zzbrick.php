@@ -83,10 +83,10 @@ Available functions in this file:
 Always installed modules:
 	- loop - will do a loop and repeat parts of the brick
 		%%% loop start "optional HTML if content" "optional HTML if no content" %%%
-		%%% loop end %%%
+		%%% loop end "optional HTML if content" %%%
 		»subloops«:
 		%%% loop subcategory %%%
-		%%% loop end %%%
+		%%% loop end "optional HTML if content" %%%
 	
 Available modules:
 	- comment - comment blocks, won't be displayed
@@ -206,7 +206,7 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 					$i++; // there's a loop
 					$loop_start[$i] = $index; // start with the next index again
 					if ($brick['vars'][0] == 'start') {
-						// main record, numeric indizes
+						// main record, numeric indices
 						$loop_parameter[$i] = $brick['parameter'];
 						// parameters with non-numeric indizes are not interestign
 						// for loops, so get rid of them when handling with loops
@@ -256,9 +256,16 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 						if (!$loop_parameter[$i]) unset($loop_parameter[$i]);
 						while (key($blocks) != $last_block) prev($blocks); // rewind
 					} else {
+						$there_was_data = false;
 						array_pop($loop_start); // remove last loop
-						if (!empty($params[$i])) unset($params[$i]); // end of loop!
+						if (!empty($params[$i])) {
+							unset($params[$i]); // end of loop!
+							$there_was_data = true;
+						}
 						$i--;
+						// closing HTML if there is something
+						if (!empty($brick['vars'][1]) AND $there_was_data)
+							$brick['page']['text'][$brick['position']] .= $brick['vars'][1];
 					}
 				}
 			} elseif (!$fast_forward) {
@@ -375,7 +382,7 @@ function brick_get_variables($block) {
 			} elseif (isset($paste) AND substr($var, -1) == '"') {
 				// ending with "
 				$variables[$index] = $paste.' '.substr($variables[$index], 0, -1);
-				$paste = false;
+				unset($paste);
 			} elseif (isset($paste)) {
 				$paste .= ' '.$var;
 				unset($variables[$index]);
