@@ -84,69 +84,79 @@ function brick_forms($brick) {
 		}
 	}
 
-	// script path must be first variable
-	$scriptpath = array_shift($brick['vars']);
+	// check whether script shall be made accessible from public
+	$auth = ((count($brick['vars']) > 1) AND end($brick['vars']) == 'public') ? false : true;
+	if (!$auth) array_pop($brick['vars']);
 
 	if (file_exists($brick['path'].'/_common.inc.php'))
 		require_once $brick['path'].'/_common.inc.php';
 
-	// start zzform scripts
-	if (file_exists($tables = $brick['path'].'/'.$scriptpath.'.php')) {
-		// TODO: generalize this part if needed
-		// check whether script shall be made accessible from public
-		if (empty($brick['vars']) OR array_pop($brick['vars']) != 'public') {
-			if (!empty($brick['setting']['brick_authentification_file'])) {
-				require_once $brick['setting']['brick_authentification_file'];
-				$brick['setting']['brick_authentification_function']();
-			}
-			if (!empty($_SESSION) AND empty($zz_conf['user']))
-				$zz_conf['user'] = $_SESSION[$brick['setting']['brick_username_in_session']];
-		}
-		require_once $zz_conf['dir'].'/zzform.php';
-		// TODO: end generalize this part
-		require_once $tables;
-		if (empty($zz)) {
-			// no defintions for zzform, this will not work
-			$brick['page']['error']['level'] = E_USER_ERROR;
-			$brick['page']['error']['msg_text'] = 'No table definition for zzform found ($zz).';
-			$brick['page']['error']['msg_vars'] = array($tables);
+	// script path must be first variable
+	$scriptpath = implode('/', $brick['vars']);
+	$tables = $brick['path'].'/'.$scriptpath.'.php';
+	if (!file_exists($tables)) {
+		$tables = $brick['path'].'/'.array_shift($brick['vars']).'.php';
+		if (!file_exists($tables)) {
+			$brick['page']['status'] = 404;
 			return $brick;
 		}
-		$zz_conf['show_output'] = false;
-		zzform();
-		// replace %%% placeholders from zzbrick just in case the whole output
-		// goes through brick_format() again
-		$zz['output'] = str_replace('%%%', '&#37;&#37;&#37;', $zz['output']);
-		$brick['page']['text'][$brick['position']] = $zz['output'];
-		$brick['page']['title'] = ((!empty($zz_conf['title'])) ? $zz_conf['title'] 
-			: ($brick['setting']['brick_translate_text_function'] 
-				? $brick['setting']['brick_translate_text_function']('Error') : 'Error'));
-		if (!empty($zz_conf['breadcrumbs'])) {
-			foreach ($zz_conf['breadcrumbs'] as $breadcrumb) {
-				$brick['page']['breadcrumbs'][] = 
-					(!empty($breadcrumb['url']) ? '<a href="'.$breadcrumb['url'].'"'
-					.(!empty($breadcrumb['title']) ? ' title="'.$breadcrumb['title'].'"' : '')
-					.'>' : '')
-					.$breadcrumb['linktext'].(!empty($breadcrumb['url']) ? '</a>' : '');
-			}
-		}
-		if (empty($zz_conf['dont_show_title_as_breadcrumb']))
-			$brick['page']['breadcrumbs'][] = $brick['page']['title'];
-		$brick['page']['dont_show_h1'] = true;
-		if (!empty($zz['mode']) AND $zz['mode'] == 'export') {
-			// in export mode, there is no html, just pdf, csv or something else
-			// output it directly
-			foreach ($zz['headers'] as $index) {
-				foreach ($index as $bool => $header) {
-					header($header, $bool);
-				}
-			}
-			echo $zz['output'];			// Output der Funktion ausgeben
-			exit;
-		}
-	} else {
-		$brick['page']['status'] = 404;
 	}
+
+	// start zzform scripts
+	// TODO: generalize this part if needed
+	if ($auth) {
+		if (!empty($brick['setting']['brick_authentification_file'])) {
+			require_once $brick['setting']['brick_authentification_file'];
+			$brick['setting']['brick_authentification_function']();
+		}
+		if (!empty($_SESSION) AND empty($zz_conf['user']))
+			$zz_conf['user'] = $_SESSION[$brick['setting']['brick_username_in_session']];
+	}
+	require_once $zz_conf['dir'].'/zzform.php';
+	// TODO: end generalize this part
+	require_once $tables;
+	if (empty($zz)) {
+		// no defintions for zzform, this will not work
+		$brick['page']['error']['level'] = E_USER_ERROR;
+		$brick['page']['error']['msg_text'] = 'No table definition for zzform found ($zz).';
+		$brick['page']['error']['msg_vars'] = array($tables);
+		return $brick;
+	}
+	$zz_conf['show_output'] = false;
+	zzform();
+
+	// Export?
+	if (!empty($zz['mode']) AND $zz['mode'] == 'export') {
+		// in export mode, there is no html, just pdf, csv or something else
+		// output it directly
+		foreach ($zz['headers'] as $index) {
+			foreach ($index as $bool => $header) {
+				header($header, $bool);
+			}
+		}
+		echo $zz['output'];			// Output der Funktion ausgeben
+		exit;
+	}
+
+	// replace %%% placeholders from zzbrick just in case the whole output
+	// goes through brick_format() again
+	$zz['output'] = str_replace('%%%', '&#37;&#37;&#37;', $zz['output']);
+	$brick['page']['text'][$brick['position']] .= $zz['output'];
+	$brick['page']['title'] = ((!empty($zz_conf['title'])) ? $zz_conf['title'] 
+		: ($brick['setting']['brick_translate_text_function'] 
+			? $brick['setting']['brick_translate_text_function']('Error') : 'Error'));
+	if (!empty($zz_conf['breadcrumbs'])) {
+		foreach ($zz_conf['breadcrumbs'] as $breadcrumb) {
+			$brick['page']['breadcrumbs'][] = 
+				(!empty($breadcrumb['url']) ? '<a href="'.$breadcrumb['url'].'"'
+				.(!empty($breadcrumb['title']) ? ' title="'.$breadcrumb['title'].'"' : '')
+				.'>' : '')
+				.$breadcrumb['linktext'].(!empty($breadcrumb['url']) ? '</a>' : '');
+		}
+	}
+	if (empty($zz_conf['dont_show_title_as_breadcrumb']))
+		$brick['page']['breadcrumbs'][] = $brick['page']['title'];
+	$brick['page']['dont_show_h1'] = true;
 	return $brick;
 }
 
