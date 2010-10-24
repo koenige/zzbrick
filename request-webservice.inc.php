@@ -37,13 +37,17 @@ function brick_request_getjson($script, $params = array(), $setting = array()) {
 	return $object;
 }
 
-function brick_import_errors($errno, $errstr) {
+function brick_import_errors($errno, $errstr, $errfile, $errline, $errcontext) {
 	// we do not care about 404 errors, they will be logged otherwise
 	if (trim($errstr)
 		AND substr(trim($errstr), -13) != '404 Not Found'
 		AND function_exists('wrap_error'))
 	{
-		wrap_error('JSON ['.$_SERVER['SERVER_ADDR'].']: '.$errstr, E_USER_ERROR);
+		// you may change the error code if e. g. only pictures will be fetched
+		// via JSON to E_USER_WARNING or E_USER_NOTICE
+		if (empty($errcontext['setting']['brick_import_error_code']))
+			$errcontext['setting']['brick_import_error_code'] = E_USER_ERROR;
+		wrap_error('JSON ['.$_SERVER['SERVER_ADDR'].']: '.$errstr, $errcontext['setting']['brick_import_error_code']);
 	}
 }
 

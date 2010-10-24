@@ -198,6 +198,7 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 							// uneven index values: %%%-blocks
 			$brick['vars'] = brick_get_variables($block);
 			$brick['type'] = array_shift($brick['vars']);
+			$brick['type'] = trim($brick['type']);
 			if ($brick['type'] == 'loop') {
 				// loop means repeat a part of the block as long as there are still
 				// parameters left
@@ -281,6 +282,8 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 				if (in_array($brick['type'], array_keys($brick['setting']['brick_types_translated']))) {
 					$brick['subtype'] = $brick['type'];
 					$brick['type'] = $brick['setting']['brick_types_translated'][$brick['type']];
+				} else {
+					$brick['subtype'] = '';
 				}
 				$brick['type'] = basename($brick['type']); // for security, allow only filenames
 				$bricktype_file = dirname(__FILE__).'/'.$brick['type'].'.inc.php';
@@ -462,6 +465,7 @@ function brick_textformat_html($string) {
 function brick_head_format($page, $setting) {
 	$head = array();
 	$i = 0;
+	
 	if (empty($page['head'])) $page['head'] = '';
 	// TODO: insert $setting['page_base']; ? or do this in functions 
 	if (!empty($page['link'])) foreach ($page['link'] AS $rel => $link) {
@@ -487,7 +491,6 @@ function brick_head_format($page, $setting) {
 			$i++;
 		}
 	}
-
 	if ($head) {
 		// add new lines to already defined head elements in $page['head']
 		$head = $page['head']."\t".implode("\n\t", $head)."\n";
