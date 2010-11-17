@@ -90,13 +90,17 @@ Always installed modules:
 	
 Available modules:
 	- comment - comment blocks, won't be displayed
+	- condition - if else condition basing on item
 	- forms - includes zzform scripts via brick_format()
 	- ipfilter - shows content only if client is in preset IP range
+	- item - gets item from array
+	- page - page element
 	- position - sets position of text block in a predefined matrix
 	- redirect - redirects to another URL
 	- request - outputs database queries in a formatted way, with URL parameters
 	- rights - depending on the result of a custom function, access to the
 		following content is allowed or forbidden (e. g. will be shown or not)
+	- text - translates text string
 */
 
 /**
@@ -209,7 +213,7 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 					if ($brick['vars'][0] == 'start') {
 						// main record, numeric indices
 						$loop_parameter[$i] = $brick['parameter'];
-						// parameters with non-numeric indizes are not interestign
+						// parameters with non-numeric indizes are not interesting
 						// for loops, so get rid of them when handling with loops
 						foreach (array_keys($loop_parameter[$i]) AS $loop_index)
 							if (!is_numeric($loop_index)) unset($loop_parameter[$i][$loop_index]);
@@ -230,6 +234,8 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 							}
 						}
 					}
+					$loop_counter[$i] = count($loop_parameter[$i]);
+					$loop_all[$i] = count($loop_parameter[$i]);
 					if (!$loop_parameter[$i]) {
 						// ooh, no data!
 						// set fast forward to true to go to loop end
@@ -251,6 +257,7 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 					// test if there is something AND if it's an array to avoid endless hanging in loop
 					// in case someone puts accidentally an identical loop into another loop
 					if (!empty($loop_parameter[$i]) AND is_array($loop_parameter[$i])) {
+						$loop_counter[$i]--;
 						// there are parameters, so go on and get most recently ... see above
 						$params[$i] = array_shift($loop_parameter[$i]);
 						// remove clutter
@@ -274,6 +281,8 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 				// if there are parameters from the loop, get them!
 				if (!empty($params[$i])) {
 					$brick['loop_parameter'] = $params[$i];
+					$brick['loop_all'] = $loop_all[$i];
+					$brick['loop_counter'] = $loop_counter[$i];
 				} else {
 					$brick['loop_parameter'] = false;
 				}
@@ -301,7 +310,9 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 		} elseif (!$fast_forward) {
 			// behind %%% -- %%% blocks, an additional newline will appear
 			// remove it, because we do not want it
-			if ($index AND substr($block, 0, 1) == "\n") $block = substr($block, 1);
+			if ($index AND substr($block, 0, 1) == "\n"
+				AND substr($block, 0, 2) != "\n\n")
+				$block = substr($block, 1);
 			// format text block (default mode)
 			$text_to_add = brick_textformat($block, 'pieces', $brick['setting']['brick_fulltextformat']);
 			// check if there's some </p>text<p>, remove it for inline results of function
@@ -421,11 +432,11 @@ function brick_textformat($string, $type, $fulltextformat) {
 			$hash = 'someneverappearingsequenceofcharacters923skfjkdlxb';
 			preg_match_all('~(<form.+</form>)~sU', $string, $forms);
 			foreach ($forms[0] as $index => $form) {
-				$string = str_replace($form, $hash.$index, $string);
+				$string = str_replace($form, $hash.sprintf("%04d", $index), $string);
 			}
 			$text = $fulltextformat($string);
 			foreach ($forms[0] as $index => $form) {
-				$text = str_replace($hash.$index, $form, $text);
+				$text = str_replace($hash.sprintf("%04d", $index), $form, $text);
 			}
 			if ($fulltextformat == 'markdown')
 				$text = substr($text, 6, -7);
