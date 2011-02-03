@@ -165,7 +165,7 @@ function brick_request_params($variables, $parameter) {
 }
 
 /**
- * Replacement for compound cms_-functions, lets you use a webservice
+ * Replacement for compound cms_-functions, lets you use content syndication
  * 
  * e. g. instead of cms_calendar($params) request is sent to 
  * $data = cms_get_calendar($params) and cms_htmlout_calendar($data, $params)
@@ -202,16 +202,16 @@ function brick_request_cms($script, $params, $brick) {
 	} else {
 		$output_format = false;
 	}
-	$webservice_functions_file = dirname(__FILE__).'/'.$brick['type'].'-webservice.inc.php';
+	$syndication_functions_file = dirname(__FILE__).'/'.$brick['type'].'-webservice.inc.php';
 	
 	// get data for input, depending on settings
 	switch ($brick['setting']['brick_cms_input']) {
 	case 'xml':
-		require_once $webservice_functions_file;
+		require_once $syndication_functions_file;
 		$data = brick_request_getxml($script, $params, $brick['setting']);
 		break;
 	case 'json':
-		require_once $webservice_functions_file;
+		require_once $syndication_functions_file;
 		$data = brick_request_getjson($script, $params, $brick['setting']);
 		break;
 	case 'db':
@@ -236,10 +236,10 @@ function brick_request_cms($script, $params, $brick) {
 	// output data, depending on parameter
 	switch ($output_format) {
 	case 'xml':
-		require_once $webservice_functions_file;
+		require_once $syndication_functions_file;
 		return brick_request_xmlout($script, $data, $params);
 	case 'json':
-		require_once $webservice_functions_file;
+		require_once $syndication_functions_file;
 		return brick_request_jsonout($script, $data, $params);
 	case 'html':
 	default:

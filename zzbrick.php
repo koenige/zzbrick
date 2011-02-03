@@ -336,7 +336,7 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 		$brick['access_forbidden'] = true;
 	}
 	if (count($page['text']) == 1 AND !empty($page['text']['none'])) {
-	// if position is not wanted, remove unneccessary complexity in array
+	// if position is not wanted, remove unnecessary complexity in array
 		if ($brick['setting']['brick_default_position'] == 'none') {
 			$page['text'] = brick_textformat($page['text']['none'], 'full', 
 				$brick['setting']['brick_fulltextformat']);
@@ -348,7 +348,7 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 		}
 	} elseif (!count($page['text']) AND $brick['access_forbidden']) {
 	// no text, access forbidden
-		$page = false; // TODO: maybe unneccessary
+		$page = array(); // TODO: maybe unnecessary
 		$page['status'] = 403;
 	} else {
 	// new
@@ -364,6 +364,8 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 		if (!is_array($value)) $page['extra_'.$key] = $value;
 		else $page['extra_'.$key] = true;
 	}
+	// make sure, 'text' is not an array if empty
+	if (empty($page['text'])) $page['text'] = '';
 	return $page;
 }
 

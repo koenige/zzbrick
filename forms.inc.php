@@ -103,7 +103,6 @@ function brick_forms($brick) {
 	}
 
 	// start zzform scripts
-	// TODO: generalize this part if needed
 	if ($auth) {
 		if (!empty($brick['setting']['brick_authentification_file'])) {
 			require_once $brick['setting']['brick_authentification_file'];
@@ -113,7 +112,6 @@ function brick_forms($brick) {
 			$zz_conf['user'] = $_SESSION[$brick['setting']['brick_username_in_session']];
 	}
 	require_once $zz_conf['dir'].'/zzform.php';
-	// TODO: end generalize this part
 	require_once $tables;
 	if (empty($zz)) {
 		// no defintions for zzform, this will not work
@@ -123,25 +121,25 @@ function brick_forms($brick) {
 		return $brick;
 	}
 	$zz_conf['show_output'] = false;
-	zzform();
+	$ops = zzform($zz);
 
 	// Export?
-	if (!empty($zz['mode']) AND $zz['mode'] == 'export') {
+	if (!empty($ops['mode']) AND $ops['mode'] == 'export') {
 		// in export mode, there is no html, just pdf, csv or something else
 		// output it directly
-		foreach ($zz['headers'] as $index) {
+		foreach ($ops['headers'] as $index) {
 			foreach ($index as $bool => $header) {
 				header($header, $bool);
 			}
 		}
-		echo $zz['output'];			// Output der Funktion ausgeben
+		echo $ops['output'];			// Output der Funktion ausgeben
 		exit;
 	}
 
 	// replace %%% placeholders from zzbrick just in case the whole output
 	// goes through brick_format() again
-	$zz['output'] = str_replace('%%%', '&#37;&#37;&#37;', $zz['output']);
-	$brick['page']['text'][$brick['position']] .= $zz['output'];
+	$ops['output'] = str_replace('%%%', '&#37;&#37;&#37;', $ops['output']);
+	$brick['page']['text'][$brick['position']] .= $ops['output'];
 	$brick['page']['title'] = ((!empty($zz_conf['title'])) ? $zz_conf['title'] 
 		: ($brick['setting']['brick_translate_text_function'] 
 			? $brick['setting']['brick_translate_text_function']('Error') : 'Error'));

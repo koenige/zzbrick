@@ -2,7 +2,7 @@
 
 // zzbrick
 // (c) Gustaf Mossakowski, <gustaf@koenige.org> 2009
-// requests to or from webservice for data interchange
+// requests to or from syndication URL for data interchange
 
 
 function brick_request_getxml($script, $params, $setting) {
