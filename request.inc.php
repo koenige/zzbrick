@@ -34,8 +34,9 @@ function brick_request($brick) {
 	if (file_exists($brick['path'].'/_common.inc.php'))
 		require_once $brick['path'].'/_common.inc.php';
 
+
 	// get parameter for function
-	$function_params = brick_request_params($brick['vars'], $brick['parameter']);
+	$function_params = brick_request_params($brick['vars'], $brick['setting']['url_parameter']);
 	// get name of function to be called
 	$script = strtolower(str_replace('-', '_', array_shift($function_params)));
 
@@ -63,6 +64,11 @@ function brick_request($brick) {
 	if (empty($content)) {
 		$brick['text'] = false;
 		$brick['page']['status'] = 404;
+		return $brick;
+	} elseif (!is_array($content)) {
+		// a space or so might have been returned to show, no, we do not
+		// want a 404 here, it's just a secondary block
+		$brick['text'] = false;
 		return $brick;
 	}
 

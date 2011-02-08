@@ -86,8 +86,11 @@ function brick_forms($brick) {
 
 	// check whether script shall be made accessible from public
 	$auth = ((count($brick['vars']) > 1) AND end($brick['vars']) == 'public') ? false : true;
-	if (!$auth) array_pop($brick['vars']);
-
+	if (!$auth) {
+		array_pop($brick['vars']);
+		$brick['public_access'] = true;
+	}
+	
 	if (file_exists($brick['path'].'/_common.inc.php'))
 		require_once $brick['path'].'/_common.inc.php';
 
