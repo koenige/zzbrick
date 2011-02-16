@@ -84,7 +84,7 @@ Always installed modules:
 	- loop - will do a loop and repeat parts of the brick
 		%%% loop start "optional HTML if content" "optional HTML if no content" %%%
 		%%% loop end "optional HTML if content" %%%
-		»subloops«:
+		Â»subloopsÂ«:
 		%%% loop subcategory %%%
 		%%% loop end "optional HTML if content" %%%
 	
@@ -331,6 +331,7 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 
 	$page = $brick['page'];
 	unset($brick['page']);
+
 	// Standard position, remove if empty
 	if (!trim($page['text']['none'])) unset($page['text']['none']);
 	// Hidden text? 403 access forbidden
@@ -338,6 +339,13 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 		unset($page['text']['_hidden_']);
 		$brick['access_forbidden'] = true;
 	}
+	
+	// check if it's html or different
+	if (!empty($page['content_type']) AND $page['content_type'] != 'html') {
+		// no formatting, if it's not HTML!
+		$brick['setting']['brick_fulltextformat'] = 'html';
+	}
+	
 	if (count($page['text']) == 1 AND !empty($page['text']['none'])) {
 	// if position is not wanted, remove unnecessary complexity in array
 		if ($brick['setting']['brick_default_position'] == 'none') {

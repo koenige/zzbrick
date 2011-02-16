@@ -34,7 +34,6 @@ function brick_request($brick) {
 	if (file_exists($brick['path'].'/_common.inc.php'))
 		require_once $brick['path'].'/_common.inc.php';
 
-
 	// get parameter for function
 	$function_params = brick_request_params($brick['vars'], $brick['setting']['url_parameter']);
 	// get name of function to be called
@@ -73,13 +72,14 @@ function brick_request($brick) {
 	}
 
 	// check if there's some </p>text<p>, remove it for inline results of function
-	if (!empty($content['text']) AND !is_array($content['text'])) if (substr($content['text'], 0, 1) != '<' 
-		AND substr($content['text'], -1) != '>') {
-		///echo substr(trim($brick['text'][$position]), -4);
-		if (substr(trim($brick['page']['text'][$brick['position']]), -4) == '</p>') {
-			$brick['page']['text'][$brick['position']] 
-				= substr(trim($brick['page']['text'][$brick['position']]), 0, -4).' ';
-			$brick['cut_next_paragraph'] = true;
+	if (!empty($content['text']) AND !is_array($content['text'])) {
+		if (substr($content['text'], 0, 1) != '<' AND substr($content['text'], -1) != '>') {
+			///echo substr(trim($brick['text'][$position]), -4);
+			if (substr(trim($brick['page']['text'][$brick['position']]), -4) == '</p>') {
+				$brick['page']['text'][$brick['position']] 
+					= substr(trim($brick['page']['text'][$brick['position']]), 0, -4).' ';
+				$brick['cut_next_paragraph'] = true;
+			}
 		}
 	}
 
@@ -101,7 +101,7 @@ function brick_request($brick) {
 	$overwrite_bricks = array('title', 'dont_show_h1', 'language_link',
 		'no_page_head', 'no_page_foot', 'last_update',
 		'style', 'breadcrumbs', 'project', 'created', 
-		'url_ending', 'no_output', 'template');
+		'url_ending', 'no_output', 'template', 'content_type');
 	// extra: for all individual needs, not standardized
 	foreach ($overwrite_bricks as $part) {
 		if (!empty($content[$part]))

@@ -9,6 +9,14 @@ function brick_request_getxml($script, $params, $setting) {
 	// TODO
 }
 
+/**
+ * gets JSON data from a remote URL and converts it into an array
+ *
+ * @param string $script
+ * @param array $params (optional)
+ * @param array $setting (optional)
+ * @return array
+ */
 function brick_request_getjson($script, $params = array(), $setting = array()) {
 	// get from URL
 	$params = implode('/', $params);
@@ -61,15 +69,14 @@ function brick_request_xmlout($script, $data, $params) {
 }
 
 function brick_request_jsonout($script, $data, $params) {
-	$out = json_encode($data);
-	if ($out) {
+	$brick['text'] = json_encode($data);
+	if ($brick['text']) {
 		header('Content-Type: application/json; charset=utf-8');
-		header('Content-Length: '.strlen($out));
+		header('Content-Length: '.strlen($brick['text']));
 	 	header('Accept-Ranges: bytes');
 		header('Content-Disposition: attachment; filename='.$script.'.json');
-		// TODO: Last-Modified
-		echo $out;
-		exit; // TODO: really exit here? maybe for error logging, continue
+		$brick['content_type'] = 'json';
+		return $brick;
 	} else {
 		return false;
 	}
