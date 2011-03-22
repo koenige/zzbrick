@@ -146,9 +146,10 @@ function brick_forms($brick) {
 	// goes through brick_format() again
 	$ops['output'] = str_replace('%%%', '&#37;&#37;&#37;', $ops['output']);
 	$brick['page']['text'][$brick['position']] .= $ops['output'];
-	$brick['page']['title'] = ((!empty($zz_conf['title'])) ? $zz_conf['title'] 
-		: ($brick['setting']['brick_translate_text_function'] 
-			? $brick['setting']['brick_translate_text_function']('Error') : 'Error'));
+	if (!empty($zz_conf['title'])) {
+		$brick['page']['title'] = $zz_conf['title'];
+		$brick['page']['dont_show_h1'] = true;
+	}
 	if (!empty($zz_conf['breadcrumbs'])) {
 		foreach ($zz_conf['breadcrumbs'] as $breadcrumb) {
 			$brick['page']['breadcrumbs'][] = 
@@ -158,9 +159,9 @@ function brick_forms($brick) {
 				.$breadcrumb['linktext'].(!empty($breadcrumb['url']) ? '</a>' : '');
 		}
 	}
-	if (empty($zz_conf['dont_show_title_as_breadcrumb']))
+	if (empty($zz_conf['dont_show_title_as_breadcrumb'])
+		AND (!empty($brick['page']['title'])))
 		$brick['page']['breadcrumbs'][] = $brick['page']['title'];
-	$brick['page']['dont_show_h1'] = true;
 	return $brick;
 }
 
