@@ -150,6 +150,7 @@ function brick_forms($brick) {
 		$brick['page']['title'] = $zz_conf['title'];
 		$brick['page']['dont_show_h1'] = true;
 	}
+	if (!empty($ops['meta'])) $brick['page']['meta'] = $ops['meta'];
 	if (!empty($zz_conf['breadcrumbs'])) {
 		foreach ($zz_conf['breadcrumbs'] as $breadcrumb) {
 			$brick['page']['breadcrumbs'][] = 
