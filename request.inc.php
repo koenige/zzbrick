@@ -246,7 +246,7 @@ function brick_request_cms($script, $params, $brick) {
 			$brick['page']['error']['level'] = E_USER_ERROR;
 			$brick['page']['error']['msg_text'] = 'No input data for %s was found. Probably function `%s` is missing.';
 			$brick['page']['error']['msg_vars'] = array($script, $request);
-			return false;
+			return $brick;
 		}
 		require_once $syndication_functions_file;
 		return brick_request_xmlout($script, $data, $params);
@@ -255,7 +255,7 @@ function brick_request_cms($script, $params, $brick) {
 			$brick['page']['error']['level'] = E_USER_ERROR;
 			$brick['page']['error']['msg_text'] = 'No input data for %s was found. Probably function `%s` is missing.';
 			$brick['page']['error']['msg_vars'] = array($script, $request);
-			return false;
+			return $brick;
 		}
 		require_once $syndication_functions_file;
 		return brick_request_jsonout($script, $data, $params);
