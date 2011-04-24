@@ -242,11 +242,21 @@ function brick_request_cms($script, $params, $brick) {
 	// output data, depending on parameter
 	switch ($output_format) {
 	case 'xml':
-		if ($data === true) return false;
+		if ($data === true AND !empty($request)) {
+			$brick['page']['error']['level'] = E_USER_ERROR;
+			$brick['page']['error']['msg_text'] = 'No input data for %s was found. Probably function `%s` is missing.';
+			$brick['page']['error']['msg_vars'] = array($script, $request);
+			return false;
+		}
 		require_once $syndication_functions_file;
 		return brick_request_xmlout($script, $data, $params);
 	case 'json':
-		if ($data === true) return false;
+		if ($data === true AND !empty($request)) {
+			$brick['page']['error']['level'] = E_USER_ERROR;
+			$brick['page']['error']['msg_text'] = 'No input data for %s was found. Probably function `%s` is missing.';
+			$brick['page']['error']['msg_vars'] = array($script, $request);
+			return false;
+		}
 		require_once $syndication_functions_file;
 		return brick_request_jsonout($script, $data, $params);
 	case 'html':
