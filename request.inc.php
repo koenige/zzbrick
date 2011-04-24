@@ -109,7 +109,8 @@ function brick_request($brick) {
 	}
 
 	// get even more content from the function and merge with existing values
-	$merge_bricks = array('authors', 'media', 'head', 'extra', 'meta', 'link');
+	$merge_bricks = array('authors', 'media', 'head', 'extra', 'meta', 'link',
+		'error');
 	foreach ($merge_bricks as $part) {
 		if (!empty($content[$part]) AND is_array($content[$part])) {
 			if (empty($brick['page'][$part])) $brick['page'][$part] = array();
@@ -243,19 +244,19 @@ function brick_request_cms($script, $params, $brick) {
 	switch ($output_format) {
 	case 'xml':
 		if ($data === true AND !empty($request)) {
-			$brick['page']['error']['level'] = E_USER_ERROR;
-			$brick['page']['error']['msg_text'] = 'No input data for %s was found. Probably function `%s` is missing.';
-			$brick['page']['error']['msg_vars'] = array($script, $request);
-			return $brick;
+			$content['error']['level'] = E_USER_ERROR;
+			$content['error']['msg_text'] = 'No input data for %s was found. Probably function `%s` is missing.';
+			$content['error']['msg_vars'] = array($script, $request);
+			return $content;
 		}
 		require_once $syndication_functions_file;
 		return brick_request_xmlout($script, $data, $params);
 	case 'json':
 		if ($data === true AND !empty($request)) {
-			$brick['page']['error']['level'] = E_USER_ERROR;
-			$brick['page']['error']['msg_text'] = 'No input data for %s was found. Probably function `%s` is missing.';
-			$brick['page']['error']['msg_vars'] = array($script, $request);
-			return $brick;
+			$content['error']['level'] = E_USER_ERROR;
+			$content['error']['msg_text'] = 'No input data for %s was found. Probably function `%s` is missing.';
+			$content['error']['msg_vars'] = array($script, $request);
+			return $content;
 		}
 		require_once $syndication_functions_file;
 		return brick_request_jsonout($script, $data, $params);
@@ -267,10 +268,10 @@ function brick_request_cms($script, $params, $brick) {
 		if (file_exists($brick['path'].'/'.$script_filename))
 			require_once $brick['path'].'/'.$script_filename;
 		if (!function_exists($request)) {
-			$brick['page']['error']['level'] = E_USER_ERROR;
-			$brick['page']['error']['msg_text'] = 'The function "%s" is not supported by the CMS.';
-			$brick['page']['error']['msg_vars'] = array($request);
-			return $brick;
+			$content['error']['level'] = E_USER_ERROR;
+			$content['error']['msg_text'] = 'The function "%s" is not supported by the CMS.';
+			$content['error']['msg_vars'] = array($request);
+			return $content;
 		}
 		return $request($data, $params);
 	}
