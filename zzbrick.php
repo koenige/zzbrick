@@ -344,6 +344,7 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 	if (!empty($page['content_type']) AND $page['content_type'] != 'html') {
 		// no formatting, if it's not HTML!
 		$brick['setting']['brick_fulltextformat'] = 'html';
+		$brick['setting']['brick_default_position'] = 'none';
 	}
 	
 	if (count($page['text']) == 1 AND !empty($page['text']['none'])) {
