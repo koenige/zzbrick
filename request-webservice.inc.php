@@ -68,18 +68,23 @@ function brick_request_xmlout($script, $data, $params) {
 	// ggf. Funktion aus reiffnet Webservice einbinden.
 }
 
+/**
+ * output of data, JSON encoded
+ *
+ * @param string $script filename for download
+ * @param array $data data for JSON encoding
+ * @param array $params
+ * @return array $brick
+ */
 function brick_request_jsonout($script, $data, $params) {
 	$brick['text'] = json_encode($data);
-	if ($brick['text']) {
-		header('Content-Type: application/json; charset=utf-8');
-		header('Content-Length: '.strlen($brick['text']));
-	 	header('Accept-Ranges: bytes');
-		header('Content-Disposition: attachment; filename='.$script.'.json');
-		$brick['content_type'] = 'json';
-		return $brick;
-	} else {
-		return false;
-	}
+	if (!$brick['text']) return false;
+	header('Content-Type: application/json; charset=utf-8');
+	header('Content-Length: '.strlen($brick['text']));
+	header('Accept-Ranges: bytes');
+	header('Content-Disposition: attachment; filename='.$script.'.json');
+	$brick['content_type'] = 'json';
+	return $brick;
 }
 
 ?>

@@ -242,9 +242,11 @@ function brick_request_cms($script, $params, $brick) {
 	// output data, depending on parameter
 	switch ($output_format) {
 	case 'xml':
+		if ($data === true) return false;
 		require_once $syndication_functions_file;
 		return brick_request_xmlout($script, $data, $params);
 	case 'json':
+		if ($data === true) return false;
 		require_once $syndication_functions_file;
 		return brick_request_jsonout($script, $data, $params);
 	case 'html':
