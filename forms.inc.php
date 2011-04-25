@@ -33,7 +33,6 @@
 function brick_forms($brick) {
 	global $zz_conf;		// zzform configuration
 	global $zz_setting;		// common settings, just for ease of use global definition goes here
-	global $zz_access;		// access parameters, just for ease of use global definition goes here
 
 	// get username for zzform, logging and errors
 	if (empty($brick['setting']['brick_username_in_session']))
