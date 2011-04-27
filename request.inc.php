@@ -29,7 +29,9 @@ function brick_request($brick) {
 		array_unshift($brick['vars'], $brick['subtype']);
 		// to transport additional variables which are needed
 		// so %%% image 23 %%% may be as small as possible
-		$brick['vars'][] = '*';
+		if (in_array($brick['subtype'], $brick['setting']['brick_request_url_params'])) {
+			$brick['vars'][] = '*';
+		}
 	}
 	if (file_exists($brick['path'].'/_common.inc.php'))
 		require_once $brick['path'].'/_common.inc.php';
