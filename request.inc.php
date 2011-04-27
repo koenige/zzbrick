@@ -25,6 +25,8 @@ function brick_request($brick) {
 		$brick['subtype'] = '';
 	if (empty($brick['setting']['brick_request_shortcuts'])) 
 		$brick['setting']['brick_request_shortcuts'] = array();
+	if (empty($brick['setting']['brick_request_url_params'])) 
+		$brick['setting']['brick_request_url_params'] = array();
 	if (in_array($brick['subtype'], $brick['setting']['brick_request_shortcuts'])) {
 		array_unshift($brick['vars'], $brick['subtype']);
 		// to transport additional variables which are needed
