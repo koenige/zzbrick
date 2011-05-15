@@ -23,8 +23,8 @@ function brick_redirect($brick) {
 	if (brick_check_url($brick['vars'][0])) {
 		if (substr($brick['vars'][0], 0, 1) == '/') {
 			// Location needs an absolute URI
-			// SERVER_NAME must be canonical, best to do this via the webserver
-			$base = (!empty($_SERVER['HTTPS']) ? 'https' : 'http').'://'.$_SERVER['SERVER_NAME'];
+			// HTTP_HOST must be canonical, best to do this via the webserver
+			$base = (!empty($_SERVER['HTTPS']) ? 'https' : 'http').'://'.htmlspecialchars($_SERVER['HTTP_HOST']);
 			$brick['vars'][0] = $base.$brick['vars'][0];
 		}
 		header('Location: '.$brick['vars'][0]);
