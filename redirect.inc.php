@@ -19,6 +19,10 @@
  * @author Gustaf Mossakowski <gustaf@koenige.org>
  */
 function brick_redirect($brick) {
+	// test if field is hidden
+	if (!empty($brick['position']) AND $brick['position'] == '_hidden_')
+		return $brick;
+
 	// test if it's a valid URL
 	if (brick_check_url($brick['vars'][0])) {
 		if (substr($brick['vars'][0], 0, 1) == '/') {
