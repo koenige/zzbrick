@@ -28,15 +28,22 @@ function brick_loopposition($brick) {
 	$display = false;
 	$positions = explode('|', $brick['vars'][0]);
 	
+	$i = $brick['loop_all'] - $brick['loop_counter'] + 1;
 	foreach ($positions as $position) {
 		if ($position == 'first' AND $brick['loop_counter'] == $brick['loop_all']
 			AND $brick['loop_all'] != 1)
 			$display = true;
-		if ($position == 'last' AND $brick['loop_counter'] == 1
+		elseif ($position == 'last' AND $brick['loop_counter'] == 1
 			AND $brick['loop_all'] != 1)
 			$display = true;
-		if ($position == 'middle' AND $brick['loop_counter'] != 1
+		elseif ($position == 'middle' AND $brick['loop_counter'] != 1
 			AND $brick['loop_counter'] != $brick['loop_all'])
+			$display = true;
+		elseif ($position == 'uneven' AND ($i & 1))
+			$display = true;
+		elseif ($position == 'odd' AND ($i & 1))
+			$display = true;
+		elseif ($position == 'even' AND !($i & 1))
 			$display = true;
 	}
 	if (!$display) return $brick;
