@@ -67,6 +67,10 @@ function brick_page($brick) {
 				break;
 			case 'year':
 				$content = date('Y');
+				break;
+			case 'base':
+				$content = $brick['setting']['base'];
+				break;
 		}
 	}
 	if (!empty($brick['vars'][0]) AND $content) {
