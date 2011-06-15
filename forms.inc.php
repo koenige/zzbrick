@@ -99,8 +99,14 @@ function brick_forms($brick) {
 	if (!file_exists($tables)) {
 		$tables = $brick['path'].'/'.array_shift($brick['vars']).'.php';
 		if (!file_exists($tables)) {
-			$brick['page']['status'] = 404;
-			return $brick;
+			$tables = $zz_conf['dir'].'/default_tables/database_'.$scriptpath.'.php';
+			if (!file_exists($tables)) {
+				$tables = $zz_conf['dir'].'/default_tables/'.$scriptpath.'.php';
+				if (!file_exists($tables)) {
+					$brick['page']['status'] = 404;
+					return $brick;
+				}
+			}
 		}
 	}
 
