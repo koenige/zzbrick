@@ -12,8 +12,8 @@
  * 		it is recommended to put the raw table definitions in zzbrick_tables
  * 		and the more sophisticated table scripts in zzbrick_forms
  * functions: -
- * settings: brick_username_in_session, brick_authentification_file, 
- *		brick_authentification_function, brick_translate_text_function, 
+ * settings: brick_username_in_session, brick_authentication_file, 
+ *		brick_authentication_function, brick_translate_text_function, 
  *		$zz_conf['dir']
  * examples:
  *		%%% tables * %%% -- URL parameters take place of asterisk
@@ -21,8 +21,8 @@
  *			(this is useful if 1st parameter is language); 
  *			*[2+] second and further parameters
  *		%%% forms webpages %%%
- *		%%% forms webpages public %%% - script does not require authentification
- *		%%% forms * public %%% - script does not require authentification
+ *		%%% forms webpages public %%% - script does not require authentication
+ *		%%% forms * public %%% - script does not require authentication
  * This function needs the table definitions in a custom directory
  * either zzbrick_forms or zzbrick_tables
  * For the syntax of the table definition file, read the zzform documentation
@@ -37,12 +37,12 @@ function brick_forms($brick) {
 	// get username for zzform, logging and errors
 	if (empty($brick['setting']['brick_username_in_session']))
 		$brick['setting']['brick_username_in_session'] = 'username';
-	// for webpages that have not always authentification, require it
+	// for webpages that have not always authentication, require it
 	// default: use core/auth.inc.php from zzwrap
-	if (!isset($brick['setting']['brick_authentification_file']))
-		$brick['setting']['brick_authentification_file'] = $brick['setting']['core'].'/auth.inc.php';
-	if (!isset($brick['setting']['brick_authentification_function']))
-		$brick['setting']['brick_authentification_function'] = 'wrap_auth';
+	if (!isset($brick['setting']['brick_authentication_file']))
+		$brick['setting']['brick_authentication_file'] = $brick['setting']['core'].'/auth.inc.php';
+	if (!isset($brick['setting']['brick_authentication_function']))
+		$brick['setting']['brick_authentication_function'] = 'wrap_auth';
 	// to translate error messages, you might use a translation function
 	// default: use wrap_text() from core/language.inc.php from zzwrap
 	if (!isset($brick['setting']['brick_translate_text_function']))
@@ -112,9 +112,9 @@ function brick_forms($brick) {
 
 	// start zzform scripts
 	if ($auth) {
-		if (!empty($brick['setting']['brick_authentification_file'])) {
-			require_once $brick['setting']['brick_authentification_file'];
-			$brick['setting']['brick_authentification_function']();
+		if (!empty($brick['setting']['brick_authentication_file'])) {
+			require_once $brick['setting']['brick_authentication_file'];
+			$brick['setting']['brick_authentication_function']();
 		}
 		if (!empty($_SESSION) AND empty($zz_conf['user']))
 			$zz_conf['user'] = $_SESSION[$brick['setting']['brick_username_in_session']];

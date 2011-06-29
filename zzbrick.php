@@ -45,11 +45,11 @@ Variabes in $setting:
 		%%% instead of %%% request image blubb %%%
 	- 'brick_username_in_session': Name of key from $_SESSION that will be used  
 		as username for zzform(), default is 'username'
-	- 'brick_authentification_file': file that will be included if
-		authentification is needed for accessing the zzform scripts. might be 
+	- 'brick_authentication_file': file that will be included if
+		authentication is needed for accessing the zzform scripts. might be 
 		false, then no file will be included. zzwrap sets this automatically
-	- 'brick_authentification_function': function to be called if
-		authentification is needed
+	- 'brick_authentication_function': function to be called if
+		authentication is needed
 	- 'brick_translate_text_function': Name of function to translate text; 
 		zzwrap sets this to wrap_text
 	- 'brick_fulltextformat': name of function to format the complete output of
