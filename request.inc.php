@@ -50,9 +50,7 @@ function brick_request($brick) {
 		$request = 'cms_'.$script;
 
 		// include function file and check if function exists
-		$script_filename = substr(strtolower($script), 0, strpos($script.'_', '_')).'.inc.php';
-		if (file_exists($brick['path'].'/'.$script_filename))
-			require_once $brick['path'].'/'.$script_filename;
+		brick_request_script($script, $brick['path']);
 		if (!function_exists($request)) {
 			$brick['page']['error']['level'] = E_USER_ERROR;
 			$brick['page']['error']['msg_text'] = 'The function "%s" is not supported by the CMS.';
@@ -229,9 +227,7 @@ function brick_request_cms($script, $params, $brick) {
 	default:
 		$request = 'cms_get_'.$script;
 		// include function file and check if function exists
-		$script_filename = substr(strtolower($script), 0, strpos($script.'_', '_')).'.inc.php';
-		if (file_exists($brick['path'].'_get/'.$script_filename))
-			require_once $brick['path'].'_get/'.$script_filename;
+		$script_filename = brick_request_script($script, $brick['path'].'_get/');
 		if (function_exists($request)) {
 			$data = $request($params);
 		} else {
@@ -268,9 +264,7 @@ function brick_request_cms($script, $params, $brick) {
 	default:
 		$request = 'cms_htmlout_'.$script;
 		// include function file and check if function exists
-		$script_filename = substr(strtolower($script), 0, strpos($script.'_', '_')).'.inc.php';
-		if (file_exists($brick['path'].'/'.$script_filename))
-			require_once $brick['path'].'/'.$script_filename;
+		brick_request_script($script, $brick['path']);
 		if (!function_exists($request)) {
 			$content['error']['level'] = E_USER_ERROR;
 			$content['error']['msg_text'] = 'The function "%s" is not supported by the CMS.';
@@ -279,6 +273,20 @@ function brick_request_cms($script, $params, $brick) {
 		}
 		return $request($data, $params);
 	}
+}
+
+/**
+ * create filename from script name
+ *
+ * @param string $script
+ * @param string $path = $brick['path']
+ * @return string $filename
+ */
+function brick_request_script($script, $path) {
+	$file = substr(strtolower($script), 0, strpos($script.'_', '_')).'.inc.php';
+	if (!file_exists($path.'/'.$file)) return false;
+	require_once $path.'/'.$file;
+	return true;
 }
 
 ?>
