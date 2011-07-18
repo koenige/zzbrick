@@ -75,13 +75,7 @@ function brick_page($brick) {
 	}
 	if (!empty($brick['vars'][0]) AND $content) {
 		// formatting to be done, there is some HTML and a value
-		// check for translations in form of %{'Hello'}%
-		// to translate text, you might use a translation function
-		// default: use wrap_text() from core/language.inc.php from zzwrap
-		if (!isset($brick['setting']['brick_translate_text_function']))
-			$brick['setting']['brick_translate_text_function'] = 'wrap_text';
-		if (strstr($brick['vars'][0], "%{'")) 
-			$brick['vars'][0] = preg_replace_callback("~%{'(.+?)'}%~", $brick['setting']['brick_translate_text_function'], $brick['vars'][0]);
+		$brick['vars'][0] = brick_translate($brick['vars'][0], $brick['setting']);
 		$brick['page']['text'][$brick['setting']['brick_default_position']] .= 
 			sprintf($brick['vars'][0], $content);
 	} else {

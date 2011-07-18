@@ -525,4 +525,21 @@ function brick_head_format($page, $setting) {
 	return $head;
 }
 
+/** 
+ * check for translations in form of %{'Hello'}%
+ * to translate text, you might use a translation function
+ * default: use wrap_text() from core/language.inc.php from zzwrap
+ * 
+ * @param string $string
+ * @param array $settings = $brick['setting']
+ * @return string translated string
+ */
+function brick_translate($string, $settings) {
+	if (!strstr($string, "%{'")) return $string;
+	if (!isset($settings['brick_translate_text_function']))
+		$settings['brick_translate_text_function'] = 'wrap_text';
+	$string = preg_replace_callback("~%{'(.+?)'}%~", $settings['brick_translate_text_function'], $string);
+	return $string;
+}
+
 ?>
