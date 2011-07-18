@@ -69,7 +69,7 @@ function brick_item($brick) {
 					$format = $values[$content];
 				}
 			}
-			$format = brick_translate($format);
+			$format = brick_translate($format, $brick['setting']);
 			$brick['page']['text'][$pos] .= sprintf($format, $content);
 		} else {
 			$brick['page']['text'][$pos] .= $content;
