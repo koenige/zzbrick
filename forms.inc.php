@@ -135,9 +135,12 @@ function brick_forms($brick) {
 	$ops = zzform($zz);
 	
 	// Caching
-	if (!empty($_GET['q'])) {
-		// Do not cache search results
-		$zz_setting['cache'] = false;
+	$uncacheable = array('q', 'zzaction', 'zzhash');
+	foreach ($uncacheable as $query) {
+		if (!empty($_GET[$query])) {
+			$zz_setting['cache'] = false;
+			break;
+		}
 	}
 
 	// Export?
