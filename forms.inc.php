@@ -133,8 +133,15 @@ function brick_forms($brick) {
 	}
 	$zz_conf['show_output'] = false;
 	$ops = zzform($zz);
+	
+	// Caching
+	if (!empty($_GET['q'])) {
+		// Do not cache search results
+		$zz_setting['cache'] = false;
+	}
 
 	// Export?
+	// TODO: allow caching
 	if (!empty($ops['mode']) AND $ops['mode'] == 'export') {
 		// in export mode, there is no html, just pdf, csv or something else
 		// output it directly
@@ -143,7 +150,7 @@ function brick_forms($brick) {
 				header($header, $bool);
 			}
 		}
-		echo $ops['output'];			// Output der Funktion ausgeben
+		echo $ops['output'];
 		exit;
 	}
 
