@@ -130,6 +130,7 @@ function brick_forms($brick) {
 		$brick['page']['error']['level'] = E_USER_ERROR;
 		$brick['page']['error']['msg_text'] = 'No table definition for zzform found ($zz).';
 		$brick['page']['error']['msg_vars'] = array($tables);
+		$brick['page']['status'] = 503;
 		return $brick;
 	}
 	$zz_conf['show_output'] = false;
@@ -167,6 +168,8 @@ function brick_forms($brick) {
 		$brick['page']['dont_show_h1'] = true;
 	}
 	if (!empty($ops['meta'])) $brick['page']['meta'] = $ops['meta'];
+	if (!empty($ops['status'])) $brick['page']['status'] = $ops['status'];
+	
 	if (!empty($zz_conf['breadcrumbs'])) {
 		foreach ($zz_conf['breadcrumbs'] as $breadcrumb) {
 			$brick['page']['breadcrumbs'][] = 
