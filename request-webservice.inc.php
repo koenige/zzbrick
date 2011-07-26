@@ -81,7 +81,6 @@ function brick_request_jsonout($script, $data, $params) {
 	if (!$brick['text']) return false;
 	header('Content-Type: application/json; charset=utf-8');
 	header('Content-Length: '.strlen($brick['text']));
-	header('Accept-Ranges: bytes');
 	header('Content-Disposition: attachment; filename='.$script.'.json');
 	$brick['content_type'] = 'json';
 	return $brick;
