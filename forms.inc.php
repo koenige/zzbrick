@@ -125,6 +125,9 @@ function brick_forms($brick) {
 	// table script can react to them
 	zzform_post_too_big(); 
 	require_once $tables;
+	if (!empty($brick['page']['status']) AND $brick['page']['status'] !== 200)
+		return $brick;
+
 	if (empty($zz)) {
 		// no defintions for zzform, this will not work
 		$brick['page']['error']['level'] = E_USER_ERROR;
