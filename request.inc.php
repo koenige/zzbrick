@@ -103,7 +103,7 @@ function brick_request($brick) {
 	$overwrite_bricks = array('title', 'dont_show_h1', 'language_link',
 		'no_page_head', 'no_page_foot', 'last_update',
 		'style', 'breadcrumbs', 'project', 'created', 
-		'url_ending', 'no_output', 'template', 'content_type');
+		'url_ending', 'no_output', 'template', 'content_type', 'status');
 	// extra: for all individual needs, not standardized
 	foreach ($overwrite_bricks as $part) {
 		if (!empty($content[$part]))
@@ -244,18 +244,20 @@ function brick_request_cms($script, $params, $brick) {
 	switch ($output_format) {
 	case 'xml':
 		if ($data === true AND !empty($request)) {
-			$content['error']['level'] = E_USER_ERROR;
+			$content['error']['level'] = E_USER_WARNING;
 			$content['error']['msg_text'] = 'No input data for %s was found. Probably function `%s` is missing.';
 			$content['error']['msg_vars'] = array($script, $request);
+			$content['status'] = 404;
 			return $content;
 		}
 		require_once $syndication_functions_file;
 		return brick_request_xmlout($script, $data, $params);
 	case 'json':
 		if ($data === true AND !empty($request)) {
-			$content['error']['level'] = E_USER_ERROR;
+			$content['error']['level'] = E_USER_WARNING;
 			$content['error']['msg_text'] = 'No input data for %s was found. Probably function `%s` is missing.';
 			$content['error']['msg_vars'] = array($script, $request);
+			$content['status'] = 404;
 			return $content;
 		}
 		require_once $syndication_functions_file;
