@@ -28,9 +28,10 @@ function brick_page($brick) {
 	if (empty($brick['vars'][0])) return false;
 
 	$page = &$brick['parameter'];
+	$pos = $brick['position'];
 	global $zz_conf;
-	if (!isset($brick['page']['text'][$brick['setting']['brick_default_position']]))
-		$brick['page']['text'][$brick['setting']['brick_default_position']] = '';
+	if (!isset($brick['page']['text'][$pos]))
+		$brick['page']['text'][$pos] = '';
 	$content = false;
 	$brick_var = str_replace('-', '_', array_shift($brick['vars']));
 	if (file_exists($brick['path'].'/'.basename(strtolower($brick_var)).'.inc.php')) {
@@ -76,11 +77,11 @@ function brick_page($brick) {
 	if (!empty($brick['vars'][0]) AND $content) {
 		// formatting to be done, there is some HTML and a value
 		$brick['vars'][0] = brick_translate($brick['vars'][0], $brick['setting']);
-		$brick['page']['text'][$brick['setting']['brick_default_position']] .= 
+		$brick['page']['text'][$pos] .= 
 			sprintf($brick['vars'][0], $content);
 	} else {
 		// no formatting or no value
-		$brick['page']['text'][$brick['setting']['brick_default_position']] .= $content;
+		$brick['page']['text'][$pos] .= $content;
 	}
 	return $brick;
 }
