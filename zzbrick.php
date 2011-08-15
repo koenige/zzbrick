@@ -336,9 +336,9 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 	if (!trim($page['text']['none'])) unset($page['text']['none']);
 	// Hidden text? 403 access forbidden
 	if (!empty($page['text']['_hidden_'])) {
-		unset($page['text']['_hidden_']);
 		$brick['access_forbidden'] = true;
 	}
+	unset($page['text']['_hidden_']);
 	
 	// check if it's html or different
 	if (!empty($page['content_type']) AND $page['content_type'] != 'html') {
