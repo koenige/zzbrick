@@ -86,6 +86,7 @@ function brick_request($brick) {
 	}
 
 	if (!empty($content['replace_db_text'])) {
+		// hide previous textblocks
 		$brick['replace_db_text'][$brick['position']] = true;
 		$brick['page']['text'][$brick['position']] = '';
 	}
@@ -98,6 +99,12 @@ function brick_request($brick) {
 		}
 	} elseif (!empty($content['text']))
 		$brick['page']['text'][$brick['position']] .= $content['text'];
+
+	if (!empty($content['replace_db_text'])) {
+		// hide next textblocks
+		$brick['position'] = '_hidden_';
+		$brick['page']['text'][$brick['position']] = '';
+	}
 
 	// get some content from the function and overwrite existing values
 	$overwrite_bricks = array('title', 'dont_show_h1', 'language_link',
