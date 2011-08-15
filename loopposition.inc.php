@@ -15,6 +15,7 @@
  * 		%%% loopcondition first "blubb" %%% 
  * 		%%% loopcondition middle|last "blubb" %%% 
  * 		%%% loopcondition first|middle "|" %%%
+ * 		%%% loopcondition %5 "<br>" %%% (all 5 lines)
  * @param array $brick
  * @return array $brick
  * @author Gustaf Mossakowski <gustaf@koenige.org>
@@ -45,6 +46,10 @@ function brick_loopposition($brick) {
 			$display = true;
 		elseif ($position == 'even' AND !($i & 1))
 			$display = true;
+		elseif (substr($position, 0, 1) == '%') {
+			$num = intval(substr($position, 1));
+			if (!($i % $num)) $display = true;
+		}
 	}
 	if (!$display) return $brick;
 	if (empty($brick['page']['text'][$brick['position']]))
