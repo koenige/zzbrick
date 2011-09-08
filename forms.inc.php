@@ -47,6 +47,9 @@ function brick_forms($brick) {
 	// default: use wrap_text() from core/language.inc.php from zzwrap
 	if (!isset($brick['setting']['brick_translate_text_function']))
 		$brick['setting']['brick_translate_text_function'] = 'wrap_text';
+	// allow default tables for inclusion, on demand only
+	if (!isset($brick['setting']['brick_default_tables']))
+		$brick['setting']['brick_default_tables'] = array();
 
 	// directory depending on subtype
 	if (empty($brick['subtype'])) $brick['subtype'] = 'forms';
@@ -98,7 +101,8 @@ function brick_forms($brick) {
 	$tables = $brick['path'].'/'.$scriptpath.'.php';
 	if (!file_exists($tables)) {
 		$tables = $brick['path'].'/'.array_shift($brick['vars']).'.php';
-		if (!file_exists($tables)) {
+		if (!file_exists($tables) AND (brick['setting']['default_tables'] === true
+			OR in_array($tables, $brick['setting']['default_tables']))) {
 			$tables = $zz_conf['dir'].'/default_tables/database_'.$scriptpath.'.php';
 			if (!file_exists($tables)) {
 				$tables = $zz_conf['dir'].'/default_tables/'.$scriptpath.'.php';
