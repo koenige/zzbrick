@@ -102,7 +102,7 @@ function brick_forms($brick) {
 	if (!file_exists($tables)) {
 		$tables = $brick['path'].'/'.array_shift($brick['vars']).'.php';
 		if (!file_exists($tables) AND ($brick['setting']['brick_default_tables'] === true
-			OR in_array($tables, $brick['setting']['brick_default_tables']))) {
+			OR in_array($scriptpath, $brick['setting']['brick_default_tables']))) {
 			$tables = $zz_conf['dir'].'/default_tables/database_'.$scriptpath.'.php';
 			if (!file_exists($tables)) {
 				$tables = $zz_conf['dir'].'/default_tables/'.$scriptpath.'.php';
