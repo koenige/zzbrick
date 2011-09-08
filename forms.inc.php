@@ -101,8 +101,8 @@ function brick_forms($brick) {
 	$tables = $brick['path'].'/'.$scriptpath.'.php';
 	if (!file_exists($tables)) {
 		$tables = $brick['path'].'/'.array_shift($brick['vars']).'.php';
-		if (!file_exists($tables) AND (brick['setting']['default_tables'] === true
-			OR in_array($tables, $brick['setting']['default_tables']))) {
+		if (!file_exists($tables) AND ($brick['setting']['brick_default_tables'] === true
+			OR in_array($tables, $brick['setting']['brick_default_tables']))) {
 			$tables = $zz_conf['dir'].'/default_tables/database_'.$scriptpath.'.php';
 			if (!file_exists($tables)) {
 				$tables = $zz_conf['dir'].'/default_tables/'.$scriptpath.'.php';
@@ -111,6 +111,9 @@ function brick_forms($brick) {
 					return $brick;
 				}
 			}
+		} else {
+			$brick['page']['status'] = 404;
+			return $brick;
 		}
 	}
 
