@@ -111,7 +111,7 @@ function brick_forms($brick) {
 					return $brick;
 				}
 			}
-		} else {
+		} elseif (!file_exists($tables)) {
 			$brick['page']['status'] = 404;
 			return $brick;
 		}
