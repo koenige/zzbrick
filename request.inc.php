@@ -109,7 +109,7 @@ function brick_request($brick) {
 	// get some content from the function and overwrite existing values
 	$overwrite_bricks = array('title', 'dont_show_h1', 'language_link',
 		'no_page_head', 'no_page_foot', 'last_update',
-		'style', 'breadcrumbs', 'project', 'created', 
+		'style', 'breadcrumbs', 'project', 'created', 'headers',
 		'url_ending', 'no_output', 'template', 'content_type', 'status');
 	// extra: for all individual needs, not standardized
 	foreach ($overwrite_bricks as $part) {
