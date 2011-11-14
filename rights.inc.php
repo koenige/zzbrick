@@ -56,7 +56,16 @@ function brick_rights($brick) {
 	switch ($rights) {
 	case '=': // test with custom function
 		$access = brick_access_rights($brick['vars']);
-		if ($access) $brick['content_shown'] = true;
+		if ($access) {
+			if (empty($brick['content_shown'])) {
+				// nothing shown so far, so show this
+				$brick['content_shown'] = true;
+			} else {
+				// something was already shown in if clause beforehands
+				// this is an elseif
+				$access = false;
+			}
+		}
 		break;
 	case ':': // show content else
 		if (empty($brick['content_shown'])) {
