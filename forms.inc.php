@@ -34,6 +34,10 @@ function brick_forms($brick) {
 	global $zz_conf;		// zzform configuration
 	global $zz_setting;		// common settings, just for ease of use global definition goes here
 
+	if (!empty($brick['access_blocked'])) {
+		return $brick;
+	}
+
 	// get username for zzform, logging and errors
 	if (empty($brick['setting']['brick_username_in_session']))
 		$brick['setting']['brick_username_in_session'] = 'username';
@@ -131,7 +135,7 @@ function brick_forms($brick) {
 	// check if POST is too big, then set GET variables if possible here, so the
 	// table script can react to them
 	zzform_post_too_big(); 
-	require_once $tables;
+	require $tables;
 	if (!empty($brick['page']['status']) AND $brick['page']['status'] !== 200)
 		return $brick;
 
