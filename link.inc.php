@@ -13,21 +13,25 @@
  * settings: -
  * examples: 
  * 		%%% link /some/internal/link "Link text" %%% 
+ * 		%%% link /some/internal/link "Link text" "title='title text'" %%% 
  * @param array $brick
  * @return array $brick
  * @author Gustaf Mossakowski <gustaf@koenige.org>
  */
 function brick_link($brick) {
-	if (count($brick['vars']) !== 2) return $brick;
+	if (count($brick['vars']) < 2) return $brick;
 	if (!isset($brick['page']['text'][$brick['position']]))
 		$brick['page']['text'][$brick['position']] = '';
 
 	if ($_SERVER['REQUEST_URI'] === $brick['setting']['base'].$brick['vars'][0]) {
 		$template = '%s';
 		$text = sprintf($template, $brick['vars'][1]);
-	} else {
+	} elseif (count($brick['vars']) === 2) {
 		$template = '<a href="%s">%s</a>';
 		$text = sprintf($template, $brick['vars'][0], $brick['vars'][1]);
+	} elseif (count($brick['vars']) === 3) {
+		$template = '<a href="%s" %s>%s</a>';
+		$text = sprintf($template, $brick['vars'][0], $brick['vars'][2], $brick['vars'][1]);
 	}
 	$brick['page']['text'][$brick['position']] .= $text;
 	return $brick;
