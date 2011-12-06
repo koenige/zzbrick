@@ -10,7 +10,8 @@
  * 
  * files: -
  * functions: -
- * settings: -
+ * settings:
+ *		'nolink_template', default '<strong>%s</strong>', in case URL = current
  * examples: 
  * 		%%% link /some/internal/link "Link text" %%% 
  * 		%%% link /some/internal/link "Link text" "title='title text'" %%% 
@@ -20,12 +21,13 @@
  */
 function brick_link($brick) {
 	if (count($brick['vars']) < 2) return $brick;
+	if (!isset($brick['setting']['nolink_template']))
+		$brick['setting']['nolink_template'] = '<strong>%s</strong>';
 	if (!isset($brick['page']['text'][$brick['position']]))
 		$brick['page']['text'][$brick['position']] = '';
 
 	if ($_SERVER['REQUEST_URI'] === $brick['setting']['base'].$brick['vars'][0]) {
-		$template = '%s';
-		$text = sprintf($template, $brick['vars'][1]);
+		$text = sprintf($brick['setting']['nolink_template'], $brick['vars'][1]);
 	} elseif (count($brick['vars']) === 2) {
 		$template = '<a href="%s">%s</a>';
 		$text = sprintf($template, $brick['vars'][0], $brick['vars'][1]);
