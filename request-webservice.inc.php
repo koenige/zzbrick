@@ -29,6 +29,8 @@ function brick_request_getjson($script, $params = array(), $setting = array()) {
 	} else {
 		$url = $script;
 	}
+	// rare occurence, but we might not have a URL
+	if (!$url) return array();
 	set_error_handler('brick_import_errors');
 	$data = file_get_contents($url); // do not log error here
 	restore_error_handler();
