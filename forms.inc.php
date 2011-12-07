@@ -120,6 +120,11 @@ function brick_forms($brick) {
 			return $brick;
 		}
 	}
+	
+	// set allowed params
+	$brick['page']['query_strings'] = array('mode', 'q', 'id', 'source_id', 
+		'scope', 'filter', 'where', 'order', 'dir', 'zzaction', 'zzhash',
+		'export', 'add', 'group', 'nolist', 'limit', 'referer', 'file');
 
 	// start zzform scripts
 	if ($auth) {
