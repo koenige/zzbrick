@@ -119,7 +119,7 @@ function brick_request($brick) {
 
 	// get even more content from the function and merge with existing values
 	$merge_bricks = array('authors', 'media', 'head', 'extra', 'meta', 'link',
-		'error');
+		'error', 'query_strings');
 	foreach ($merge_bricks as $part) {
 		if (!empty($content[$part]) AND is_array($content[$part])) {
 			if (empty($brick['page'][$part])) $brick['page'][$part] = array();
