@@ -26,6 +26,7 @@ function brick_link($brick) {
 	if (!isset($brick['page']['text'][$brick['position']]))
 		$brick['page']['text'][$brick['position']] = '';
 
+	$text = '';
 	if ($_SERVER['REQUEST_URI'] === $brick['setting']['base'].$brick['vars'][0]) {
 		$text = sprintf($brick['setting']['nolink_template'], $brick['vars'][1]);
 	} elseif (count($brick['vars']) === 2) {
