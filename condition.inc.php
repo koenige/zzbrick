@@ -22,6 +22,9 @@
  * @todo condition = AND OR ...
  */
 function brick_condition($brick) {
+	static $i;
+	if (!$i) $i = 0;
+	
 	// if one of the other access modules already blocks access, ignore this brick
 	if (!isset($brick['access_blocked'])) $brick['access_blocked'] = false;
 	if ($brick['access_blocked'] AND $brick['access_blocked'] != 'condition') {
@@ -29,7 +32,7 @@ function brick_condition($brick) {
 	}
 	// default translations, cannot be changed
 	$brick['setting']['brick_condition_translated']['if'] = '=';
-	$brick['setting']['brick_condition_translated']['elseif'] = '=';
+	$brick['setting']['brick_condition_translated']['elseif'] = ':=';
 	$brick['setting']['brick_condition_translated']['else'] = ':';
 	$brick['setting']['brick_condition_translated']['endif'] = '-';
 
@@ -43,6 +46,9 @@ function brick_condition($brick) {
 		$condition = ':';
 	} elseif ($brick['vars'][0] == '=') {
 		$condition = '=';
+		array_shift($brick['vars']);
+	} elseif ($brick['vars'][0] == ':=') {
+		$condition = ':=';
 		array_shift($brick['vars']);
 	} else {
 		$condition = '=';
@@ -64,39 +70,63 @@ function brick_condition($brick) {
 		}
 	}
 
-	$show = true;
+	// check if there it's a nested if and if there is a parent condition
+	// if so and it is false, do not show content for all clauses
+	if ($condition === '=') {
+		$i++; // increase level
+		$brick['content_shown'][$i] = false;
+	}
+	if (isset($brick['condition_show'][$i-1]) AND !$brick['condition_show'][$i-1]) {
+		$show = false;
+	} else {
+		$show = true;
+	}
+
 	switch ($condition) {
-	case '=': // test with custom function
+	case '=': // if
+		if (!$show) break;
 		if ($content) {
-			if (empty($brick['content_shown'])) {
-				$brick['content_shown'] = true;
+			$brick['content_shown'][$i] = true;
+		} else {
+			$brick['content_shown'][$i] = false;
+			$show = false;
+		}
+		break;
+	case ':=': // elseif
+		if (!$show) break;
+		if ($content) {
+			if (empty($brick['content_shown'][$i])) {
+				$brick['content_shown'][$i] = true;
 			} else {
 				// something was already shown in if clause beforehands
 				// this is an elseif
 				$show = false;
 			}
 		} else {
-			$brick['content_shown'] = false;
 			$show = false;
 		}
 		break;
 	case ':': // show content else
-		if (empty($brick['content_shown'])) {
+		if (!$show) break;
+		if (empty($brick['content_shown'][$i])) {
 			// nothing was shown yet, so show something
-			$brick['content_shown'] = true;
-			$show = true;
+			$brick['content_shown'][$i] = true;
 		} else {
 			$show = false;
 		}
 		break;
 	case '-':
-		unset($brick['content_shown']);
-		$show = true;
+		unset($brick['content_shown'][$i]);
+		unset($brick['condition_show'][$i]);
+		// reset show state to last condition if there is one
+		$i--;
 		break;
 	}
 	
 	// almost the same as in brick_language
 	if ($show) {
+		// save that this branch of condition is to be evaluated
+		$brick['condition_show'][$i] = true;
 		// reset to old brick_position
 		if (!empty($brick['position_old'])) {
 			$brick['position'] = $brick['position_old'];
@@ -107,6 +137,8 @@ function brick_condition($brick) {
 			$brick['access_blocked'] = false;		
 		}
 	} else {
+		// this branch of condition is to be neglected
+		$brick['condition_show'][$i] = false;
 		// set current position to _hidden_
 		if ($brick['position'] != '_hidden_')
 			$brick['position_old'] = $brick['position'];
