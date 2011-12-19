@@ -67,9 +67,15 @@ function brick_condition($brick) {
 	$show = true;
 	switch ($condition) {
 	case '=': // test with custom function
-		if ($content)
-			$brick['content_shown'] = true;
-		else {
+		if ($content) {
+			if (empty($brick['content_shown'])) {
+				$brick['content_shown'] = true;
+			} else {
+				// something was already shown in if clause beforehands
+				// this is an elseif
+				$show = false;
+			}
+		} else {
 			$brick['content_shown'] = false;
 			$show = false;
 		}
