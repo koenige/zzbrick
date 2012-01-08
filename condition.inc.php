@@ -81,6 +81,14 @@ function brick_condition($brick) {
 	} else {
 		$show = true;
 	}
+	if ($i === 0) {
+		// this means the template is somehow wrong
+		$brick['page']['error']['level'] = E_USER_NOTICE;
+		$brick['page']['error']['msg_text'] = 'There\'s an error in the nesting of conditions in the template `%s`: There are more endifs than ifs.';
+		if (!empty($brick['setting']['current_template'])) {
+			$brick['page']['error']['msg_vars'] = $brick['setting']['current_template'];
+		}
+	}
 
 	switch ($condition) {
 	case '=': // if
