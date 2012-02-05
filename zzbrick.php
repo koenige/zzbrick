@@ -1,7 +1,7 @@
 <?php 
 
 // zzbrick
-// (c) Gustaf Mossakowski, <gustaf@koenige.org> 2009
+// (c) Gustaf Mossakowski, <gustaf@koenige.org> 2009-2012
 // Main file
 
 /*
@@ -335,7 +335,7 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 	// Standard position, remove if empty
 	if (!trim($page['text']['none'])) unset($page['text']['none']);
 	// Hidden text? 403 access forbidden
-	if (!empty($page['text']['_hidden_'])) {
+	if (!empty($page['text']['_hidden_']) AND trim($page['text']['_hidden_'])) {
 		$brick['access_forbidden'] = true;
 	}
 	unset($page['text']['_hidden_']);
