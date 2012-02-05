@@ -1,7 +1,7 @@
 <?php 
 
 // zzbrick
-// (c) Gustaf Mossakowski, <gustaf@koenige.org> 2009
+// (c) Gustaf Mossakowski, <gustaf@koenige.org> 2009-2012
 // Show content depending on condition
 
 
@@ -153,10 +153,6 @@ function brick_condition($brick) {
 		$brick['position'] = '_hidden_';
 		// initialize text at _hidden_ position
 		$brick['page']['text'][$brick['position']] = false;
-		// ok, something is forbidden, will not be shown
-		// mark it as forbidden, so if nothing will be shown, we can
-		// answer with 403 forbidden
-		$brick['access_forbidden'] = true; 
 		// block access scripts until this script unblocks access
 		$brick['access_blocked'] = 'condition';
 	}
