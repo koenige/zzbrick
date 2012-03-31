@@ -156,7 +156,7 @@ function brick_forms($brick) {
 	$ops = zzform($zz);
 	
 	// Caching
-	$uncacheable = array('q', 'zzaction', 'zzhash');
+	$uncacheable = array('q', 'zzaction', 'zzhash', 'mode');
 	foreach ($uncacheable as $query) {
 		if (!empty($_GET[$query])) {
 			$zz_setting['cache'] = false;
