@@ -1,7 +1,7 @@
 <?php 
 
 // zzbrick
-// (c) Gustaf Mossakowski, <gustaf@koenige.org> 2009
+// (c) Gustaf Mossakowski, <gustaf@koenige.org> 2009-2012
 // redirect to another URL
 
 
@@ -15,6 +15,8 @@
  *		%%% redirect http://www.example.org/ %%%
  *		%%% redirect /path/to/local.html %%%
  * @param array $brick	Array from zzbrick, in $brick['vars'][0] we need the new URL
+ *		$brick['setting']['host_base'] will be used if set, must be something
+ *		like http://www.example.org
  * @return array $brick['page']['error'] if false; this function exits if URL is correct
  * @author Gustaf Mossakowski <gustaf@koenige.org>
  */
@@ -28,9 +30,13 @@ function brick_redirect($brick) {
 		if (substr($brick['vars'][0], 0, 1) == '/') {
 			// Location needs an absolute URI
 			// HTTP_HOST must be canonical, best to do this via the webserver
-			$host = htmlspecialchars($_SERVER['HTTP_HOST']);
-			if (!$host) $host = $_SERVER['SERVER_NAME'];
-			$base = (!empty($_SERVER['HTTPS']) ? 'https' : 'http').'://'.$host;
+			if (empty($brick['setting']['host_base'])) {
+				$host = htmlspecialchars($_SERVER['HTTP_HOST']);
+				if (!$host) $host = $_SERVER['SERVER_NAME'];
+				$base = (!empty($_SERVER['HTTPS']) ? 'https' : 'http').'://'.$host;
+			} else {
+				$base = $brick['setting']['host_base'];
+			}
 			$brick['vars'][0] = $base.$brick['vars'][0];
 		}
 		header('Location: '.$brick['vars'][0]);
