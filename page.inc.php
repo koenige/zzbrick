@@ -1,12 +1,12 @@
 <?php 
 
 // zzbrick
-// (c) Gustaf Mossakowski, <gustaf@koenige.org> 2009
+// (c) Gustaf Mossakowski, <gustaf@koenige.org> 2009-2012
 // page templates
 
 
 /**
- * seplaces template brick for HTML page layout
+ * Replaces template brick for HTML page layout
  * 
  * the second parameter might be used in case value for first parameter
  * returns something to format the output only if a parameter is returned.
@@ -26,6 +26,7 @@
  */
 function brick_page($brick) {
 	if (empty($brick['vars'][0])) return false;
+	global $zz_page;
 
 	$page = &$brick['parameter'];
 	$pos = $brick['position'];
@@ -63,15 +64,19 @@ function brick_page($brick) {
 	} elseif (!$content) {
 		// other special cases
 		switch ($brick_var) {
-			case 'charset':
-				$content = $zz_conf['character_set'];
-				break;
-			case 'year':
-				$content = date('Y');
-				break;
-			case 'base':
-				$content = $brick['setting']['base'];
-				break;
+		case 'charset':
+			$content = $zz_conf['character_set'];
+			break;
+		case 'year':
+			$content = date('Y');
+			break;
+		case 'base':
+			$content = $brick['setting']['base'];
+			break;
+		default:
+			if (empty($zz_page['db'][$brick_var])) break;
+			$content = $zz_page['db'][$brick_var];
+			break;
 		}
 	}
 	if (!empty($brick['vars'][0]) AND $content) {
