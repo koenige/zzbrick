@@ -208,40 +208,41 @@ function brick_request_cms($script, $params, $brick) {
 		$brick['setting']['brick_cms_input'] = '';
 
 	// supported export formats
-	if (empty($brick['setting']['brick_export_formats']))
+	if (empty($brick['setting']['brick_export_formats'])) {
 		$brick['setting']['brick_export_formats'] = array('html', 'xml', 'json');
-	if (!is_array($brick['setting']['brick_export_formats']))
+	}
+	if (empty($brick['setting']['syndication_function'])) {
+		$brick['setting']['syndication_library'] = '/zzwrap/syndication.inc.php';
+		$brick['setting']['syndication_function'] = 'wrap_syndication_get';
+	}
+	if (!is_array($brick['setting']['brick_export_formats'])) {
 		$brick['setting']['brick_export_formats'] = array($brick['setting']['brick_export_formats']);
+	}
 
 	if (in_array($brick['subtype'], $brick['setting']['brick_export_formats'])) {
 		$output_format = $brick['subtype'];
 	} else {
 		$output_format = false;
 	}
-	$syndication_functions_file = dirname(__FILE__).'/'.$brick['type'].'-webservice.inc.php';
 	
 	// get data for input, depending on settings
-	switch ($brick['setting']['brick_cms_input']) {
-	case 'xml':
-		require_once $syndication_functions_file;
-		$data = brick_request_getxml($script, $params, $brick['setting']);
-		break;
-	case 'json':
-		require_once $syndication_functions_file;
-		$data = brick_request_getjson($script, $params, $brick['setting']);
-		break;
-	case 'db':
-	default:
-		$request = 'cms_get_'.$script;
-		// include function file and check if function exists
-		$script_filename = brick_request_script($script, $brick['path'].'_get/');
-		if (function_exists($request)) {
-			$data = $request($params);
-		} else {
-			// function does not exist, probably no database data is needed
+	$request = 'cms_get_'.$script;
+	// include function file and check if function exists
+	$script_filename = brick_request_script($script, $brick['path'].'_get/');
+	if (function_exists($request)) {
+		$data = $request($params);
+	} else {
+		// function does not exist, probably no database data is needed
+		switch ($brick['setting']['brick_cms_input']) {
+		case 'xml':
+		case 'json':
+			$data = brick_request_external($script, $params, $brick['setting']);
+			break;
+		case 'db':
 			$data = true; // do not return a 404
-		}
-		break;
+			break;
+		default:
+			break;
 	}
 
 	// return false, if there's no input
@@ -301,6 +302,46 @@ function brick_request_script($script, $path) {
 	if (!file_exists($path.'/'.$file)) return false;
 	require_once $path.'/'.$file;
 	return true;
+}
+
+/**
+ * requests external data, first create URL, then run syndication script
+ * from own library
+ *
+ * @param string $script
+ * @param array $setting
+ * @param array $params (optional)
+ */
+function brick_request_external($script, $setting, $params = array()) {
+	$url = brick_request_url($script, $params, $setting);
+	if ($url === true) return true;
+
+	require_once $setting['lib'].$setting['syndication_library'];
+	$data = $setting['syndication_function']($url, $setting['brick_cms_input']);
+}
+
+/**
+ * gets URL for retrieving data from a foreign source
+ *
+ * @param string $script
+ * @param array $params (optional)
+ * @param array $setting (optional)
+ * @return array
+ */
+function brick_request_url($script, $params = array(), $setting = array()) {
+	// get from URL
+	$params = implode('/', $params);
+	if (isset($setting['brick_json_source_url'][$script])) {
+		// set to: we don't need a JSON import
+		if (!$setting['brick_json_source_url'][$script]) return true;
+		$url = sprintf($setting['brick_json_source_url'][$script], $params);
+	} elseif (!empty($setting['brick_json_source_url_default'])) {
+		$url = sprintf($setting['brick_json_source_url_default'], $script, $params);
+	} else {
+		$url = $script;
+	}
+	// rare occurence, but we might not have a URL
+	if (!$url) return array();
 }
 
 ?>
