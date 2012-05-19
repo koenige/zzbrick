@@ -272,7 +272,7 @@ function brick_request_cms($script, $params, $brick) {
 		$brick['text'] = json_encode($data);
 		if (!$brick['text']) return false;
 		$brick['content_type'] = 'json';
-		$brick['page']['headers']['filename'] = $script;
+		$brick['headers']['filename'] = $script.'.json';
 		return $brick;
 	case 'html':
 	default:
