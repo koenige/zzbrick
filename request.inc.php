@@ -243,6 +243,7 @@ function brick_request_cms($script, $params, $brick) {
 			break;
 		default:
 			break;
+		}
 	}
 
 	// return false, if there's no input
