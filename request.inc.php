@@ -236,7 +236,7 @@ function brick_request_cms($script, $params, $brick) {
 		switch ($brick['setting']['brick_cms_input']) {
 		case 'xml':
 		case 'json':
-			$data = brick_request_external($script, $params, $brick['setting']);
+			$data = brick_request_external($script, $brick['setting'], $params);
 			break;
 		case 'db':
 			$data = true; // do not return a 404
