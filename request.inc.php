@@ -1,7 +1,7 @@
 <?php 
 
 // zzbrick
-// (c) Gustaf Mossakowski, <gustaf@koenige.org> 2009
+// Copyright (c) 2009-2012 Gustaf Mossakowski, <gustaf@koenige.org>
 // requests
 
 
@@ -257,8 +257,10 @@ function brick_request_cms($script, $params, $brick) {
 			$content['status'] = 404;
 			return $content;
 		}
-		require_once $syndication_functions_file;
-		return brick_request_xmlout($script, $data, $params);
+		// @todo: SimpleXML or use some generic function
+		// $brick['content_type'] = 'xml';
+		$brick['text'] = 'XML export currently not supported';
+		return $brick;
 	case 'json':
 		if ($data === true AND !empty($request)) {
 			$content['error']['level'] = E_USER_WARNING;
@@ -267,8 +269,11 @@ function brick_request_cms($script, $params, $brick) {
 			$content['status'] = 404;
 			return $content;
 		}
-		require_once $syndication_functions_file;
-		return brick_request_jsonout($script, $data, $params);
+		$brick['text'] = json_encode($data);
+		if (!$brick['text']) return false;
+		$brick['content_type'] = 'json';
+		$brick['page']['headers']['filename'] = $script;
+		return $brick;
 	case 'html':
 	default:
 		$request = 'cms_htmlout_'.$script;

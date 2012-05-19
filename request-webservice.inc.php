@@ -61,31 +61,4 @@ function brick_import_errors($errno, $errstr, $errfile, $errline, $errcontext) {
 	}
 }
 
-function brick_request_xmlout($script, $data, $params) {
-	// TODO
-	// header('Content-Type: application/xml; charset=utf-8');
-	// header Content-Type, Content-Length, Last-Modified
-	// Output XML
-
-	// ggf. Funktion aus reiffnet Webservice einbinden.
-}
-
-/**
- * output of data, JSON encoded
- *
- * @param string $script filename for download
- * @param array $data data for JSON encoding
- * @param array $params
- * @return array $brick
- */
-function brick_request_jsonout($script, $data, $params) {
-	$brick['text'] = json_encode($data);
-	if (!$brick['text']) return false;
-	header('Content-Type: application/json; charset=utf-8');
-	header('Content-Length: '.strlen($brick['text']));
-	header('Content-Disposition: attachment; filename='.$script.'.json');
-	$brick['content_type'] = 'json';
-	return $brick;
-}
-
 ?>
