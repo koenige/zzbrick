@@ -316,9 +316,11 @@ function brick_request_script($script, $path) {
 function brick_request_external($script, $setting, $params = array()) {
 	$url = brick_request_url($script, $params, $setting);
 	if ($url === true) return true;
+	if (!$url) return array();
 
 	require_once $setting['lib'].$setting['syndication_library'];
 	$data = $setting['syndication_function']($url, $setting['brick_cms_input']);
+	return $data;
 }
 
 /**
@@ -342,7 +344,8 @@ function brick_request_url($script, $params = array(), $setting = array()) {
 		$url = $script;
 	}
 	// rare occurence, but we might not have a URL
-	if (!$url) return array();
+	if (!$url) return false;
+	return $url;
 }
 
 ?>
