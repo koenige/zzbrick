@@ -1,8 +1,16 @@
 <?php 
 
-// zzbrick
-// (c) Gustaf Mossakowski, <gustaf@koenige.org> 2009
-// text blocks, translated if applicable
+/**
+ * zzbrick
+ * Text blocks, translated if applicable
+ *
+ * Part of »Zugzwang Project«
+ * http://www.zugzwang.org/projects/zzbrick
+ *
+ * @author Gustaf Mossakowski <gustaf@koenige.org>
+ * @copyright Copyright © 2009 Gustaf Mossakowski
+ * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
+ */
 
 
 /**

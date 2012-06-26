@@ -1,8 +1,16 @@
 <?php 
 
-// zzbrick
-// (c) Gustaf Mossakowski, <gustaf@koenige.org> 2011
-// links (will not link to self if link url = current url)
+/**
+ * zzbrick
+ * Links (will not link to self if link url = current url)
+ *
+ * Part of »Zugzwang Project«
+ * http://www.zugzwang.org/projects/zzbrick
+ *
+ * @author Gustaf Mossakowski <gustaf@koenige.org>
+ * @copyright Copyright © 2011 Gustaf Mossakowski
+ * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
+ */
 
 
 /**

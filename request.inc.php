@@ -1,8 +1,16 @@
 <?php 
 
-// zzbrick
-// Copyright (c) 2009-2012 Gustaf Mossakowski, <gustaf@koenige.org>
-// requests
+/**
+ * zzbrick
+ * Requests
+ *
+ * Part of »Zugzwang Project«
+ * http://www.zugzwang.org/projects/zzbrick
+ *
+ * @author Gustaf Mossakowski <gustaf@koenige.org>
+ * @copyright Copyright © 2009-2012 Gustaf Mossakowski
+ * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
+ */
 
 
 /**

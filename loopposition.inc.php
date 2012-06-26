@@ -1,8 +1,16 @@
 <?php 
 
-// zzbrick
-// (c) Gustaf Mossakowski, <gustaf@koenige.org> 2010
-// string depending on position in loop
+/**
+ * zzbrick
+ * Content depending on position in loop
+ *
+ * Part of »Zugzwang Project«
+ * http://www.zugzwang.org/projects/zzbrick
+ *
+ * @author Gustaf Mossakowski <gustaf@koenige.org>
+ * @copyright Copyright © 2010 Gustaf Mossakowski
+ * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
+ */
 
 
 /**

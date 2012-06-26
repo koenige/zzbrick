@@ -1,8 +1,16 @@
 <?php 
 
-// zzbrick
-// (c) Gustaf Mossakowski, <gustaf@koenige.org> 2009
-// Access rights depending on user IP address
+/**
+ * zzbrick
+ * Access rights depending on user IPv4 address
+ *
+ * Part of »Zugzwang Project«
+ * http://www.zugzwang.org/projects/zzbrick
+ *
+ * @author Gustaf Mossakowski <gustaf@koenige.org>
+ * @copyright Copyright © 2009 Gustaf Mossakowski
+ * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
+ */
 
 
 /**
