@@ -48,8 +48,17 @@ function brick_request($brick) {
 
 	// get parameter for function
 	$function_params = brick_request_params($brick['vars'], $brick['setting']['url_parameter']);
+	$script = array_shift($function_params);
+	// check if script is in subdirectory
+	// @todo: currently works only for non request_cms-scripts
+	if (strstr($script, '/')) {
+		$script_folder = substr($script, 0, strpos($script, '/')+1);
+		$script = substr($script, strpos($script, '/')+1);
+	} else {
+		$script_folder = '';
+	}
 	// get name of function to be called
-	$script = strtolower(str_replace('-', '_', array_shift($function_params)));
+	$script = strtolower(str_replace('-', '_', $script));
 
 	if (!empty($brick['setting']['brick_request_cms'])) {
 		// call function
@@ -58,7 +67,7 @@ function brick_request($brick) {
 		$request = 'cms_'.$script;
 
 		// include function file and check if function exists
-		brick_request_script($script, $brick['path']);
+		brick_request_script($script_folder.$script, $brick['path']);
 		if (!function_exists($request)) {
 			$brick['page']['error']['level'] = E_USER_ERROR;
 			$brick['page']['error']['msg_text'] = 'The function "%s" is not supported by the CMS.';
