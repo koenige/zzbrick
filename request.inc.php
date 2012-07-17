@@ -335,6 +335,11 @@ function brick_request_external($script, $setting, $params = array()) {
 	if ($url === true) return true;
 	if (!$url) return array();
 
+	if (empty($setting['syndication_function'])) {
+		$setting['syndication_library'] = '/zzwrap/syndication.inc.php';
+		$setting['syndication_function'] = 'wrap_syndication_get';
+	}
+
 	require_once $setting['lib'].$setting['syndication_library'];
 	$data = $setting['syndication_function']($url, $setting['brick_cms_input']);
 	return $data;
