@@ -144,7 +144,6 @@ function brick_forms($brick) {
 			$zz_conf['user'] = $_SESSION[$brick['setting']['brick_username_in_session']];
 	}
 	require_once $zz_conf['dir'].'/zzform.php';
-	require_once $zz_conf['dir'].'/output.inc.php';
 	// check if POST is too big, then set GET variables if possible here, so the
 	// table script can react to them
 	zzform_post_too_big(); 
