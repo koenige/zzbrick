@@ -42,7 +42,7 @@ function brick_rights($brick) {
 	$brick['setting']['brick_rights_translated']['else'] = ':';
 	$brick['setting']['brick_rights_translated']['off'] = '-';
 
-	// TODO: what is access_rights?
+	// @todo: what is access_rights?
 	require_once $brick['path'].'/access_rights.inc.php';
 
 	if (in_array($brick['vars'][0], array_keys($brick['setting']['brick_rights_translated']))) {

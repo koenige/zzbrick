@@ -363,7 +363,7 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 		}
 	} elseif (!count($page['text']) AND $brick['access_forbidden']) {
 	// no text, access forbidden
-		$page = array(); // TODO: maybe unnecessary
+		$page = array(); // @todo: maybe unnecessary
 		$page['status'] = 403;
 	} else {
 	// new
@@ -495,7 +495,7 @@ function brick_head_format($page, $setting) {
 	$i = 0;
 	
 	if (empty($page['head'])) $page['head'] = '';
-	// TODO: insert $setting['page_base']; ? or do this in functions 
+	// @todo: insert $setting['page_base']; ? or do this in functions 
 	if (!empty($page['link'])) foreach ($page['link'] AS $rel => $link) {
 		if (!in_array(ucfirst($rel), $setting['html_link_types'])) continue;
 		foreach ($link as $index) {

@@ -173,7 +173,7 @@ function brick_forms($brick) {
 	}
 
 	// Export?
-	// TODO: allow caching
+	// @todo: allow caching
 	if (!empty($ops['mode']) AND $ops['mode'] == 'export') {
 		// in export mode, there is no html, just pdf, csv or something else
 		// output it directly

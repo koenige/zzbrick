@@ -95,7 +95,7 @@ function brick_check_url($url) {
  * @author Gustaf Mossakowski <gustaf@koenige.org>
  */
 function brick_is_url($url) {
-	// todo: give back which part of URL is incorrect
+	// @todo: give back which part of URL is incorrect
 	$possible_schemes = array('http', 'https', 'ftp', 'gopher');
 	if (!$url) return false;
 	$parts = parse_url($url);
