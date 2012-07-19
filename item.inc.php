@@ -84,8 +84,15 @@ function brick_item($brick) {
 		}
 	} else {
 		// allow for (OR)
-		if (count($brick['vars']) == 3 AND $brick['vars'][1] == '|')
-			$content = $brick['vars'][2];
+		if (count($brick['vars']) == 3 AND $brick['vars'][1] == '|') {
+			if ($content) {
+				// condition is true, choose first value (= nothing)
+				$content = '';
+			} else {
+				// condition is false, choose last value
+				$content = $brick['vars'][2];
+			}
+		}
 		// no formatting or no value
 		$brick['page']['text'][$pos] .= $content;
 	}
