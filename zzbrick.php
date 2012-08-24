@@ -78,7 +78,7 @@
  * 	- loop - will do a loop and repeat parts of the brick
  * 		%%% loop start "optional HTML if content" "optional HTML if no content" %%%
  * 		%%% loop end "optional HTML if content" %%%
- * 		Â»subloopsÂ«:
+ * 		»subloops«:
  * 		%%% loop subcategory %%%
  * 		%%% loop end "optional HTML if content" %%%
  * 	
@@ -96,11 +96,11 @@
  * 		following content is allowed or forbidden (e. g. will be shown or not)
  * 	- text - translates text string
  * 
- * Part of Â»Zugzwang ProjectÂ«
+ * Part of »Zugzwang Project«
  * http://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright Â© 2009-2012 Gustaf Mossakowski
+ * @copyright Copyright © 2009-2012 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
