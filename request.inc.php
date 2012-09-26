@@ -264,7 +264,7 @@ function brick_request_cms($script, $params, $brick) {
 	}
 
 	// return false, if there's no input
-	if (!$data) return false;
+	if (empty($data)) return false;
 	
 	// output data, depending on parameter
 	switch ($output_format) {
