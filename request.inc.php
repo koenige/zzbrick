@@ -47,6 +47,15 @@ function brick_request($brick) {
 		require_once $brick['path'].'/_common.inc.php';
 
 	// get parameter for function
+	$filetype = '';
+	if (!empty($brick['setting']['brick_request_cms'])
+		AND preg_match('/(.+)\.([a-z0-9]+)/', $brick['setting']['url_parameter'], $matches)) {
+		// use last part behind dot as file extension
+		if (count($matches) === 3) {
+			$brick['setting']['url_parameter'] = $matches[1];
+			$filetype = $matches[2];
+		}
+	}
 	$function_params = brick_request_params($brick['vars'], $brick['setting']['url_parameter']);
 	$script = array_shift($function_params);
 	// check if script is in subdirectory
@@ -62,7 +71,7 @@ function brick_request($brick) {
 
 	if (!empty($brick['setting']['brick_request_cms'])) {
 		// call function
-		$content = brick_request_cms($script, $function_params, $brick);
+		$content = brick_request_cms($script, $function_params, $brick, $filetype);
 	} else {
 		$request = 'cms_'.$script;
 
@@ -219,14 +228,16 @@ function brick_request_params($variables, $parameter) {
  * @return mixed output of function (html: $page; other cases: direct output, headers
  * @author Gustaf Mossakowski <gustaf@koenige.org>
  */
-function brick_request_cms($script, $params, $brick) {
+function brick_request_cms($script, $params, $brick, $filetype = '') {
 	// brick_cms_input is variable to check where input comes from
 	if (empty($brick['setting']['brick_cms_input'])) 
 		$brick['setting']['brick_cms_input'] = '';
 
 	// supported export formats
 	if (empty($brick['setting']['brick_export_formats'])) {
-		$brick['setting']['brick_export_formats'] = array('html', 'xml', 'json');
+		$brick['setting']['brick_export_formats'] = array(
+			'html', 'xml', 'json', 'csv'
+		);
 	}
 	if (empty($brick['setting']['syndication_function'])) {
 		$brick['setting']['syndication_library'] = '/zzwrap/syndication.inc.php';
@@ -238,6 +249,8 @@ function brick_request_cms($script, $params, $brick) {
 
 	if (in_array($brick['subtype'], $brick['setting']['brick_export_formats'])) {
 		$output_format = $brick['subtype'];
+	} elseif ($filetype AND in_array($filetype, $brick['setting']['brick_export_formats'])) {
+		$output_format = $filetype;
 	} else {
 		$output_format = false;
 	}
@@ -265,33 +278,46 @@ function brick_request_cms($script, $params, $brick) {
 
 	// return false, if there's no input
 	if (empty($data)) return false;
-	
-	// output data, depending on parameter
-	switch ($output_format) {
-	case 'xml':
-		if ($data === true AND !empty($request)) {
+
+	if ($data === true AND !empty($request)) {
+		switch ($output_format) {
+		case 'xml':
+		case 'json':
+		case 'csv':
 			$content['error']['level'] = E_USER_WARNING;
 			$content['error']['msg_text'] = 'No input data for %s was found. Probably function `%s` is missing.';
 			$content['error']['msg_vars'] = array($script, $request);
 			$content['status'] = 404;
 			return $content;
+			break;
 		}
+	}
+
+	if (isset($data['filename'])) {
+		$filename = $data['filename'].'.'.$output_format;
+		unset($data['filename']);
+	} else {
+		$filename = $script.'.'.$output_format;
+	}
+	
+	// output data, depending on parameter
+	switch ($output_format) {
+	case 'xml':
 		// @todo: SimpleXML or use some generic function
 		// $brick['content_type'] = 'xml';
 		$brick['text'] = 'XML export currently not supported';
 		return $brick;
 	case 'json':
-		if ($data === true AND !empty($request)) {
-			$content['error']['level'] = E_USER_WARNING;
-			$content['error']['msg_text'] = 'No input data for %s was found. Probably function `%s` is missing.';
-			$content['error']['msg_vars'] = array($script, $request);
-			$content['status'] = 404;
-			return $content;
-		}
 		$brick['text'] = json_encode($data);
 		if (!$brick['text']) return false;
 		$brick['content_type'] = 'json';
-		$brick['headers']['filename'] = $script.'.json';
+		$brick['headers']['filename'] = $filename;
+		return $brick;
+	case 'csv':
+		$brick['text'] = brick_csv_encode($data, $brick['setting']);
+		if (!$brick['text']) return false;
+		$brick['content_type'] = 'csv';
+		$brick['headers']['filename'] = $filename;
 		return $brick;
 	case 'html':
 	default:
@@ -368,6 +394,46 @@ function brick_request_url($script, $params = array(), $setting = array()) {
 	// rare occurence, but we might not have a URL
 	if (!$url) return false;
 	return $url;
+}
+
+/**
+ * Convert array into CSV format
+ *
+ * @param array $data
+ * @param array $setting
+ * @return string
+ */
+function brick_csv_encode($data, $setting) {
+	if (empty($set['export_csv_enclosure']))
+		$setting['export_csv_enclosure'] = '"';
+	if (empty($set['export_csv_delimiter']))
+		$setting['export_csv_delimiter'] = ";";
+	$enc = $setting['export_csv_enclosure'];
+	$lim = $setting['export_csv_delimiter'];
+
+	$text = '';
+	$newline = true;
+	$head = reset($data);
+	foreach (array_keys($head) as $field) {
+		if ($text) $text .= $lim;
+		$text .= $enc.str_replace($enc, $enc.$enc, $field).$enc;
+	}
+	$text .= "\r\n";
+	foreach ($data as $line) {
+		foreach ($line as $field) {
+			if ($newline) $newline = false;
+			else $text .= $lim;
+			if ($field AND !is_array($field)) {
+				$text .= $enc.str_replace($enc, $enc.$enc, $field).$enc;
+			} elseif ($field AND is_array($field)) {
+				// @todo: allow arrays in arrays
+				$text .= $enc.str_replace($enc, $enc.$enc, implode(',', $field)).$enc;
+			}
+		}
+		$text .= "\r\n";
+		$newline = true;
+	}
+	return $text;
 }
 
 ?>
