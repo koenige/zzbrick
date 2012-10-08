@@ -24,6 +24,7 @@
  *		%%% request news * %%% -- URL-parameters take place of asterisk
  *		%%% request news 2004 %%%
  * @param array $brick	Array from zzbrick
+ *	- brick_export_formats = html, xml, json
  * @return array $brick
  * @author Gustaf Mossakowski <gustaf@koenige.org>
  */
@@ -43,15 +44,23 @@ function brick_request($brick) {
 			$brick['vars'][] = '*';
 		}
 	}
+	// supported export formats
+	if (empty($brick['setting']['brick_export_formats'])) {
+		$brick['setting']['brick_export_formats'] = array(
+			'html', 'xml', 'json', 'csv'
+		);
+	}
+	if (!is_array($brick['setting']['brick_export_formats'])) {
+		$brick['setting']['brick_export_formats'] = array($brick['setting']['brick_export_formats']);
+	}
 	if (file_exists($brick['path'].'/_common.inc.php'))
 		require_once $brick['path'].'/_common.inc.php';
 
 	// get parameter for function
 	$filetype = '';
-	if (!empty($brick['setting']['brick_request_cms'])
-		AND preg_match('/(.+)\.([a-z0-9]+)/', $brick['setting']['url_parameter'], $matches)) {
+	if (preg_match('/(.+)\.([a-z0-9]+)/', $brick['setting']['url_parameter'], $matches)) {
 		// use last part behind dot as file extension
-		if (count($matches) === 3) {
+		if (count($matches) === 3 AND in_array($matches[2], $brick['setting']['brick_export_formats')) {
 			$brick['setting']['url_parameter'] = $matches[1];
 			$filetype = $matches[2];
 		}
@@ -224,7 +233,6 @@ function brick_request_params($variables, $parameter) {
  * @param array $params - parameter from URL
  * @param array $brick - settings for brick-scripts, here:
  *	- brick_cms_input = db, xml, json (defaults to db)
- *	- brick_export_formats = html, xml, json (set via first parameter)
  * @return mixed output of function (html: $page; other cases: direct output, headers
  * @author Gustaf Mossakowski <gustaf@koenige.org>
  */
@@ -233,18 +241,9 @@ function brick_request_cms($script, $params, $brick, $filetype = '') {
 	if (empty($brick['setting']['brick_cms_input'])) 
 		$brick['setting']['brick_cms_input'] = '';
 
-	// supported export formats
-	if (empty($brick['setting']['brick_export_formats'])) {
-		$brick['setting']['brick_export_formats'] = array(
-			'html', 'xml', 'json', 'csv'
-		);
-	}
 	if (empty($brick['setting']['syndication_function'])) {
 		$brick['setting']['syndication_library'] = '/zzwrap/syndication.inc.php';
 		$brick['setting']['syndication_function'] = 'wrap_syndication_get';
-	}
-	if (!is_array($brick['setting']['brick_export_formats'])) {
-		$brick['setting']['brick_export_formats'] = array($brick['setting']['brick_export_formats']);
 	}
 
 	if (in_array($brick['subtype'], $brick['setting']['brick_export_formats'])) {
@@ -293,7 +292,7 @@ function brick_request_cms($script, $params, $brick, $filetype = '') {
 		}
 	}
 
-	if (isset($data['filename'])) {
+	if (is_array($data) AND array_key_exists('filename', $data)) {
 		$filename = $data['filename'].'.'.$output_format;
 		unset($data['filename']);
 	} else {
