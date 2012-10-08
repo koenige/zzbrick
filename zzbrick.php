@@ -499,6 +499,7 @@ function brick_head_format($page, $setting) {
 	if (!empty($page['link'])) foreach ($page['link'] AS $rel => $link) {
 		if (!in_array(ucfirst($rel), $setting['html_link_types'])) continue;
 		foreach ($link as $index) {
+			if (!is_array($index)) continue;
 			$head[$i] = '<link rel="'.$rel.'"';
 			foreach ($index as $attribute => $value) {
 				$head[$i] .= ' '.$attribute.'="'.$value.'"';
