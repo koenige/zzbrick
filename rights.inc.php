@@ -24,6 +24,8 @@
  * 		%%% rights "Group 1" %%%
  * 		%%% rights "Group 1" "Group 2" Group-3 %%%
  * 		%%% rights = "Group 1" "Group 2" Group-3 %%%
+ *		%%% rights group1 event:* %%% -- will send prefix and URL parameters
+ *			as second parameter to brick_access_rights()
  * 		%%% rights : %%% -- if not in group, this content will be shown
  * 		%%% rights - %%% -- resume normal operations (end) 
  * @param array $brick	Array from zzbrick
@@ -63,7 +65,15 @@ function brick_rights($brick) {
 	$access = true;
 	switch ($rights) {
 	case '=': // test with custom function
-		$access = brick_access_rights($brick['vars']);
+		// is there an asterisk?
+		$details = '';
+		foreach ($brick['vars'] as $id => $var) {
+			if (substr($var, -1) === '*' AND !empty($brick['setting']['url_parameter'])) {
+				$details = str_replace('*', $brick['setting']['url_parameter'], $var);
+				unset($brick['vars'][$id]);
+			}
+		}
+		$access = brick_access_rights($brick['vars'], $details);
 		if ($access) {
 			if (empty($brick['content_shown'])) {
 				// nothing shown so far, so show this
