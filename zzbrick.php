@@ -197,7 +197,7 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 	
 	$i = 0;
 	$loop_start = array();
-	$fast_forward = false;
+	$fast_forward = 0;
 	$loop_parameter = array();
 	$params = array();
 
@@ -209,14 +209,14 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 			$brick['vars'] = brick_get_variables($block);
 			$brick['type'] = array_shift($brick['vars']);
 			$brick['type'] = trim($brick['type']);
-			if ($brick['type'] == 'loop') {
+			if ($brick['type'] === 'loop') {
 				// loop means repeat a part of the block as long as there are still
 				// parameters left
-				if ($brick['vars'][0] != 'end' AND !$fast_forward) {
+				if ($brick['vars'][0] !== 'end' AND !$fast_forward) {
 					// start loop
 					$i++; // there's a loop
 					$loop_start[$i] = $index; // start with the next index again
-					if ($brick['vars'][0] == 'start') {
+					if ($brick['vars'][0] === 'start') {
 						// main record, numeric indices
 						$loop_parameter[$i] = $brick['parameter'];
 						// parameters with non-numeric indizes are not interesting
@@ -244,8 +244,8 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 					$loop_all[$i] = count($loop_parameter[$i]);
 					if (!$loop_parameter[$i]) {
 						// ooh, no data!
-						// set fast forward to true to go to loop end
-						$fast_forward = true;
+						// increase fast forward by 1 to go to loop end
+						$fast_forward++;
 					} else {
 						if (!empty($brick['vars'][1])) {
 							$brick['page']['text'][$brick['position']] .= $brick['vars'][1];
@@ -255,9 +255,13 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 						// remove clutter
 						if (!$loop_parameter[$i]) unset($loop_parameter[$i]);
 					}
+				} elseif ($brick['vars'][0] !== 'end') {
+					// loop inside loop with no data: ignore this one and go on!
+					$fast_forward++;
 				} else {
 					// end loop
-					$fast_forward = false;
+					$fast_forward--;
+					if ($fast_forward < 0) $fast_forward = 0;
 					// set parameters for next loop
 					$last_block = end($loop_start);
 					// test if there is something AND if it's an array to avoid endless hanging in loop
