@@ -151,7 +151,10 @@ function brick_forms($brick) {
 	if (!empty($brick['page']['status']) AND $brick['page']['status'] !== 200)
 		return $brick;
 
-	if (empty($zz)) {
+	if (empty($zz) AND !empty($zz_sub)) {
+		$zz = $zz_sub;
+		unset($zz_sub);
+	} elseif (empty($zz)) {
 		// no defintions for zzform, this will not work
 		$brick['page']['error']['level'] = E_USER_ERROR;
 		$brick['page']['error']['msg_text'] = 'No table definition for zzform found ($zz).';
