@@ -189,8 +189,8 @@ function brick_forms($brick) {
 	// goes through brick_format() again
 	$ops['output'] = str_replace('%%%', '&#37;&#37;&#37;', $ops['output']);
 	$brick['page']['text'][$brick['position']] .= $ops['output'];
-	if (!empty($zz_conf['title'])) {
-		$brick['page']['title'] = $zz_conf['title'];
+	if (!empty($ops['title'])) {
+		$brick['page']['title'] = $ops['title'];
 		$brick['page']['dont_show_h1'] = true;
 	}
 	if (!empty($ops['meta'])) $brick['page']['meta'] = $ops['meta'];
