@@ -54,11 +54,12 @@ function brick_request($brick) {
 		$brick['setting']['brick_export_formats'] = array($brick['setting']['brick_export_formats']);
 	}
 	if (file_exists($brick['path'].'/_common.inc.php'))
-		require_once $brick['path'].'/_common.inc.php';
+		require $brick['path'].'/_common.inc.php';
 
 	// get parameter for function
 	$filetype = '';
-	if (preg_match('/(.+)\.([a-z0-9]+)/', $brick['setting']['url_parameter'], $matches)) {
+	if (!empty($brick['setting']['brick_request_cms'])
+		AND preg_match('/(.+)\.([a-z0-9]+)/', $brick['setting']['url_parameter'], $matches)) {
 		// use last part behind dot as file extension
 		if (count($matches) === 3 AND in_array($matches[2], $brick['setting']['brick_export_formats'])) {
 			$brick['setting']['url_parameter'] = $matches[1];
@@ -292,11 +293,23 @@ function brick_request_cms($script, $params, $brick, $filetype = '') {
 		}
 	}
 
-	if (is_array($data) AND array_key_exists('filename', $data)) {
-		$filename = $data['filename'].'.'.$output_format;
-		unset($data['filename']);
+	if (is_array($data) AND array_key_exists('_filename', $data)) {
+		if (array_key_exists('_extension', $data)) {
+			$extension = $data['_extension'];
+			unset($data['_extension']);
+		} else {
+			$extension = $output_format;
+		}
+		$filename = $data['_filename'].'.'.$extension;
+		unset($data['_filename']);
 	} else {
 		$filename = $script.'.'.$output_format;
+	}
+	// just use/change settings for this single request
+	$setting = $brick['setting'];
+	if (is_array($data) AND array_key_exists('_setting', $data)) {
+		$setting = array_merge($setting, $data['_setting']);
+		unset($data['_setting']);
 	}
 	
 	// output data, depending on parameter
@@ -313,7 +326,7 @@ function brick_request_cms($script, $params, $brick, $filetype = '') {
 		$brick['headers']['filename'] = $filename;
 		return $brick;
 	case 'csv':
-		$brick['text'] = brick_csv_encode($data, $brick['setting']);
+		$brick['text'] = brick_csv_encode($data, $setting);
 		if (!$brick['text']) return false;
 		$brick['content_type'] = 'csv';
 		$brick['headers']['filename'] = $filename;
@@ -403,21 +416,27 @@ function brick_request_url($script, $params = array(), $setting = array()) {
  * @return string
  */
 function brick_csv_encode($data, $setting) {
-	if (empty($set['export_csv_enclosure']))
+	if (!isset($setting['export_csv_enclosure']))
 		$setting['export_csv_enclosure'] = '"';
-	if (empty($set['export_csv_delimiter']))
+	if (!isset($setting['export_csv_delimiter']))
 		$setting['export_csv_delimiter'] = ";";
+	if (!isset($setting['export_csv_show_empty_cells']))
+		$setting['export_csv_show_empty_cells'] = false;
+	if (!isset($setting['export_csv_heading']))
+		$setting['export_csv_heading'] = true;
 	$enc = $setting['export_csv_enclosure'];
 	$lim = $setting['export_csv_delimiter'];
 
 	$text = '';
 	$newline = true;
-	$head = reset($data);
-	foreach (array_keys($head) as $field) {
-		if ($text) $text .= $lim;
-		$text .= $enc.str_replace($enc, $enc.$enc, $field).$enc;
+	if ($setting['export_csv_heading']) {
+		$head = reset($data);
+		foreach (array_keys($head) as $field) {
+			if ($text) $text .= $lim;
+			$text .= $enc.str_replace($enc, $enc.$enc, $field).$enc;
+		}
+		$text .= "\r\n";
 	}
-	$text .= "\r\n";
 	foreach ($data as $line) {
 		foreach ($line as $field) {
 			if ($newline) $newline = false;
@@ -427,6 +446,8 @@ function brick_csv_encode($data, $setting) {
 			} elseif ($field AND is_array($field)) {
 				// @todo: allow arrays in arrays
 				$text .= $enc.str_replace($enc, $enc.$enc, implode(',', $field)).$enc;
+			} elseif (!$field AND $setting['export_csv_show_empty_cells']) {
+				$text .= $enc.$enc;
 			}
 		}
 		$text .= "\r\n";
