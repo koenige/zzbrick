@@ -48,14 +48,14 @@ function brick_condition($brick) {
 		$brick['vars'][0] = $brick['setting']['brick_condition_translated'][$brick['vars'][0]];
 	}
 
-	if ($brick['vars'][0] == '-') {
+	if ($brick['vars'][0] === '-') {
 		$condition = '-';
-	} elseif ($brick['vars'][0] == ':') {
+	} elseif ($brick['vars'][0] === ':') {
 		$condition = ':';
-	} elseif ($brick['vars'][0] == '=') {
+	} elseif ($brick['vars'][0] === '=') {
 		$condition = '=';
 		array_shift($brick['vars']);
-	} elseif ($brick['vars'][0] == ':=') {
+	} elseif ($brick['vars'][0] === ':=') {
 		$condition = ':=';
 		array_shift($brick['vars']);
 	} else {
@@ -82,7 +82,7 @@ function brick_condition($brick) {
 	// if so and it is false, do not show content for all clauses
 	if ($condition === '=') {
 		$i++; // increase level
-		$brick['content_shown'][$i] = false;
+		$brick['condition_content_shown'][$i] = false;
 	}
 	if (isset($brick['condition_show'][$i-1]) AND !$brick['condition_show'][$i-1]) {
 		$show = false;
@@ -102,17 +102,17 @@ function brick_condition($brick) {
 	case '=': // if
 		if (!$show) break;
 		if ($content) {
-			$brick['content_shown'][$i] = true;
+			$brick['condition_content_shown'][$i] = true;
 		} else {
-			$brick['content_shown'][$i] = false;
+			$brick['condition_content_shown'][$i] = false;
 			$show = false;
 		}
 		break;
 	case ':=': // elseif
 		if (!$show) break;
 		if ($content) {
-			if (empty($brick['content_shown'][$i])) {
-				$brick['content_shown'][$i] = true;
+			if (empty($brick['condition_content_shown'][$i])) {
+				$brick['condition_content_shown'][$i] = true;
 			} else {
 				// something was already shown in if clause beforehands
 				// this is an elseif
@@ -124,15 +124,15 @@ function brick_condition($brick) {
 		break;
 	case ':': // show content else
 		if (!$show) break;
-		if (empty($brick['content_shown'][$i])) {
+		if (empty($brick['condition_content_shown'][$i])) {
 			// nothing was shown yet, so show something
-			$brick['content_shown'][$i] = true;
+			$brick['condition_content_shown'][$i] = true;
 		} else {
 			$show = false;
 		}
 		break;
 	case '-':
-		unset($brick['content_shown'][$i]);
+		unset($brick['condition_content_shown'][$i]);
 		unset($brick['condition_show'][$i]);
 		// reset show state to last condition if there is one
 		$i--;
