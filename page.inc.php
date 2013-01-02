@@ -96,6 +96,8 @@ function brick_page($brick) {
 		// no formatting or no value
 		$brick['page']['text'][$pos] .= $content;
 	}
+	// write value to parameter for later use with conditions in page template
+	$brick['parameter'][$brick_var] = $content;
 	return $brick;
 }
 
