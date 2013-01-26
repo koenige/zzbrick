@@ -20,10 +20,11 @@
  * functions: -
  * settings: -
  * examples: 
- * 		%%% loopcondition first "blubb" %%% 
- * 		%%% loopcondition middle|last "blubb" %%% 
- * 		%%% loopcondition first|middle "|" %%%
- * 		%%% loopcondition %5 "<br>" %%% (all 5 lines)
+ * 		%%% loopposition single "blubb" %%% (display if only one item)
+ * 		%%% loopposition first "blubb" %%% (display if first item of min. 2)
+ * 		%%% loopposition middle|last "blubb" %%% 
+ * 		%%% loopposition first|middle "|" %%%
+ * 		%%% loopposition %5 "<br>" %%% (all 5 lines)
  * @param array $brick
  * @return array $brick
  * @author Gustaf Mossakowski <gustaf@koenige.org>
@@ -41,6 +42,9 @@ function brick_loopposition($brick) {
 	foreach ($positions as $position) {
 		if ($position == 'first' AND $brick['loop_counter'] == $brick['loop_all']
 			AND $brick['loop_all'] != 1)
+			$display = true;
+		elseif ($position == 'single' AND $brick['loop_counter'] == $brick['loop_all']
+			AND $brick['loop_all'] == 1)
 			$display = true;
 		elseif ($position == 'last' AND $brick['loop_counter'] == 1
 			AND $brick['loop_all'] != 1)
