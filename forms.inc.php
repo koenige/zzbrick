@@ -59,6 +59,9 @@ function brick_forms($brick) {
 	// default: use wrap_text() from core/language.inc.php from zzwrap
 	if (!isset($brick['setting']['brick_translate_text_function']))
 		$brick['setting']['brick_translate_text_function'] = 'wrap_text';
+	// format HTML templates
+	if (!isset($brick['setting']['brick_template_function']))
+		$brick['setting']['brick_template_function'] = 'wrap_template';
 	// allow default tables for inclusion, on demand only
 	if (!isset($brick['setting']['brick_default_tables']))
 		$brick['setting']['brick_default_tables'] = array();
@@ -165,6 +168,17 @@ function brick_forms($brick) {
 	$zz_conf['show_output'] = false;
 	$ops = zzform($zz);
 	
+	// Map?
+	if ($ops['mode'] === 'list_only' AND !empty($zz['geo_map_html'])) {
+		$ops['output'] = str_replace(
+			"<div class='explanation_dynamic'></div>",
+			sprintf("<div class='explanation_dynamic'>%s</div>", $zz['geo_map_html']),
+			$ops['output']
+		);
+		$template = !empty($zz['geo_map_template']) ? $zz['geo_map_template'] : 'map';
+		$brick = brick_forms_geo_map($brick, $template);
+	}
+	
 	// Caching
 	$uncacheable = array('q', 'zzaction', 'zzhash', 'mode');
 	foreach ($uncacheable as $query) {
@@ -211,6 +225,52 @@ function brick_forms($brick) {
 	if (empty($zz_conf['dont_show_title_as_breadcrumb'])
 		AND (!empty($brick['page']['title'])))
 		$brick['page']['breadcrumbs'][] = $brick['page']['title'];
+	return $brick;
+}
+
+/**
+ * outputs map based on a corresponding KML file to the table output
+ * (e. g. an OpenLayers map)
+ * HTML output goes into {$template}.template.txt
+ *
+ * @param array $brick
+ * @param string $template name of map template, defaults to map
+ * @global array $zz_conf
+ * @global array $zz_setting
+ *		*_maps_api_key will be made available for map template
+ * @return array $brick;
+ */
+function brick_forms_geo_map($brick, $template) {
+	global $zz_conf;
+	global $zz_setting;
+
+	// get map URL
+	$url = parse_url($_SERVER['REQUEST_URI']);
+	$map['kml_url'] = $url['path'];
+	if (!empty($url['query'])) {
+		parse_str($url['query'], $query);
+		if (isset($query['limit']) AND !$query['limit']) {
+			// don't set limit = 0 as this is default for export
+			unset($query['limit']);
+		} elseif (!isset($query['limit']))  {
+			$query['limit'] = $zz_conf['limit'];
+		}
+	} else {
+		// no limit = default limit
+		$query['limit'] = $zz_conf['limit'];
+	}
+	$query['export'] = 'kml';
+	$map['kml_url'] .= '?'.str_replace('&amp;', '&', http_build_query($query));
+
+	// set maps API key if needed
+	foreach ($zz_setting as $key => $value) {
+		if (substr($key, -13) !== '_maps_api_key') continue;
+		$map[$key] = $value;
+	}
+
+	if (!isset($brick['page']['head'])) $brick['page']['head'] = '';
+	$brick['page']['head'] .= $brick['setting']['brick_template_function']($template, $map);
+	$brick['page']['extra']['body_attributes'] = ' onload="init()"';
 	return $brick;
 }
 
