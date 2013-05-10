@@ -168,8 +168,8 @@ function brick_forms($brick) {
 	$zz_conf['show_output'] = false;
 	$ops = zzform($zz);
 	
-	// Map?
-	if ($ops['mode'] === 'list_only' AND !empty($zz['geo_map_html'])) {
+	// Map? Only in list-mode and if there are records
+	if (!empty($zz['geo_map_html']) AND $ops['mode'] === 'list_only' AND $ops['records_total']) {
 		$ops['output'] = str_replace(
 			"<div class='explanation_dynamic'></div>",
 			sprintf("<div class='explanation_dynamic'>%s</div>", $zz['geo_map_html']),
