@@ -550,4 +550,25 @@ function brick_translate($string, $settings) {
 	return $string;
 }
 
+/**
+ * send response to an xmlHTTPrequest
+ *
+ * @param string $xmlHttpRequest
+ * @param string $block
+ * @param string $parameter
+ * @return array $page
+ */
+function brick_xhr($xmlHttpRequest, $parameter, $zz_setting = array()) {
+	if (empty($zz_setting)) global $zz_setting;
+
+	$xmlHttpRequest = json_decode($xmlHttpRequest, 1);
+	$function = $xmlHttpRequest['httpRequest'];
+	require_once $zz_setting['custom'].'/zzbrick_xhr/'.$function.'.inc.php';
+	$function = 'cms_xhr_'.$function;
+	$page['text'] = json_encode($function($xmlHttpRequest, $parameter));
+	$page['status'] = 200;
+	$page['content_type'] = 'json';
+	return $page;
+}
+
 ?>
