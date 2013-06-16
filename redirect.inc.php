@@ -103,14 +103,14 @@ function brick_is_url($url) {
 	if (empty($parts['scheme']) OR !in_array($parts['scheme'], $possible_schemes))
 		return false;
 	elseif (empty($parts['host']) 
-		OR (!preg_match("/^[0-9a-z]([-.]?[0-9a-z])*\.[a-z]{2,6}$/", $parts['host'])
+		OR (!preg_match("/^[0-9a-z]([-.]?[0-9a-z])*\.[a-z]{2,6}$/i", $parts['host'])
 		AND !preg_match('/[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}/', $parts['host'])))
 		return false;
 	elseif (!empty($parts['user']) 
-		AND !preg_match("/^([0-9a-z-]|[\_])*$/", $parts['user']))
+		AND !preg_match("/^([0-9a-z-]|[\_])*$/i", $parts['user']))
 		return false;
 	elseif (!empty($parts['pass']) 
-		AND !preg_match("/^([0-9a-z-]|[\_])*$/", $parts['pass']))
+		AND !preg_match("/^([0-9a-z-]|[\_])*$/i", $parts['pass']))
 		return false;
 	elseif (!empty($parts['path']) 
 		AND !preg_match("/^[0-9a-z\/_\.@~\-,=%]*$/i", $parts['path']))

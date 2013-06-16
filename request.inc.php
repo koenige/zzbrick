@@ -59,7 +59,7 @@ function brick_request($brick) {
 	// get parameter for function
 	$filetype = '';
 	if (!empty($brick['setting']['brick_request_cms'])
-		AND preg_match('/(.+)\.([a-z0-9]+)/', $brick['setting']['url_parameter'], $matches)) {
+		AND preg_match('/(.+)\.([a-z0-9]+)/i', $brick['setting']['url_parameter'], $matches)) {
 		// use last part behind dot as file extension
 		if (count($matches) === 3 AND in_array($matches[2], $brick['setting']['brick_export_formats'])) {
 			$brick['setting']['url_parameter'] = $matches[1];

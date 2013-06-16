@@ -451,7 +451,7 @@ function brick_textformat($string, $type, $fulltextformat) {
 			// this is useful for form elements because we do not want them to 
 			// be formatted in any way at all
 			$hash = 'someneverappearingsequenceofcharacters923skfjkdlxb';
-			preg_match_all('~(<form.+</form>)~sU', $string, $forms);
+			preg_match_all('~(<form.+</form>)~sUi', $string, $forms);
 			foreach ($forms[0] as $index => $form) {
 				$string = str_replace($form, $hash.sprintf("%04d", $index), $string);
 			}
