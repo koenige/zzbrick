@@ -212,7 +212,12 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 			if ($brick['type'] === 'loop') {
 				// loop means repeat a part of the block as long as there are still
 				// parameters left
-				if ($brick['vars'][0] !== 'end' AND !$fast_forward) {
+				if ($brick['vars'][0] !== 'end' AND $brick['position'] === '_hidden_') {
+					// ignore setting parameters for loops in hidden positions
+					// for performance reasons
+					// script will run through loop but only once because there
+					// are no more variables
+				} elseif ($brick['vars'][0] !== 'end' AND !$fast_forward) {
 					// start loop
 					$i++; // there's a loop
 					$loop_start[$i] = $index; // start with the next index again
