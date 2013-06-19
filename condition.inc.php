@@ -32,6 +32,11 @@
 function brick_condition($brick) {
 	static $i;
 	if (!$i) $i = 0;
+
+	$if_page = false;
+	if (count($brick['vars']) === 3 AND $brick['vars'][1] === 'page') {
+		$if_page = true;
+	}
 	
 	// if one of the other access modules already blocks access, ignore this brick
 	if (!isset($brick['access_blocked'])) $brick['access_blocked'] = false;
@@ -64,7 +69,11 @@ function brick_condition($brick) {
 
 	// check if item is empty or not
 	$content = false;
-	if (!empty($brick['loop_parameter'])) {
+	if ($if_page) {
+		array_shift($brick['vars']);
+		$req = brick_format('%%% page '.$brick['vars'][0].' %%%');
+		$item[$brick['vars'][0]] = $req['text'];
+	} elseif (!empty($brick['loop_parameter'])) {
 		$item = &$brick['loop_parameter'];
 	} else {
 		$item = &$brick['parameter'];
@@ -72,7 +81,7 @@ function brick_condition($brick) {
 	$brick_var = array_shift($brick['vars']);
 	if ($brick_var) {
 		$brick_var = str_replace('-', '_', $brick_var);
-		if (isset($item[$brick_var])) {
+		if (is_array($item) AND isset($item[$brick_var])) {
 			// we have it in $item, so return this.
 			$content = $item[$brick_var];
 		}
