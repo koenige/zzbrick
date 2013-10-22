@@ -38,11 +38,6 @@ function brick_condition($brick) {
 		$if_page = true;
 	}
 	
-	// if one of the other access modules already blocks access, ignore this brick
-	if (!isset($brick['access_blocked'])) $brick['access_blocked'] = false;
-	if ($brick['access_blocked'] AND $brick['access_blocked'] != 'condition') {
-		return $brick;
-	}
 	// default translations, cannot be changed
 	$brick['setting']['brick_condition_translated']['if'] = '=';
 	$brick['setting']['brick_condition_translated']['elseif'] = ':=';
@@ -158,9 +153,7 @@ function brick_condition($brick) {
 			$brick['position_old'] = '';
 		}
 		// unblock access
-		if ($brick['access_blocked'] == 'condition') {
-			$brick['access_blocked'] = false;		
-		}
+		$brick['access_blocked'] = false;		
 	} else {
 		// this branch of condition is to be neglected
 		$brick['condition_show'][$i] = false;

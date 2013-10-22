@@ -33,11 +33,6 @@
  * @author Gustaf Mossakowski <gustaf@koenige.org>
  */
 function brick_rights($brick) {
-	// if one of the other access modules already blocks access, ignore this brick
-	if (!isset($brick['access_blocked'])) $brick['access_blocked'] = false;
-	if ($brick['access_blocked'] AND $brick['access_blocked'] != 'rights') {
-		return $brick;
-	}
 	// default translations, cannot be changed
 	$brick['setting']['brick_rights_translated']['on'] = '=';
 	$brick['setting']['brick_rights_translated']['elseif'] = '=';
@@ -108,9 +103,7 @@ function brick_rights($brick) {
 			$brick['position_old'] = '';
 		}
 		// unblock access
-		if ($brick['access_blocked'] == 'rights') {
-			$brick['access_blocked'] = false;		
-		}
+		$brick['access_blocked'] = false;		
 	} else {
 		// set current position to _hidden_
 		if ($brick['position'] != '_hidden_')

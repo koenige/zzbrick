@@ -28,11 +28,6 @@
  * @author Gustaf Mossakowski <gustaf@koenige.org>
  */
 function brick_language($brick) {
-	// if one of the other access modules already blocks access, ignore this brick
-	if (!isset($brick['access_blocked'])) $brick['access_blocked'] = false;
-	if ($brick['access_blocked'] AND $brick['access_blocked'] != 'language') {
-		return $brick;
-	}
 	global $zz_conf;
 	if (empty($brick['vars'][0])) {
 		// no language was defined
@@ -57,9 +52,7 @@ function brick_language($brick) {
 			$brick['position_old'] = '';
 		}
 		// unblock access
-		if ($brick['access_blocked'] == 'language') {
-			$brick['access_blocked'] = false;		
-		}
+		$brick['access_blocked'] = false;		
 	} else {
 		// set current position to _hidden_
 		if ($brick['position'] != '_hidden_')

@@ -34,11 +34,6 @@
  * @author Gustaf Mossakowski <gustaf@koenige.org>
  */
 function brick_ipfilter($brick) {
-	// if one of the other access modules already blocks access, ignore this brick
-	if (!isset($brick['access_blocked'])) $brick['access_blocked'] = false;
-	if ($brick['access_blocked'] AND $brick['access_blocked'] != 'ipfilter') {
-		return $brick;
-	}
 	// default translations, cannot be changed
 	$brick['setting']['brick_ipfilter_translated']['on'] = '=';
 	$brick['setting']['brick_ipfilter_translated']['elseif'] = '=';
@@ -102,9 +97,7 @@ function brick_ipfilter($brick) {
 			$brick['position_old'] = '';
 		}
 		// unblock access
-		if ($brick['access_blocked'] == 'ipfilter') {
-			$brick['access_blocked'] = false;		
-		}
+		$brick['access_blocked'] = false;		
 	} else {
 		// set current position to _hidden_
 		if ($brick['position'] != '_hidden_')

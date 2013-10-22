@@ -178,6 +178,7 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 
 	// further variables
 	$brick['access_forbidden'] = false;			// access is allowed
+	$brick['access_blocked'] = '';
 	$brick['position'] = 'none';
 	$brick['cut_next_paragraph'] = false;		// to get markdown formatted text inline
 	$brick['replace_db_text'][$brick['position']] = false;
@@ -311,14 +312,18 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 				$brick['type'] = basename($brick['type']); // for security, allow only filenames
 				$bricktype_file = dirname(__FILE__).'/'.$brick['type'].'.inc.php';
 				$brick['path'] = $brick['setting']['brick_custom_dir'].$brick['type'];
-				if (file_exists($bricktype_file)) {
-					require_once $bricktype_file;
-					$function_name = 'brick_'.$brick['type'];
-					$brick = $function_name($brick);
-				} else {
-					// output error
-					$brick['page']['text'][$brick['position']].= '<p><strong class="error">Error: 
-						 '.$brick['type'].' is not a valid parameter.</strong></p>';
+				if (!$brick['access_blocked'] OR $brick['access_blocked'] === $brick['type']) {
+					// just interpret bricks if access is not blocked
+					// or if it is might get unblocked
+					if (file_exists($bricktype_file)) {
+						require_once $bricktype_file;
+						$function_name = 'brick_'.$brick['type'];
+						$brick = $function_name($brick);
+					} else {
+						// output error
+						$brick['page']['text'][$brick['position']].= '<p><strong class="error">Error: 
+							 '.$brick['type'].' is not a valid parameter.</strong></p>';
+					}
 				}
 			}
 		} elseif (!$fast_forward) {
