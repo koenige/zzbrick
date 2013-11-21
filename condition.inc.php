@@ -66,7 +66,7 @@ function brick_condition($brick) {
 	$content = false;
 	if ($if_page) {
 		array_shift($brick['vars']);
-		$req = brick_format('%%% page '.$brick['vars'][0].' %%%');
+		$req = brick_format('%%% page '.$brick['vars'][0].' %%%', $brick['parameter']);
 		$item[$brick['vars'][0]] = $req['text'];
 	} elseif (!empty($brick['loop_parameter'])) {
 		$item = &$brick['loop_parameter'];
