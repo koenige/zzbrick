@@ -39,7 +39,9 @@ function brick_redirect($brick) {
 			// Location needs an absolute URI
 			// HTTP_HOST must be canonical, best to do this via the webserver
 			if (empty($brick['setting']['host_base'])) {
-				$host = htmlspecialchars($_SERVER['HTTP_HOST']);
+				$host = $_SERVER['HTTP_HOST'];
+				// hostname may only contain ASCII letters, - and .
+				if (!preg_match('/^[a-zA-Z0-9-\.]+$/', $host)) $host = '';
 				if (!$host) $host = $_SERVER['SERVER_NAME'];
 				$base = (!empty($_SERVER['HTTPS']) ? 'https' : 'http').'://'.$host;
 			} else {
