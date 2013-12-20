@@ -182,7 +182,7 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 	$brick['position'] = 'none';
 	$brick['cut_next_paragraph'] = false;		// to get markdown formatted text inline
 	$brick['replace_db_text'][$brick['position']] = false;
-	$brick['parameter'] = is_array($parameter) ? $parameter : array($parameter);
+	$brick['parameter'] = $parameter;
 	// first call of brick_format(): parameters are from URL
 	if (!isset($brick['setting']['url_parameter'])) 
 		$brick['setting']['url_parameter'] = $parameter;
