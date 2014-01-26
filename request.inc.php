@@ -8,7 +8,7 @@
  * http://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2009-2012 Gustaf Mossakowski
+ * @copyright Copyright © 2009-2012, 2014 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -68,25 +68,13 @@ function brick_request($brick) {
 	}
 	$function_params = brick_request_params($brick['vars'], $brick['setting']['url_parameter']);
 	$script = array_shift($function_params);
-	// check if script is in subdirectory
-	// @todo: currently works only for non request_cms-scripts
-	if (strstr($script, '/')) {
-		$script_folder = substr($script, 0, strpos($script, '/')+1);
-		$script = substr($script, strpos($script, '/')+1);
-	} else {
-		$script_folder = '';
-	}
-	// get name of function to be called
-	$script = strtolower(str_replace('-', '_', $script));
 
 	if (!empty($brick['setting']['brick_request_cms'])) {
 		// call function
 		$content = brick_request_cms($script, $function_params, $brick, $filetype);
 	} else {
-		$request = 'cms_'.$script;
+		$request = brick_request_file($script, $brick);
 
-		// include function file and check if function exists
-		brick_request_script($script_folder.$script, $brick['path']);
 		if (!function_exists($request)) {
 			$brick['page']['error']['level'] = E_USER_ERROR;
 			$brick['page']['error']['msg_text'] = 'The function "%s" is not supported by the CMS.';
@@ -255,9 +243,7 @@ function brick_request_cms($script, $params, $brick, $filetype = '') {
 	}
 	
 	// get data for input, depending on settings
-	$request = 'cms_get_'.$script;
-	// include function file and check if function exists
-	$script_filename = brick_request_script($script, $brick['path'].'_get/');
+	$request = brick_request_file($script, $brick, 'get');
 	if (function_exists($request)) {
 		$data = $request($params);
 	} else {
@@ -302,6 +288,10 @@ function brick_request_cms($script, $params, $brick, $filetype = '') {
 		$filename = $data['_filename'].'.'.$extension;
 		unset($data['_filename']);
 	} else {
+		if (strstr($script, '/')) {
+			$script = explode('/', $script);
+			$script = array_pop($script);
+		}
 		$filename = $script.'.'.$output_format;
 	}
 	// just use/change settings for this single request
@@ -332,9 +322,7 @@ function brick_request_cms($script, $params, $brick, $filetype = '') {
 		return $brick;
 	case 'html':
 	default:
-		$request = 'cms_htmlout_'.$script;
-		// include function file and check if function exists
-		brick_request_script($script, $brick['path']);
+		$request = brick_request_file($script, $brick, 'htmlout');
 		if (!function_exists($request)) {
 			$content['error']['level'] = E_USER_ERROR;
 			$content['error']['msg_text'] = 'The function "%s" is not supported by the CMS.';
@@ -343,6 +331,58 @@ function brick_request_cms($script, $params, $brick, $filetype = '') {
 		}
 		return $request($data, $params);
 	}
+}
+
+/**
+ * get filename of request script from request-folder or modules
+ * and include file
+ *
+ * @param string $script
+ * @param array $brick
+ * @param string $type (optional: false, 'get' or 'htmlout')
+ * @param string function name if script was found, or false
+ */
+function brick_request_file($script, $brick, $type = false) {
+
+	// check if script is in subdirectory
+	// @todo: currently works only for non request_cms-scripts
+	if (strstr($script, '/')) {
+		$script_folder = substr($script, 0, strpos($script, '/') + 1);
+		$script = substr($script, strpos($script, '/') + 1);
+	} else {
+		$script_folder = '';
+	}
+	// get name of function to be called
+	$script = strtolower(str_replace('-', '_', $script));
+	switch ($type) {
+	case 'get':
+		$request = 'cms_get_'.$script;
+		$path = $brick['path'].'_get/';
+		$function_name = 'mod_%s_get_%s';
+		break;
+	case 'htmlout':
+		$request = 'cms_htmlout'.$script;
+		$path = $brick['path'];
+		$function_name = 'mod_%s_htmlout_%s';
+		break;
+	default:
+		$request = 'cms_'.$script;
+		$path = $brick['path'];
+		$function_name = 'mod_%s_%s';
+		break;
+	}
+
+	// include function file and check if function exists
+	$exists = brick_request_script($script_folder.$script, $path);
+	if (!$exists) {
+		foreach ($brick['setting']['modules'] as $module) {
+			if ($script_folder AND $script_folder !== $module) continue;
+			$module_path = $brick['setting']['modules_dir'].'/'.$module.$brick['module_path'];
+			$exists = brick_request_script($script, $module_path);
+			if ($exists) $request = sprintf($function_name, $module, $script);
+		}
+	}
+	return $request;
 }
 
 /**
