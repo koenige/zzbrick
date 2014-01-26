@@ -100,7 +100,7 @@
  * http://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2009-2012 Gustaf Mossakowski
+ * @copyright Copyright © 2009-2014 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -165,6 +165,8 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 		$brick['setting']['brick_fulltextformat'] = '';
 	if (empty($brick['setting']['brick_custom_dir']))
 		$brick['setting']['brick_custom_dir'] = $zz_setting['custom'].'/zzbrick_';
+	if (empty($brick['setting']['brick_module_dir']))
+		$brick['setting']['brick_module_dir'] = '/zzbrick_';
 
 	// initialize page variables
 	$brick['page']['text'] = false;				// textbody
@@ -312,6 +314,7 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 				$brick['type'] = basename($brick['type']); // for security, allow only filenames
 				$bricktype_file = dirname(__FILE__).'/'.$brick['type'].'.inc.php';
 				$brick['path'] = $brick['setting']['brick_custom_dir'].$brick['type'];
+				$brick['module_path'] = $brick['setting']['brick_module_dir'].$brick['type'];
 				if (!$brick['access_blocked'] OR $brick['access_blocked'] === $brick['type']) {
 					// just interpret bricks if access is not blocked
 					// or if it is might get unblocked
