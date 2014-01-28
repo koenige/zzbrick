@@ -8,7 +8,7 @@
  * http://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2009-2010 Gustaf Mossakowski
+ * @copyright Copyright © 2009-2014 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -108,24 +108,10 @@ function brick_forms($brick) {
 		require_once $brick['path'].'/_common.inc.php';
 
 	// script path must be first variable
-	$scriptpath = implode('/', $brick['vars']);
-	$tables = $brick['path'].'/'.$scriptpath.'.php';
-	if (!file_exists($tables)) {
-		$tables = $brick['path'].'/'.array_shift($brick['vars']).'.php';
-		if (!file_exists($tables) AND ($brick['setting']['brick_default_tables'] === true
-			OR in_array($scriptpath, $brick['setting']['brick_default_tables']))) {
-			$tables = $zz_conf['dir'].'/default_tables/database_'.$scriptpath.'.php';
-			if (!file_exists($tables)) {
-				$tables = $zz_conf['dir'].'/default_tables/'.$scriptpath.'.php';
-				if (!file_exists($tables)) {
-					$brick['page']['status'] = 404;
-					return $brick;
-				}
-			}
-		} elseif (!file_exists($tables)) {
-			$brick['page']['status'] = 404;
-			return $brick;
-		}
+	$tables = brick_forms_file($brick);
+	if (!$tables) {
+		$brick['page']['status'] = 404;
+		return $brick;
 	}
 	
 	// set allowed params
@@ -185,7 +171,7 @@ function brick_forms($brick) {
 	}
 
 	// Export?
-	// @todo: allow caching
+	// @todo allow caching
 	if (!empty($ops['mode']) AND $ops['mode'] == 'export') {
 		// in export mode, there is no html, just pdf, csv or something else
 		// output it directly
@@ -222,6 +208,34 @@ function brick_forms($brick) {
 		AND (!empty($brick['page']['title'])))
 		$brick['page']['breadcrumbs'][] = $brick['page']['title'];
 	return $brick;
+}
+
+/**
+ * get table definition filename
+ *
+ * @param array $brick
+ * @global array $zz_conf
+ * @return string
+ */
+function brick_forms_file($brick) {
+	global $zz_conf;
+
+	$scriptpath = implode('/', $brick['vars']);
+	$tables = $brick['path'].'/'.$scriptpath.'.php';
+	if (!file_exists($tables)) {
+		$tables = $brick['path'].'/'.array_shift($brick['vars']).'.php';
+		if (!file_exists($tables) AND ($brick['setting']['brick_default_tables'] === true
+			OR in_array($scriptpath, $brick['setting']['brick_default_tables']))) {
+			$tables = $zz_conf['dir'].'/default_tables/database_'.$scriptpath.'.php';
+			if (!file_exists($tables)) {
+				$tables = $zz_conf['dir'].'/default_tables/'.$scriptpath.'.php';
+				if (!file_exists($tables)) return '';
+			}
+		} elseif (!file_exists($tables)) {
+			return '';
+		}
+	}
+	return $tables;
 }
 
 /**
