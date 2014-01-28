@@ -361,7 +361,7 @@ function brick_request_file($script, $brick, $type = false) {
 		$function_name = 'mod_%s_get_%s';
 		break;
 	case 'htmlout':
-		$request = 'cms_htmlout'.$script;
+		$request = 'cms_htmlout_'.$script;
 		$path = $brick['path'];
 		$function_name = 'mod_%s_htmlout_%s';
 		break;
