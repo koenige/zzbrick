@@ -345,12 +345,12 @@ function brick_request_cms($script, $params, $brick, $filetype = '') {
 function brick_request_file($script, $brick, $type = false) {
 
 	// check if script is in subdirectory
-	// @todo: currently works only for non request_cms-scripts
 	if (strstr($script, '/')) {
-		$script_folder = substr($script, 0, strpos($script, '/') + 1);
-		$script = substr($script, strpos($script, '/') + 1);
+		$script = explode('/', $script);
+		$folder = array_shift($script);
+		$script = implode('/', $script);
 	} else {
-		$script_folder = '';
+		$folder = '';
 	}
 	// get name of function to be called
 	$script = strtolower(str_replace('-', '_', $script));
@@ -358,6 +358,7 @@ function brick_request_file($script, $brick, $type = false) {
 	case 'get':
 		$request = 'cms_get_'.$script;
 		$path = $brick['path'].'_get/';
+		$brick['module_path'] .= '_get';
 		$function_name = 'mod_%s_get_%s';
 		break;
 	case 'htmlout':
@@ -373,10 +374,10 @@ function brick_request_file($script, $brick, $type = false) {
 	}
 
 	// include function file and check if function exists
-	$exists = brick_request_script($script_folder.$script, $path);
+	$exists = brick_request_script($folder.$script, $path);
 	if (!$exists) {
 		foreach ($brick['setting']['modules'] as $module) {
-			if ($script_folder AND $script_folder !== $module) continue;
+			if ($folder AND $folder !== $module) continue;
 			$module_path = $brick['setting']['modules_dir'].'/'.$module.$brick['module_path'];
 			$exists = brick_request_script($script, $module_path);
 			if ($exists) $request = sprintf($function_name, $module, $script);
