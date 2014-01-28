@@ -69,7 +69,9 @@ function brick_forms($brick) {
 		case 'forms': 
 			$brick['path'] .= '_forms'; break;
 		default: 
-			$brick['path'] .= '_tables'; break;
+			$brick['path'] .= '_tables';
+			$brick['module_path'] = $brick['setting']['brick_module_dir'].'tables';
+		break;
 	}
 	
 	foreach ($brick['vars'] AS $index => $var) {
@@ -108,8 +110,8 @@ function brick_forms($brick) {
 		require_once $brick['path'].'/_common.inc.php';
 
 	// script path must be first variable
-	$tables = brick_forms_file($brick);
-	if (!$tables) {
+	$brick = brick_forms_file($brick);
+	if (!$brick['form_script_path']) {
 		$brick['page']['status'] = 404;
 		return $brick;
 	}
@@ -132,7 +134,7 @@ function brick_forms($brick) {
 	// check if POST is too big, then set GET variables if possible here, so the
 	// table script can react to them
 	zzform_post_too_big(); 
-	require $tables;
+	require $brick['form_script_path'];
 	if (!empty($brick['page']['status']) AND $brick['page']['status'] !== 200)
 		return $brick;
 
@@ -143,7 +145,7 @@ function brick_forms($brick) {
 		// no defintions for zzform, this will not work
 		$brick['page']['error']['level'] = E_USER_ERROR;
 		$brick['page']['error']['msg_text'] = 'No table definition for zzform found ($zz).';
-		$brick['page']['error']['msg_vars'] = array($tables);
+		$brick['page']['error']['msg_vars'] = array($brick['form_script_path']);
 		$brick['page']['status'] = 503;
 		return $brick;
 	}
@@ -212,30 +214,68 @@ function brick_forms($brick) {
 
 /**
  * get table definition filename
+*
+ * possible notations, table script name must be first parameter always
+ * %%% tables table %%%
+ * %%% tables module/table %%%
+ * %%% tables table parameters %%%
+ * %%% tables module/table parameters %%%
+ *
+ * @deprecated because table script name is second parameter
+ * %%% tables subfolder table %%%
  *
  * @param array $brick
  * @global array $zz_conf
- * @return string
+ * @return array $brick, with form_script_path set and vars modified
  */
 function brick_forms_file($brick) {
 	global $zz_conf;
 
-	$scriptpath = implode('/', $brick['vars']);
-	$tables = $brick['path'].'/'.$scriptpath.'.php';
-	if (!file_exists($tables)) {
-		$tables = $brick['path'].'/'.array_shift($brick['vars']).'.php';
-		if (!file_exists($tables) AND ($brick['setting']['brick_default_tables'] === true
-			OR in_array($scriptpath, $brick['setting']['brick_default_tables']))) {
-			$tables = $zz_conf['dir'].'/default_tables/database_'.$scriptpath.'.php';
-			if (!file_exists($tables)) {
-				$tables = $zz_conf['dir'].'/default_tables/'.$scriptpath.'.php';
-				if (!file_exists($tables)) return '';
+	// @deprecated
+	// %%% tables subfolder table %%%
+	if (count($brick['vars']) === 2) {
+		$brick['form_script_path'] = $brick['path'].'/'.implode('/', $brick['vars']).'.php';
+		if (file_exists($brick['form_script_path'])) {
+			$found = false;
+			foreach ($brick['vars'] as $var) {
+				if (substr($var, 0, 1) === '.') $found = true;
 			}
-		} elseif (!file_exists($tables)) {
-			return '';
+			if (!$found) {
+				$brick['vars'] = array();
+				return $brick;
+			}
 		}
 	}
-	return $tables;
+
+	$folder = '';
+	$script = array_shift($brick['vars']);
+
+	if (strstr($script, '/')) {
+		$script = explode('/', $script);
+		$folder = array_shift($script);
+		$script = implode('/', $script);
+	}
+	
+	$brick['form_script_path'] = $brick['path'].'/'.($folder ? $folder.'/' : '').$script.'.php';
+	if (file_exists($brick['form_script_path'])) return $brick;
+	
+	foreach ($brick['setting']['modules'] as $module) {
+		if ($folder AND $folder !== $module) continue;
+		if ($module === 'default') {
+			if (empty($brick['setting']['brick_default_tables'])) continue;
+			if ($brick['setting']['brick_default_tables'] !== true AND
+				!in_array($script, $brick['setting']['brick_default_tables'])) continue;
+		}
+		$module_path = $brick['setting']['modules_dir'].'/'.$module.$brick['module_path'];
+		$brick['form_script_path'] = $module_path.'/'.$script.'.php';
+		if (file_exists($brick['form_script_path'])) return $brick;
+		if ($module !== 'default') continue;
+		// default-module has some database_-prefixed tables
+		$brick['form_script_path'] = $module_path.'/database_'.$script.'.php';	
+		if (file_exists($brick['form_script_path'])) return $brick;
+	}
+	$brick['form_script_path'] = '';
+	return $brick;
 }
 
 /**
