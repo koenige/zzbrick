@@ -343,7 +343,6 @@ function brick_request_cms($script, $params, $brick, $filetype = '') {
  * @param string function name if script was found, or false
  */
 function brick_request_file($script, $brick, $type = false) {
-
 	// check if script is in subdirectory
 	if (strstr($script, '/')) {
 		$script = explode('/', $script);
@@ -374,7 +373,7 @@ function brick_request_file($script, $brick, $type = false) {
 	}
 
 	// include function file and check if function exists
-	$exists = brick_request_script($folder.$script, $path);
+	$exists = brick_request_script(($folder ? $folder.'/' : '').$script, $path);
 	if (!$exists) {
 		foreach ($brick['setting']['modules'] as $module) {
 			if ($folder AND $folder !== $module) continue;
