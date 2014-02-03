@@ -225,6 +225,10 @@ function brick_forms($brick) {
  * %%% tables subfolder table %%%
  *
  * @param array $brick
+ *		array 'vars'
+ *		string 'path', defaults to _inc/zzbrick_tables
+ *		string 'module_path', defaults to /zzbrick_tables
+ *		array 'setting' = $zz_setting
  * @global array $zz_conf
  * @return array $brick, with form_script_path set and vars modified
  */
