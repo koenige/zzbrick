@@ -298,6 +298,15 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 				// if there are parameters from the loop, get them!
 				if (!empty($params[$i])) {
 					$brick['loop_parameter'] = $params[$i];
+					// if it's a loop in a loop, also get parameters from main loop
+					// if they are not set in this loop, just for convenience
+					if (!empty($params[$i-1])) {
+						foreach ($params[$i-1] as $key => $value) {
+							if (is_array($value)) continue;
+							if (isset($brick['loop_parameter'][$key])) continue;
+							$brick['loop_parameter'][$key] = $value;
+						}
+					}
 					$brick['loop_all'] = $loop_all[$i];
 					$brick['loop_counter'] = $loop_counter[$i];
 				} else {
