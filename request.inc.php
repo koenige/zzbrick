@@ -73,17 +73,17 @@ function brick_request($brick) {
 		// call function
 		$content = brick_request_cms($script, $function_params, $brick, $filetype);
 	} else {
-		$request = brick_request_file($script, $brick);
+		$brick = brick_request_file($script, $brick);
 
-		if (!function_exists($request)) {
+		if (!function_exists($brick['request_function'])) {
 			$brick['page']['error']['level'] = E_USER_ERROR;
 			$brick['page']['error']['msg_text'] = 'The function "%s" is not supported by the CMS.';
-			$brick['page']['error']['msg_vars'] = array($request);
+			$brick['page']['error']['msg_vars'] = array($brick['request_function']);
 			$brick['text'] = false;
 			return $brick;
 		}
 		// call function
-		$content = $request($function_params);
+		$content = $brick['request_function']($function_params);
 	}
 
 	if (empty($content)) {
@@ -243,9 +243,9 @@ function brick_request_cms($script, $params, $brick, $filetype = '') {
 	}
 	
 	// get data for input, depending on settings
-	$request = brick_request_file($script, $brick, 'get');
-	if (function_exists($request)) {
-		$data = $request($params);
+	$brick['request_function'] = brick_request_file($script, $brick, 'get');
+	if (function_exists($brick['request_function'])) {
+		$data = $brick['request_function']($params);
 	} else {
 		// function does not exist, probably no database data is needed
 		switch ($brick['setting']['brick_cms_input']) {
@@ -264,14 +264,14 @@ function brick_request_cms($script, $params, $brick, $filetype = '') {
 	// return false, if there's no input
 	if (empty($data)) return false;
 
-	if ($data === true AND !empty($request)) {
+	if ($data === true AND !empty($brick['request_function'])) {
 		switch ($output_format) {
 		case 'xml':
 		case 'json':
 		case 'csv':
 			$content['error']['level'] = E_USER_WARNING;
 			$content['error']['msg_text'] = 'No input data for %s was found. Probably function `%s` is missing.';
-			$content['error']['msg_vars'] = array($script, $request);
+			$content['error']['msg_vars'] = array($script, $brick['request_function']);
 			$content['status'] = 404;
 			return $content;
 			break;
@@ -322,14 +322,14 @@ function brick_request_cms($script, $params, $brick, $filetype = '') {
 		return $brick;
 	case 'html':
 	default:
-		$request = brick_request_file($script, $brick, 'htmlout');
-		if (!function_exists($request)) {
+		$brick = brick_request_file($script, $brick, 'htmlout');
+		if (!function_exists($brick['request_function'])) {
 			$content['error']['level'] = E_USER_ERROR;
 			$content['error']['msg_text'] = 'The function "%s" is not supported by the CMS.';
-			$content['error']['msg_vars'] = array($request);
+			$content['error']['msg_vars'] = array($brick['request_function']);
 			return $content;
 		}
-		return $request($data, $params);
+		return $brick['request_function']($data, $params);
 	}
 }
 
@@ -340,7 +340,9 @@ function brick_request_cms($script, $params, $brick, $filetype = '') {
  * @param string $script
  * @param array $brick
  * @param string $type (optional: false, 'get' or 'htmlout')
- * @param string function name if script was found, or false
+ * @return array $brick
+ *		'request_function' => function name if script was found, or false
+ *		'active_module' => name of module, if applicable
  */
 function brick_request_file($script, $brick, $type = false) {
 	// check if script is in subdirectory
@@ -355,18 +357,18 @@ function brick_request_file($script, $brick, $type = false) {
 	$script = strtolower(str_replace('-', '_', $script));
 	switch ($type) {
 	case 'get':
-		$request = 'cms_get_'.$script;
+		$brick['request_function'] = 'cms_get_'.$script;
 		$path = $brick['path'].'_get/';
 		$brick['module_path'] .= '_get';
 		$function_name = 'mod_%s_get_%s';
 		break;
 	case 'htmlout':
-		$request = 'cms_htmlout_'.$script;
+		$brick['request_function'] = 'cms_htmlout_'.$script;
 		$path = $brick['path'];
 		$function_name = 'mod_%s_htmlout_%s';
 		break;
 	default:
-		$request = 'cms_'.$script;
+		$brick['request_function'] = 'cms_'.$script;
 		$path = $brick['path'];
 		$function_name = 'mod_%s_%s';
 		break;
@@ -379,10 +381,13 @@ function brick_request_file($script, $brick, $type = false) {
 			if ($folder AND $folder !== $module) continue;
 			$module_path = $brick['setting']['modules_dir'].'/'.$module.$brick['module_path'];
 			$exists = brick_request_script($script, $module_path);
-			if ($exists) $request = sprintf($function_name, $module, $script);
+			if ($exists) {
+				$brick['request_function'] = sprintf($function_name, $module, $script);
+				$brick['setting']['active_module'] = $module;
+			}
 		}
 	}
-	return $request;
+	return $brick;
 }
 
 /**
