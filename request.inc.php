@@ -243,7 +243,7 @@ function brick_request_cms($script, $params, $brick, $filetype = '') {
 	}
 	
 	// get data for input, depending on settings
-	$brick['request_function'] = brick_request_file($script, $brick, 'get');
+	$brick = brick_request_file($script, $brick, 'get');
 	if (function_exists($brick['request_function'])) {
 		$data = $brick['request_function']($params);
 	} else {
