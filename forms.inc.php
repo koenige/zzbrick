@@ -106,8 +106,6 @@ function brick_forms($brick) {
 		$brick['public_access'] = true;
 	}
 	
-	$brick = brick_local_settings($brick);
-	
 	if (file_exists($brick['path'].'/_common.inc.php'))
 		require_once $brick['path'].'/_common.inc.php';
 
