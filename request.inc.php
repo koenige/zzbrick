@@ -53,6 +53,9 @@ function brick_request($brick) {
 	if (!is_array($brick['setting']['brick_export_formats'])) {
 		$brick['setting']['brick_export_formats'] = array($brick['setting']['brick_export_formats']);
 	}
+
+	$brick = brick_local_settings($brick);
+	
 	if (file_exists($brick['path'].'/_common.inc.php'))
 		require $brick['path'].'/_common.inc.php';
 
@@ -245,7 +248,7 @@ function brick_request_cms($script, $params, $brick, $filetype = '') {
 	// get data for input, depending on settings
 	$brick = brick_request_file($script, $brick, 'get');
 	if (function_exists($brick['request_function'])) {
-		$data = $brick['request_function']($params);
+		$data = $brick['request_function']($params, $brick['local_settings']);
 	} else {
 		// function does not exist, probably no database data is needed
 		switch ($brick['setting']['brick_cms_input']) {
@@ -329,7 +332,7 @@ function brick_request_cms($script, $params, $brick, $filetype = '') {
 			$content['error']['msg_vars'] = array($brick['request_function']);
 			return $content;
 		}
-		return $brick['request_function']($data, $params);
+		return $brick['request_function']($data, $params, $brick['local_settings']);
 	}
 }
 
