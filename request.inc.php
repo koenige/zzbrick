@@ -83,7 +83,7 @@ function brick_request($brick) {
 			return $brick;
 		}
 		// call function
-		$content = $brick['request_function']($function_params);
+		$content = $brick['request_function']($function_params, $brick['local_settings']);
 	}
 
 	if (empty($content)) {

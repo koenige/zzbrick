@@ -592,4 +592,28 @@ function brick_xhr($xmlHttpRequest, $parameter, $zz_setting = array()) {
 	return $page;
 }
 
+/**
+ * read settings from vars, if they have an equal sign
+ *
+ * example: %%% forms table media * title=Files publish=0 %%%
+ *
+ * @param array $brick
+ * @return array $brick
+ */
+function brick_local_settings($brick) {
+	// get settings out of parameters
+	$brick['local_settings'] = array();
+	$url_settings = array_reverse($brick['vars']);
+	foreach ($url_settings as $setting) {
+		// '=' is not an allowed symbol for a folder identifier
+		if (!strstr($setting, '=')) continue;
+		parse_str($setting, $new_settings);
+		if ($new_settings) {
+			$brick['local_settings'] = array_merge($brick['local_settings'], $new_settings);
+		}
+		array_pop($brick['vars']);
+	}
+	return $brick;
+}
+
 ?>
