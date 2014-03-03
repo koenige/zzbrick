@@ -75,23 +75,23 @@ function brick_forms($brick) {
 	}
 	
 	foreach ($brick['vars'] AS $index => $var) {
-		if ($var == '*') {
+		if ($var === '*') {
 			// replace * with full parameter list
 			// (full list because we either have the scriptname directly
 			// in 'vars' or we have the full script name in the url
 			// mixing is not possible because it will be difficult
 			// to say how many parameters are allowed)
 			array_splice($brick['vars'], $index, 1, $brick['parameter']);
-		} elseif ($var == '*[1]') {
+		} elseif ($var === '*[1]') {
 			$parameter = explode('/', $brick['parameter']);
 			array_splice($brick['vars'], $index, 1, $parameter[0]);
-		} elseif ($var == '*[2]') {
+		} elseif ($var === '*[2]') {
 			$parameter = explode('/', $brick['parameter']);
 			array_splice($brick['vars'], $index, 1, $parameter[1]);
-		} elseif ($var == '*[3]') {
+		} elseif ($var === '*[3]') {
 			$parameter = explode('/', $brick['parameter']);
 			array_splice($brick['vars'], $index, 1, $parameter[2]);
-		} elseif ($var == '*[2+]') {
+		} elseif ($var === '*[2+]') {
 			$parameter = explode('/', $brick['parameter']);
 			array_shift($parameter); // remove first element
 			$parameter = implode('/', $parameter);
@@ -100,11 +100,13 @@ function brick_forms($brick) {
 	}
 
 	// check whether script shall be made accessible from public
-	$auth = ((count($brick['vars']) > 1) AND end($brick['vars']) == 'public') ? false : true;
+	$auth = ((count($brick['vars']) > 1) AND end($brick['vars']) === 'public') ? false : true;
 	if (!$auth) {
 		array_pop($brick['vars']);
 		$brick['public_access'] = true;
 	}
+	
+	$brick = brick_local_settings($brick);
 	
 	if (file_exists($brick['path'].'/_common.inc.php'))
 		require_once $brick['path'].'/_common.inc.php';
@@ -133,21 +135,28 @@ function brick_forms($brick) {
 	require_once $zz_conf['dir'].'/zzform.php';
 	// check if POST is too big, then set GET variables if possible here, so the
 	// table script can react to them
-	zzform_post_too_big(); 
-	require $brick['form_script_path'];
+	zzform_post_too_big();
+	$zz = brick_forms_include($brick);
 	if (!empty($brick['page']['status']) AND $brick['page']['status'] !== 200)
 		return $brick;
 
-	if (empty($zz) AND !empty($zz_sub)) {
-		$zz = $zz_sub;
-		unset($zz_sub);
-	} elseif (empty($zz)) {
-		// no defintions for zzform, this will not work
+	if (!$zz) {
+		// no definitions for zzform, this will not work
 		$brick['page']['error']['level'] = E_USER_ERROR;
 		$brick['page']['error']['msg_text'] = 'No table definition for zzform found ($zz).';
 		$brick['page']['error']['msg_vars'] = array($brick['form_script_path']);
 		$brick['page']['status'] = 503;
 		return $brick;
+	} elseif (!empty($zz['page'])) {
+		foreach ($zz['page'] as $key => $value) {
+			if (empty($brick['page'][$key])) {
+				$brick['page'][$key] = $value;
+			} elseif (is_array($value)) {
+				$brick['page'][$key] = array_merge($brick['page'][$key], $value);
+			} else {
+				$brick['page'][$key] .= $value;
+			}
+		}
 	}
 	$zz_conf['show_output'] = false;
 	$ops = zzform($zz);
@@ -174,7 +183,7 @@ function brick_forms($brick) {
 
 	// Export?
 	// @todo allow caching
-	if (!empty($ops['mode']) AND $ops['mode'] == 'export') {
+	if (!empty($ops['mode']) AND $ops['mode'] === 'export') {
 		// in export mode, there is no html, just pdf, csv or something else
 		// output it directly
 		foreach ($ops['headers'] as $index) {
@@ -334,4 +343,24 @@ function brick_forms_geo_map($brick, $template) {
 	return $brick;
 }
 
-?>
+/**
+ * include a table definition file
+ * with just $zz_conf, $zz_setting and $brick available for reading, $zz for
+ * writing
+ *
+ * @param array $brick
+ * @return array $zz (or false, if no definitions available)
+ */
+function brick_forms_include($brick) {
+	global $zz_conf;
+	global $zz_setting;
+
+	require $brick['form_script_path'];
+	if (empty($zz) AND !empty($zz_sub))
+		return $zz_sub;
+	if (!empty($zz))
+		return $zz;
+
+	// no definitions for zzform, this will not work
+	return false;
+}
