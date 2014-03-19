@@ -65,12 +65,15 @@ function brick_forms($brick) {
 	// directory depending on subtype
 	if (empty($brick['subtype'])) $brick['subtype'] = 'forms';
 	$brick['path'] = substr($brick['path'], 0, -6); // remove _forms
+	$brick['tables_path'] = $brick['path'].'_tables';
 	switch ($brick['subtype']) {
-		case 'forms': 
-			$brick['path'] .= '_forms'; break;
-		default: 
-			$brick['path'] .= '_tables';
-			$brick['module_path'] = $brick['setting']['brick_module_dir'].'tables';
+	case 'forms': 
+		$brick['path'] .= '_forms';
+		$brick['module_path'] = $brick['setting']['brick_module_dir'].'forms';
+		break;
+	default: 
+		$brick['path'] .= '_tables';
+		$brick['module_path'] = $brick['setting']['brick_module_dir'].'tables';
 		break;
 	}
 	
@@ -108,8 +111,12 @@ function brick_forms($brick) {
 	
 	$brick = brick_local_settings($brick);
 	
-	if (file_exists($brick['path'].'/_common.inc.php'))
-		require_once $brick['path'].'/_common.inc.php';
+	if (file_exists($brick['path'].'/_common.inc.php')) {
+		include_once $brick['path'].'/_common.inc.php';
+	} elseif ($brick['path'] !== $brick['tables_path']
+		AND file_exists($brick['tables_path'].'/_common.inc.php') {
+		include_once $brick['tables_path'].'/_common.inc.php';
+	}
 
 	// script path must be first variable
 	$brick = brick_forms_file($brick);
