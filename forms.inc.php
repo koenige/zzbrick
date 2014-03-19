@@ -114,7 +114,7 @@ function brick_forms($brick) {
 	if (file_exists($brick['path'].'/_common.inc.php')) {
 		include_once $brick['path'].'/_common.inc.php';
 	} elseif ($brick['path'] !== $brick['tables_path']
-		AND file_exists($brick['tables_path'].'/_common.inc.php') {
+		AND file_exists($brick['tables_path'].'/_common.inc.php')) {
 		include_once $brick['tables_path'].'/_common.inc.php';
 	}
 
