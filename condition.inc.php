@@ -88,7 +88,7 @@ function brick_condition($brick) {
 
 	// check if there it's a nested if and if there is a parent condition
 	// if so and it is false, do not show content for all clauses
-	if ($condition === '=') {
+	if ($condition === '=' OR $condition === '!') {
 		$i++; // increase level
 		$brick['condition_content_shown'][$i] = false;
 	}
@@ -181,5 +181,3 @@ function brick_condition($brick) {
 	}
 	return $brick;
 }
-
-?>
