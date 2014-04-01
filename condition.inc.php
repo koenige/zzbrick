@@ -22,12 +22,13 @@
  * examples
  * 		%%% condition itemcontent %%%
  * 		%%% condition = itemcontent %%%
- * 		%%% condition : %%% -- if item = false, this content will be shown
+ * 		%%% condition : %%% -- if !item =, this content will be shown
  * 		%%% condition - %%% -- resume normal operations (end) 
+ * 		%%% condition ! %%% -- if !item , this will be shown
+ * 		%%% condition itemcontent | itemcontent2 | itemconten2 %%% -- OR
+ * 		%%% condition itemcontent & itemcontent2 & itemconten2 %%% -- AND
  * @param array $brick	Array from zzbrick
  * @return array $brick
- * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @todo condition = AND OR ...
  */
 function brick_condition($brick) {
 	static $i;
@@ -77,12 +78,28 @@ function brick_condition($brick) {
 	} else {
 		$item = &$brick['parameter'];
 	}
-	$brick_var = array_shift($brick['vars']);
-	if ($brick_var) {
+	$operator = '';
+	if (count($brick['vars']) > 1) {
+		// possible: uneven number of brick vars, separated by | = or
+		// or & = and, currently no combination possible
+		$operator = $brick['vars'][1];
+		$brick_vars = array();
+		for ($i = 0; $i < count($brick['vars']); $i++) {
+			if ($i & 1) continue;
+			$brick_vars[] = $brick['vars'][$i];
+		}
+	} else {
+		$brick_vars[0] = array_shift($brick['vars']);
+	}
+	foreach ($brick_vars as $brick_var) {
 		$brick_var = str_replace('-', '_', $brick_var);
 		if (is_array($item) AND isset($item[$brick_var])) {
 			// we have it in $item, so return this.
 			$content = $item[$brick_var];
+			if ($operator === '|') break;
+		} elseif ($operator === '&') {
+			$content = '';
+			break;
 		}
 	}
 
