@@ -81,6 +81,8 @@
  * 		»subloops«:
  * 		%%% loop subcategory %%%
  * 		%%% loop end "optional HTML if content" %%%
+ *		only part of the items
+ *		%%% loop start 2- %%% e. g. 1, 2-4, -5
  * 	
  * Available modules:
  * 	- comment - comment blocks, won't be displayed
@@ -235,7 +237,6 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 							// e. g. 2 -> categories -> 4 -> category
 							// it's in the main record (-1) that is also in a loop
 							$loop_parameter[$i] = $params[$i-1][$brick['vars'][0]];
-
 						} elseif (!empty($brick['parameter'][$brick['vars'][0]])) {
 							// main record is not in a loop
 							$loop_parameter[$i] = $brick['parameter'][$brick['vars'][0]];
@@ -246,6 +247,7 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 								$brick['page']['text'][$brick['position']] .= $brick['vars'][2];
 							}
 						}
+						$loop_parameter[$i] = brick_loop_range($brick['vars'], $loop_parameter[$i]);
 					}
 					$loop_counter[$i] = count($loop_parameter[$i]);
 					$loop_all[$i] = count($loop_parameter[$i]);
@@ -407,6 +409,33 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 	// make sure, 'text' is not an array if empty
 	if (empty($page['text'])) $page['text'] = '';
 	return $page;
+}
+
+/**
+ * allow loop start 1, loop start 1-, loop start -2 etc.
+ * to select only a subset of a loop
+ *
+ * @param array $vars
+ * @param array $params loop parameter
+ * @return $params
+ */
+function brick_loop_range(&$vars, $params) {
+	if (!$params) return array();
+	if (empty($vars[1])) return $params;
+	if (!preg_match('/^[0-9-]+$/', $vars[1])) return $params;
+	if (strstr('-', $vars[1]) > 1) return $params;
+	$range = explode('-', $vars[1]);
+	unset($vars[1]);
+	if (count($range) === 1) {
+		$params = array_slice($params, $range[0] - 1, 1);
+	} elseif (!$range[0]) {
+		$params = array_slice($params, 0, $range[1] - 1);
+	} elseif (!$range[1]) {
+		$params = array_slice($params, $range[0] - 1);
+	} else {
+		$params = array_slice($params, $range[0] - 1, $range[1] - $range[0] - 1);
+	}
+	return $params;
 }
 
 /**
@@ -615,5 +644,3 @@ function brick_local_settings($brick) {
 	}
 	return $brick;
 }
-
-?>
