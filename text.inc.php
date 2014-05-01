@@ -8,7 +8,7 @@
  * http://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2009 Gustaf Mossakowski
+ * @copyright Copyright © 2009, 2014 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -22,6 +22,7 @@
  * examples: 
  * 		%%% text hello %%% 
  * 		%%% text We like to use our CMS! %%%
+ * 		%%% text "We found %d items" item_count %%%
  * @param array $brick
  * @return array $brick
  * @author Gustaf Mossakowski <gustaf@koenige.org>
@@ -43,12 +44,30 @@ function brick_text($brick) {
 	} else {
 		$function = false;
 	}
-	$text = $brick['setting']['brick_translate_text_function'](implode(' ', $brick['vars'])); 
+	if (strstr($brick['vars'][0], ' ') AND count($brick['vars']) > 1) {
+		$text = array_shift($brick['vars']);
+		$sprintf_params = $brick['vars'];
+	} else {
+		$text = implode(' ', $brick['vars']);
+		$sprintf_params = array();
+	}
+	$text = $brick['setting']['brick_translate_text_function']($text); 
+	if ($sprintf_params) {
+		if (!empty($brick['loop_parameter'])) {
+			$item = &$brick['loop_parameter'];
+		} else {
+			$item = &$brick['parameter'];
+		}
+		$params = array();
+		foreach ($sprintf_params as $key) {
+			if (!isset($item[$key])) continue;
+			$params[] = $item[$key];
+		}
+		$text = vsprintf($text, $params);
+	}
 	if ($function) $text = $function($text);
 	$brick['page']['text'][$brick['position']] .= $text;
 	unset($brick['vars']);
 
 	return $brick;
 }
-
-?>
