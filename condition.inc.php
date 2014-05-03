@@ -50,20 +50,8 @@ function brick_condition($brick) {
 		$brick['vars'][0] = $brick['setting']['brick_condition_translated'][$brick['vars'][0]];
 	}
 
-	if ($brick['vars'][0] === '-') {
-		$condition = '-';
-	} elseif ($brick['vars'][0] === ':') {
-		$condition = ':';
-	} elseif ($brick['vars'][0] === '=') {
-		$condition = '=';
-		array_shift($brick['vars']);
-	} elseif ($brick['vars'][0] === ':=') {
-		$condition = ':=';
-		array_shift($brick['vars']);
-	} elseif ($brick['vars'][0] === '!') {
-		$condition = '!';
-		array_shift($brick['vars']);
-	} else {
+	$condition = array_shift($brick['vars']);
+	if (!in_array($condition, $brick['setting']['brick_condition_translated'])) {
 		$condition = '=';
 	}
 
@@ -84,10 +72,11 @@ function brick_condition($brick) {
 		// or & = and, currently no combination possible
 		$operator = $brick['vars'][1];
 		$brick_vars = array();
-		for ($i = 0; $i < count($brick['vars']); $i++) {
-			if ($i & 1) continue;
-			$brick_vars[] = $brick['vars'][$i];
+		for ($j = 0; $j < count($brick['vars']); $j++) {
+			if ($j & 1) continue;
+			$brick_vars[] = $brick['vars'][$j];
 		}
+		$brick['vars'] = array();
 	} else {
 		$brick_vars[0] = array_shift($brick['vars']);
 	}
