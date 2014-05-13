@@ -117,9 +117,6 @@ function brick_forms($brick) {
 		AND file_exists($brick['tables_path'].'/_common.inc.php')) {
 		include_once $brick['tables_path'].'/_common.inc.php';
 	}
-	if (file_exists($path = $zz_conf['dir_custom'].'/editing.inc.php')) {
-		include_once $path;
-	}
 
 	// script path must be first variable
 	$brick = brick_forms_file($brick);
