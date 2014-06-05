@@ -169,17 +169,22 @@ function brick_request($brick) {
  * @author Gustaf Mossakowski <gustaf@koenige.org>
  */
 function brick_request_params($variables, $parameter) {
-	$parameter_for_function = false;
-	$var_safe = false;
+	$parameter_for_function = array();
+	$var_safe = array();
 
 	foreach ($variables as $var) {
-		if ($var == '*') {
+		if ($var === '*' OR substr($var, -1) === '*') {
 			if (!$parameter) continue; // no URL parameters, ignore *
 			$url_parameters = explode('/', $parameter);
+			if (substr($var, -1) === '*' AND count($url_parameters)) {
+				$url_parameters[0] = substr($var, 0, -1).$url_parameters[0];
+			}
 			if ($parameter_for_function AND count($url_parameters)) {
-				$parameter_for_function = array_merge($parameter_for_function, 
-				$url_parameters); // parameters transmitted via URL
-			// Attention: if there are more than one *-variables
+				$parameter_for_function = array_merge(
+					$parameter_for_function, $url_parameters
+				);
+			// parameters transmitted via URL
+			// Attention: if there is more than one *-variable
 			// parameters will be inserted several times
 			} else {
 				$parameter_for_function = $url_parameters;
@@ -194,7 +199,7 @@ function brick_request_params($variables, $parameter) {
 			elseif ($var_safe && substr($var, -1) == '"') {
 				$var_safe[] = substr($var, 0, -1);
 				$parameter_for_function[] = implode(" ", $var_safe);
-				$var_safe = false;
+				$var_safe = array();
 			} elseif ($var) {
 				// parameter like given to function but newly indexed
 				// ignore empty parameters
@@ -502,5 +507,3 @@ function brick_csv_encode($data, $setting) {
 	}
 	return $text;
 }
-
-?>
