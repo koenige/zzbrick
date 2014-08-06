@@ -453,6 +453,8 @@ function brick_request_url($script, $params = array(), $setting = array()) {
 	} elseif (!empty($setting['brick_json_source_url_default'])) {
 		$url = sprintf($setting['brick_json_source_url_default'], $script, $params);
 	} else {
+		$test = parse_url($script);
+		if (empty($test['scheme'])) return false;
 		$url = $script;
 	}
 	// rare occurence, but we might not have a URL
