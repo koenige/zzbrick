@@ -8,7 +8,7 @@
  * http://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2009-2012 Gustaf Mossakowski
+ * @copyright Copyright © 2009-2014 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -58,8 +58,7 @@ function brick_page($brick) {
 		}
 		// call function
 		$content = $request($brick['vars'], $page);
-	}
-	if (!$content AND !empty($page[$brick_var])) {
+	} elseif (!empty($page[$brick_var])) {
 		// we have it in $page, so return this.
 		if (is_array($page[$brick_var])) {
 			$key = array_shift($brick['vars']);
@@ -69,7 +68,7 @@ function brick_page($brick) {
 		} else {
 			$content = $page[$brick_var];
 		}
-	} elseif (!$content) {
+	} else {
 		// other special cases
 		switch ($brick_var) {
 		case 'charset':
@@ -101,5 +100,3 @@ function brick_page($brick) {
 	$brick['parameter'][$brick_var] = $content;
 	return $brick;
 }
-
-?>
