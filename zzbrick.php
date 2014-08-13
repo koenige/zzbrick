@@ -329,9 +329,11 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 				if (!$brick['access_blocked'] OR $brick['access_blocked'] === $brick['type']) {
 					// just interpret bricks if access is not blocked
 					// or if it is might get unblocked
-					if (file_exists($bricktype_file)) {
+					$function_name = 'brick_'.$brick['type'];
+					if (!function_exists($function_name) AND file_exists($bricktype_file)) {
 						require_once $bricktype_file;
-						$function_name = 'brick_'.$brick['type'];
+					}
+					if (function_exists($function_name)) {
 						$brick = $function_name($brick);
 					} else {
 						// output error
