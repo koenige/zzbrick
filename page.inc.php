@@ -80,6 +80,9 @@ function brick_page($brick) {
 		case 'base':
 			$content = $brick['setting']['base'];
 			break;
+		case 'hostname':
+			$content = $brick['setting']['hostname'];
+			break;
 		default:
 			if (empty($zz_page['db'][$brick_var])) break;
 			$content = $zz_page['db'][$brick_var];
