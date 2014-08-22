@@ -83,6 +83,12 @@ function brick_page($brick) {
 		case 'hostname':
 			$content = $brick['setting']['hostname'];
 			break;
+		case 'host_base':
+			$content = $brick['setting']['host_base'];
+			break;
+		case 'url_path':
+			$content = $zz_page['url']['full']['path'];
+			break;
 		default:
 			if (empty($zz_page['db'][$brick_var])) break;
 			$content = $zz_page['db'][$brick_var];
