@@ -384,7 +384,7 @@ function brick_request_file($script, $brick, $type = false) {
 
 	// include function file and check if function exists
 	$exists = brick_request_script(($folder ? $folder.'/' : '').$script, $path);
-	if (!$exists) {
+	if (!$exists AND !empty($brick['setting']['modules'])) {
 		foreach ($brick['setting']['modules'] as $module) {
 			if ($folder AND $folder !== $module) continue;
 			$module_path = $brick['setting']['modules_dir'].'/'.$module.$brick['module_path'];
