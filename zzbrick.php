@@ -613,7 +613,6 @@ function brick_translate($string, $settings) {
 function brick_xhr($xmlHttpRequest, $parameter, $zz_setting = array()) {
 	if (empty($zz_setting)) global $zz_setting;
 
-	$xmlHttpRequest = json_decode($xmlHttpRequest, 1);
 	$function = $xmlHttpRequest['httpRequest'];
 	require_once $zz_setting['custom'].'/zzbrick_xhr/'.$function.'.inc.php';
 	$function = 'cms_xhr_'.$function;
