@@ -35,10 +35,10 @@
 function brick_page($brick) {
 	if (empty($brick['vars'][0])) return false;
 	global $zz_page;
+	global $zz_conf;
 
 	$page = &$brick['parameter'];
 	$pos = $brick['position'];
-	global $zz_conf;
 	if (!isset($brick['page']['text'][$pos]))
 		$brick['page']['text'][$pos] = '';
 	$content = false;
@@ -78,16 +78,15 @@ function brick_page($brick) {
 			$content = date('Y');
 			break;
 		case 'base':
-			$content = $brick['setting']['base'];
-			break;
 		case 'hostname':
-			$content = $brick['setting']['hostname'];
-			break;
 		case 'host_base':
-			$content = $brick['setting']['host_base'];
+			$content = $brick['setting'][$brick_var];
 			break;
 		case 'url_path':
 			$content = $zz_page['url']['full']['path'];
+			break;
+		case 'project':
+			$content = $zz_conf['project'];
 			break;
 		default:
 			if (empty($zz_page['db'][$brick_var])) break;
