@@ -178,6 +178,7 @@ function brick_forms($brick) {
 		$template = !empty($zz['geo_map_template']) ? $zz['geo_map_template'] : 'map';
 		$brick = brick_forms_geo_map($brick, $template);
 	}
+	$brick = brick_forms_wmd_editor($brick);
 	
 	// Caching
 	$uncacheable = array('q', 'zzaction', 'zzhash', 'mode');
@@ -348,6 +349,36 @@ function brick_forms_geo_map($brick, $template) {
 	$brick['page']['head'] .= $brick['setting']['brick_template_function']($template, $map);
 	$brick['page']['extra']['body_attributes'] = ' onload="init()"';
 	return $brick;
+}
+
+/**
+ * include JavaScript for WMD Editor
+ *
+ * @param array $brick
+ * @global array $zz_conf
+ * @return array $brick
+ */
+function brick_forms_wmd_editor($brick) {
+	global $zz_conf;
+
+	if (empty($zz_conf['wmd_editor'])) return $brick;
+	if ($zz_conf['wmd_editor'] === true) return $brick;
+	$head  = '<script type="text/javascript" src="%s/pagedown/Markdown.Converter.js"></script>'."\n";
+	$head .= '<script type="text/javascript" src="%s/pagedown/Markdown.Sanitizer.js"></script>'."\n";
+	$head .= '<script type="text/javascript" src="%s/pagedown/Markdown.Editor.js"></script>'."\n";
+	if (!empty($zz_conf['wmd_editor_languages'])) {
+		if (in_array($zz_conf['language'], $zz_conf['wmd_editor_languages'])) {
+			$head .= sprintf('<script type="text/javascript" src="%s/pagedown/local/Markdown.local.de.js" charset="utf-8"></script>'."\n",
+				$brick['setting']['behaviour_path']
+			);
+		}
+	}
+	$head = sprintf($head, $brick['setting']['behaviour_path'],
+		$brick['setting']['behaviour_path'], $brick['setting']['behaviour_path']
+	);
+	if (!isset($brick['page']['head'])) $brick['page']['head'] = '';
+	$brick['page']['head'] .= $head;
+	return $brick;		
 }
 
 /**
