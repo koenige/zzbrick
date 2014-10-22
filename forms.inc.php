@@ -126,9 +126,11 @@ function brick_forms($brick) {
 	}
 	
 	// set allowed params
-	$brick['page']['query_strings'] = array('mode', 'q', 'id', 'source_id', 
-		'scope', 'filter', 'where', 'order', 'dir', 'zzaction', 'zzhash',
-		'export', 'add', 'group', 'nolist', 'limit', 'referer', 'file');
+	$brick['page']['query_strings'] = array(
+		'mode', 'q', 'id', 'source_id', 'scope', 'filter', 'where', 'order',
+		'dir', 'delete', 'insert', 'update', 'noupdate', 'zzhash', 'export',
+		'add', 'group', 'nolist', 'limit', 'referer', 'file'
+	);
 
 	// start zzform scripts
 	if ($auth) {
@@ -181,7 +183,9 @@ function brick_forms($brick) {
 	$brick = brick_forms_wmd_editor($brick);
 	
 	// Caching
-	$uncacheable = array('q', 'zzaction', 'zzhash', 'mode');
+	$uncacheable = array(
+		'q', 'delete', 'insert', 'update', 'noupdate', 'zzhash', 'mode'
+	);
 	foreach ($uncacheable as $query) {
 		if (!empty($_GET[$query])) {
 			$zz_setting['cache'] = false;
