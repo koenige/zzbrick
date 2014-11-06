@@ -129,7 +129,8 @@ function brick_forms($brick) {
 	$brick['page']['query_strings'] = array(
 		'mode', 'q', 'id', 'source_id', 'scope', 'filter', 'where', 'order',
 		'dir', 'delete', 'insert', 'update', 'noupdate', 'zzhash', 'export',
-		'add', 'group', 'nolist', 'limit', 'referer', 'file'
+		'add', 'group', 'nolist', 'limit', 'referer', 'file', 'thumbs',
+		'field'
 	);
 
 	// start zzform scripts
@@ -184,7 +185,7 @@ function brick_forms($brick) {
 	
 	// Caching
 	$uncacheable = array(
-		'q', 'delete', 'insert', 'update', 'noupdate', 'zzhash', 'mode'
+		'q', 'delete', 'insert', 'update', 'noupdate', 'zzhash', 'mode', 'thumbs'
 	);
 	foreach ($uncacheable as $query) {
 		if (!empty($_GET[$query])) {
