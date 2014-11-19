@@ -509,3 +509,57 @@ function brick_csv_encode($data, $setting) {
 	}
 	return $text;
 }
+
+/**
+ * replaces all placeholders in text with files
+ *
+ * @param string $text (will change)
+ * @param array $media (will change)
+ * @param string $field_name
+ * @return void
+ */
+function brick_request_links(&$text, &$media, $field_name) {
+	$parts = explode('%%%', $text);
+	$formatted = '';
+	foreach ($parts as $index => $part) {
+		if ($index & 1) {
+			$part = trim($part);
+			$medium = explode(' ', $part);
+			$formatted .= brick_place_link($media, $medium, $field_name);
+		} else {
+			$formatted .= ltrim($part);
+		}
+	}
+	$text = $formatted;
+}
+
+/**
+ * replaces single placeholder in text with file
+ *
+ * @param array $media (will change)
+ * @param string $placeholder
+ * @param string $field_name
+ * @return string
+ */
+function brick_request_link(&$media, $placeholder, $field_name) {
+	switch ($placeholder[0]) {
+	case 'bild':
+	case 'image':
+		$area = 'image';
+		break;
+	case 'link':
+	case 'doc':
+		$area = 'link';
+		break;
+	default:
+		// not supported
+		break;
+	}
+	$mediakey = $area.'s';
+	foreach ($media[$mediakey] as $medium_id => $medium) {
+		if ($medium[$field_name] != $placeholder[1]) continue;
+		unset($media[$mediakey][$medium_id]);
+		return wrap_template($area, $medium);
+	}
+	return '';
+}
