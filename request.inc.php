@@ -525,7 +525,7 @@ function brick_request_links(&$text, &$media, $field_name) {
 		if ($index & 1) {
 			$part = trim($part);
 			$medium = explode(' ', $part);
-			$formatted .= brick_place_link($media, $medium, $field_name);
+			$formatted .= brick_request_link($media, $medium, $field_name);
 		} else {
 			$formatted .= ltrim($part);
 		}
