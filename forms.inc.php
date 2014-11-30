@@ -337,6 +337,7 @@ function brick_forms_geo_map($brick, $template) {
 		} elseif (!isset($query['limit']))  {
 			$query['limit'] = $zz_conf['limit'];
 		}
+		unset($query['referer']);
 	} else {
 		// no limit = default limit
 		$query['limit'] = $zz_conf['limit'];
