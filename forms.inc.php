@@ -402,7 +402,7 @@ function brick_forms_include($brick) {
 	global $zz_setting;
 
 	if ($brick['common_script_path']) {
-		require $brick['common_script_path'];
+		require_once $brick['common_script_path'];
 	}
 	require $brick['form_script_path'];
 	if (empty($zz) AND !empty($zz_sub))
