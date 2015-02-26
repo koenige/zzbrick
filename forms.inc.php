@@ -118,26 +118,6 @@ function brick_forms($brick) {
 		return $brick;
 	}
 	
-	if (file_exists($brick['path'].'/_common.inc.php')) {
-		include_once $brick['path'].'/_common.inc.php';
-	} elseif ($brick['path'] !== $brick['tables_path']
-		AND file_exists($brick['tables_path'].'/_common.inc.php')) {
-		include_once $brick['tables_path'].'/_common.inc.php';
-	}
-	if (!empty($brick['setting']['active_module'])) {
-		$module_path = sprintf('%s/%s%s',
-			$brick['setting']['modules_dir'], $brick['setting']['active_module'],
-			$brick['setting']['brick_module_dir']
-		);
-		if (file_exists($file = $module_path.$brick['subtype'].'/_common.inc.php')) {
-			include_once($file);
-		} elseif ($brick['subtype'] === 'forms') {
-			if (file_exists($file = $module_path.'tables/_common.inc.php')) {
-				include_once($file);
-			}
-		}
-	}
-	
 	// set allowed params
 	$brick['page']['query_strings'] = array(
 		'mode', 'q', 'id', 'source_id', 'scope', 'filter', 'where', 'order',
@@ -269,6 +249,15 @@ function brick_forms($brick) {
  */
 function brick_forms_file($brick) {
 	global $zz_conf;
+
+	if (file_exists($brick['path'].'/_common.inc.php')) {
+		$brick['common_script_path'] =  $brick['path'].'/_common.inc.php';
+	} elseif (!empty($brick['tables_path']) AND $brick['path'] !== $brick['tables_path']
+		AND file_exists($brick['tables_path'].'/_common.inc.php')) {
+		$brick['common_script_path'] = $brick['tables_path'].'/_common.inc.php';
+	} else {
+		$brick['common_script_path'] = '';
+	}
 
 	// @deprecated
 	// %%% tables subfolder table %%%
@@ -412,6 +401,9 @@ function brick_forms_include($brick) {
 	global $zz_conf;
 	global $zz_setting;
 
+	if ($brick['common_script_path']) {
+		require $brick['common_script_path'];
+	}
 	require $brick['form_script_path'];
 	if (empty($zz) AND !empty($zz_sub))
 		return $zz_sub;
