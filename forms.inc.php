@@ -8,7 +8,7 @@
  * http://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2009-2014 Gustaf Mossakowski
+ * @copyright Copyright © 2009-2015 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -111,18 +111,31 @@ function brick_forms($brick) {
 	
 	$brick = brick_local_settings($brick);
 	
+	// script path must be first variable
+	$brick = brick_forms_file($brick);
+	if (!$brick['form_script_path']) {
+		$brick['page']['status'] = 404;
+		return $brick;
+	}
+	
 	if (file_exists($brick['path'].'/_common.inc.php')) {
 		include_once $brick['path'].'/_common.inc.php';
 	} elseif ($brick['path'] !== $brick['tables_path']
 		AND file_exists($brick['tables_path'].'/_common.inc.php')) {
 		include_once $brick['tables_path'].'/_common.inc.php';
 	}
-
-	// script path must be first variable
-	$brick = brick_forms_file($brick);
-	if (!$brick['form_script_path']) {
-		$brick['page']['status'] = 404;
-		return $brick;
+	if (!empty($brick['setting']['active_module'])) {
+		$module_path = sprintf('%s/%s%s',
+			$brick['setting']['modules_dir'], $brick['setting']['active_module'],
+			$brick['setting']['brick_module_dir']
+		);
+		if (file_exists($file = $module_path.$brick['subtype'].'/_common.inc.php')) {
+			include_once($file);
+		} elseif ($brick['subtype'] === 'forms') {
+			if (file_exists($file = $module_path.'tables/_common.inc.php')) {
+				include_once($file);
+			}
+		}
 	}
 	
 	// set allowed params
