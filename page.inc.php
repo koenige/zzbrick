@@ -8,7 +8,7 @@
  * http://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2009-2014 Gustaf Mossakowski
+ * @copyright Copyright © 2009-2015 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -43,19 +43,31 @@ function brick_page($brick) {
 		$brick['page']['text'][$pos] = '';
 	$content = false;
 	$brick_var = str_replace('-', '_', array_shift($brick['vars']));
-	if (file_exists($brick['path'].'/'.basename(strtolower($brick_var)).'.inc.php')) {
-		// there's a custom formatting for this
-		// get name of function to be called, similar to brick_request
+
+	// is there a custom formatting for this?
+	// get name of function to be called, similar to brick_request
+	$request = false;
+	// first check own page-directory
+	$paths[] = $brick['path'];
+	foreach ($brick['setting']['modules'] as $module) {
+		// also check modules in alphabetical order
+		$paths[] = $brick['setting']['modules_dir'].'/'.$module.'/'.$brick['module_path'];
+	}
+	$filename = '/'.basename(strtolower($brick_var)).'.inc.php';
+	foreach ($paths as $path) {
+		if (!file_exists($script_filename = $path.$filename)) continue;
+		require_once $script_filename;
 		$request = 'page_'.strtolower($brick_var);
-		$script_filename = $brick['path'].'/'.basename(strtolower($brick_var)).'.inc.php';
-		if (file_exists($script_filename))
-			require_once $script_filename;
 		if (!function_exists($request)) {
 			$brick['page']['error']['level'] = E_USER_ERROR;
 			$brick['page']['error']['msg_text'] = 'The function "%s" is not supported by the CMS.';
 			$brick['page']['error']['msg_vars'] = array($request);
 			return $brick;
 		}
+		break;
+	}
+
+	if ($request) {
 		// call function
 		$content = $request($brick['vars'], $page);
 	} elseif (!empty($page[$brick_var])) {
