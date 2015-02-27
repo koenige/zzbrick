@@ -278,7 +278,8 @@ function brick_forms_file($brick) {
 	$folder = '';
 	$script = array_shift($brick['vars']);
 
-	if (strstr($script, '/')) {
+	if (strstr($script, '/') AND substr($script, 0, 3) !== '../') {
+		// allow for zzform_multi() with paths, e. g. ../zzbrick_forms/ + script name
 		$script = explode('/', $script);
 		$folder = array_shift($script);
 		$script = implode('/', $script);
