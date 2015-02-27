@@ -8,7 +8,7 @@
  * http://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2009-2012, 2014 Gustaf Mossakowski
+ * @copyright Copyright © 2009-2012, 2014-2015 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -363,11 +363,12 @@ function brick_request_file($script, $brick, $type = false) {
 	}
 	// get name of function to be called
 	$script = strtolower(str_replace('-', '_', $script));
+	$my_module_path = $brick['module_path'];
 	switch ($type) {
 	case 'get':
 		$brick['request_function'] = 'cms_get_'.$script;
 		$path = $brick['path'].'_get/';
-		$brick['module_path'] .= '_get';
+		$my_module_path .= '_get';
 		$function_name = 'mod_%s_get_%s';
 		break;
 	case 'htmlout':
@@ -387,7 +388,7 @@ function brick_request_file($script, $brick, $type = false) {
 	if (!$exists AND !empty($brick['setting']['modules'])) {
 		foreach ($brick['setting']['modules'] as $module) {
 			if ($folder AND $folder !== $module) continue;
-			$module_path = $brick['setting']['modules_dir'].'/'.$module.$brick['module_path'];
+			$module_path = $brick['setting']['modules_dir'].'/'.$module.$my_module_path;
 			$exists = brick_request_script($script, $module_path);
 			if ($exists) {
 				$brick['request_function'] = sprintf($function_name, $module, $script);
