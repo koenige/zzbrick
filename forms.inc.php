@@ -394,10 +394,13 @@ function brick_forms_wmd_editor($brick) {
  * with just $zz_conf, $zz_setting and $brick available for reading, $zz for
  * writing
  *
+ * $brick is referenced because in common_script and form_script, $brick
+ * might be changed
+ *
  * @param array $brick
  * @return array $zz (or false, if no definitions available)
  */
-function brick_forms_include($brick) {
+function brick_forms_include(&$brick) {
 	global $zz_conf;
 	global $zz_setting;
 
