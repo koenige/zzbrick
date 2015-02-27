@@ -38,9 +38,12 @@ function brick_rights($brick) {
 	$brick['setting']['brick_rights_translated']['elseif'] = '=';
 	$brick['setting']['brick_rights_translated']['else'] = ':';
 	$brick['setting']['brick_rights_translated']['off'] = '-';
+	if (empty($brick['setting']['custom_rights_dir'])) {
+		$brick['setting']['custom_rights_dir'] = $brick['path'];
+	}
 
 	// @todo: what is access_rights?
-	require_once $brick['path'].'/access_rights.inc.php';
+	require_once $brick['setting']['custom_rights_dir'].'/access_rights.inc.php';
 
 	if (in_array($brick['vars'][0], array_keys($brick['setting']['brick_rights_translated']))) {
 		$brick['vars'][0] = $brick['setting']['brick_rights_translated'][$brick['vars'][0]];
