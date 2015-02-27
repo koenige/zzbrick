@@ -614,11 +614,27 @@ function brick_xhr($xmlHttpRequest, $parameter, $zz_setting = array()) {
 	if (empty($zz_setting)) global $zz_setting;
 
 	$function = $xmlHttpRequest['httpRequest'];
-	require_once $zz_setting['custom'].'/zzbrick_xhr/'.$function.'.inc.php';
-	$function = 'cms_xhr_'.$function;
-	$page['text'] = json_encode($function($xmlHttpRequest, $parameter));
-	$page['status'] = 200;
-	$page['content_type'] = 'json';
+	$file = $zz_setting['custom'].'/zzbrick_xhr/'.$function.'.inc.php';
+	if (file_exists($file)) {
+		require_once $file;
+		$function = 'cms_xhr_'.$function;
+	} else {
+		foreach ($zz_setting['modules'] as $module) {
+			if (file_exists($file = $zz_setting['modules_dir'].'/'.$module.'/zzbrick_xhr/'.$function.'.inc.php')) {
+				require_once $file;
+				$zz_setting['active_module'] = $module;
+				$function = 'mod_'.$module.'_xhr_'.$function;
+				break;
+			}
+		}
+	}
+	if (!function_exists($function)) {
+		$page['status'] = 503;
+	} else {
+		$page['text'] = json_encode($function($xmlHttpRequest, $parameter));
+		$page['status'] = 200;
+		$page['content_type'] = 'json';
+	}
 	return $page;
 }
 
