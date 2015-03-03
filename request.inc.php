@@ -327,6 +327,9 @@ function brick_request_cms($script, $params, $brick, $filetype = '') {
 		if (!$brick['text']) return false;
 		$brick['content_type'] = 'csv';
 		$brick['headers']['filename'] = $filename;
+		if (!empty($setting['excel_compatible'])) {
+			$brick['headers']['character_set'] = 'utf-16le';
+		}
 		return $brick;
 	case 'html':
 	default:
@@ -471,10 +474,15 @@ function brick_request_url($script, $params = array(), $setting = array()) {
  * @return string
  */
 function brick_csv_encode($data, $setting) {
+	if (!isset($setting['excel_compatible']))
+		$setting['excel_compatible'] = false;
 	if (!isset($setting['export_csv_enclosure']))
 		$setting['export_csv_enclosure'] = '"';
 	if (!isset($setting['export_csv_delimiter']))
-		$setting['export_csv_delimiter'] = ";";
+		if ($setting['excel_compatible'])
+			$setting['export_csv_delimiter'] = "\t";
+		else
+			$setting['export_csv_delimiter'] = ";";
 	if (!isset($setting['export_csv_show_empty_cells']))
 		$setting['export_csv_show_empty_cells'] = false;
 	if (!isset($setting['export_csv_heading']))
@@ -507,6 +515,11 @@ function brick_csv_encode($data, $setting) {
 		}
 		$text .= "\r\n";
 		$newline = true;
+	}
+	if ($setting['excel_compatible']) {
+		global $zz_conf;
+		// @todo check with mb_list_encodings() if available
+		$text = mb_convert_encoding($text, 'UTF-16LE', $zz_conf['character_set']);
 	}
 	return $text;
 }
