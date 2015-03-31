@@ -36,6 +36,14 @@ function brick_page($brick) {
 	if (empty($brick['vars'][0])) return false;
 	global $zz_page;
 	global $zz_conf;
+	
+	if (empty($brick['setting']['brick_page_shortcuts']))
+		$brick['setting']['brick_page_shortcuts'] = array();
+	if (empty($brick['subtype'])) 
+		$brick['subtype'] = '';
+	if (in_array($brick['subtype'], $brick['setting']['brick_page_shortcuts'])) {
+		array_unshift($brick['vars'], $brick['subtype']);
+	}
 
 	$page = &$brick['parameter'];
 	$pos = $brick['position'];
