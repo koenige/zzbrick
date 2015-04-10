@@ -8,7 +8,7 @@
  * http://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2009-2014 Gustaf Mossakowski
+ * @copyright Copyright © 2009-2015 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -115,7 +115,7 @@ function brick_condition($brick) {
 	switch ($condition) {
 	case '=': // if
 		if (!$show) break;
-		if ($content) {
+		if ($content OR is_float($content) OR is_int($content)) {
 			$brick['condition_content_shown'][$i] = true;
 		} else {
 			$brick['condition_content_shown'][$i] = false;
@@ -124,7 +124,7 @@ function brick_condition($brick) {
 		break;
 	case ':=': // elseif
 		if (!$show) break;
-		if ($content) {
+		if ($content OR is_float($content) OR is_int($content)) {
 			if (empty($brick['condition_content_shown'][$i])) {
 				$brick['condition_content_shown'][$i] = true;
 			} else {
@@ -153,7 +153,7 @@ function brick_condition($brick) {
 		break;
 	case '!':
 		if (!$show) break;
-		if (!$content) {
+		if (!$content AND !is_float($content) AND !is_int($content)) {
 			$brick['condition_content_shown'][$i] = true;
 		} else {
 			$brick['condition_content_shown'][$i] = false;
