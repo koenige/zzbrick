@@ -254,10 +254,7 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 					if (!$loop_parameter[$i]) {
 						// ooh, no data!
 						// increase fast forward by 1 to go to loop end
-						// but only if there is data expected
-						if ($brick['position'] !== '_hidden_') {
-							$fast_forward++;
-						}
+						$fast_forward++;
 					} else {
 						if (!empty($brick['vars'][1])) {
 							$brick['page']['text'][$brick['position']] .= $brick['vars'][1];
@@ -270,6 +267,10 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 				} elseif ($brick['vars'][0] !== 'end') {
 					// loop inside loop with no data: ignore this one and go on!
 					$fast_forward++;
+				} elseif ($fast_forward > 1) {
+					// end loop, but do not prepare for next loop
+					// as this is still hidden
+					$fast_forward--;
 				} else {
 					// end loop
 					$fast_forward--;
