@@ -641,7 +641,7 @@ function brick_local_settings($brick) {
  */
 function brick_format_placeholder($brick) {
 	// check whether $blocktype needs to be translated
-	if (in_array($brick['type'], array_keys($brick['setting']['brick_types_translated']))) {
+	if (array_key_exists($brick['type'], $brick['setting']['brick_types_translated'])) {
 		$brick['subtype'] = $brick['type'];
 		$brick['type'] = $brick['setting']['brick_types_translated'][$brick['type']];
 	} else {
