@@ -23,7 +23,7 @@
  * is used to allow the use of whitespace in single variables, e. g. "2004 fall"
  * 
  * $page
- * $format['position'] == here goes the formatted output, if none is there, 
+ * $format['position'] => here goes the formatted output, if none is there, 
  * 	position is '_hide_'
  * 
  * Variabes in $setting:
@@ -320,13 +320,13 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 		} elseif (!$fast_forward) {
 			// behind %%% -- %%% blocks, an additional newline will appear
 			// remove it, because we do not want it
-			if ($index AND substr($block, 0, 1) == "\n"
+			if ($index AND substr($block, 0, 1) === "\n"
 				AND substr($block, 0, 2) != "\n\n")
 				$block = substr($block, 1);
 			// format text block (default mode)
 			$text_to_add = brick_textformat($block, 'pieces', $brick['setting']['brick_fulltextformat']);
 			// check if there's some </p>text<p>, remove it for inline results of function
-			if ($brick['cut_next_paragraph'] && substr(trim($text_to_add), 0, 3) == '<p>') {
+			if ($brick['cut_next_paragraph'] && substr(trim($text_to_add), 0, 3) === '<p>') {
 				$text_to_add = ' '.substr(trim($text_to_add), 3);
 				$brick['cut_next_paragraph'] = false;
 			}
@@ -354,9 +354,9 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 		$brick['setting']['brick_default_position'] = 'none';
 	}
 	
-	if (count($page['text']) == 1 AND !empty($page['text']['none'])) {
+	if (count($page['text']) === 1 AND !empty($page['text']['none'])) {
 	// if position is not wanted, remove unnecessary complexity in array
-		if ($brick['setting']['brick_default_position'] == 'none') {
+		if ($brick['setting']['brick_default_position'] === 'none') {
 			$page['text'] = brick_textformat($page['text']['none'], 'full', 
 				$brick['setting']['brick_fulltextformat']);
 		} else {
@@ -425,22 +425,22 @@ function brick_loop_range(&$vars, $params) {
 function brick_get_variables($block) {
 	$block = trim($block); // allow whitespace around '%%%'
 	$variables = explode("\n", $block); // separated by newline
-	if (count($variables) == 1) {
+	if (count($variables) === 1) {
 		$variables = explode(" ", $block); // or by space
 		// put variables with spaces, but enclosed in "" back together
 		unset($paste);
 		foreach ($variables as $index => $var) {
-			if (!isset($paste) AND substr($var, 0, 1) == '"'
-				AND substr($var, -1) == '"'
+			if (!isset($paste) AND substr($var, 0, 1) === '"'
+				AND substr($var, -1) === '"'
 				AND strlen($var) > 1) {
 				// beginning and ending with "
 				$var = substr($var, 1, -1);
 				$variables[$index] = $var;
-			} elseif (!isset($paste) AND substr($var, 0, 1) == '"') {
+			} elseif (!isset($paste) AND substr($var, 0, 1) === '"') {
 				// beginning with "
 				$paste = substr($var, 1);
 				unset($variables[$index]);
-			} elseif (isset($paste) AND substr($var, -1) == '"') {
+			} elseif (isset($paste) AND substr($var, -1) === '"') {
 				// ending with "
 				$variables[$index] = $paste.' '.substr($variables[$index], 0, -1);
 				unset($paste);
@@ -465,12 +465,12 @@ function brick_get_variables($block) {
 function brick_textformat($string, $type, $fulltextformat) {
 	if ($fulltextformat
 		AND function_exists($fulltextformat)) {
-		if ($type == 'pieces') {
+		if ($type === 'pieces') {
 			return $string;
-		} elseif ($type == 'full') {
+		} elseif ($type === 'full') {
 			// this makes markdown work with </div> bla <div>,
 			// in case you close your standard box and try to open it again
-			if ($fulltextformat == 'markdown')
+			if ($fulltextformat === 'markdown')
 				$string = '<div markdown="1">'.$string.'</div>';
 			// preserve forms, do not apply any formatting to them!
 			// this is useful for form elements because we do not want them to 
@@ -484,16 +484,16 @@ function brick_textformat($string, $type, $fulltextformat) {
 			foreach ($forms[0] as $index => $form) {
 				$text = str_replace($hash.sprintf("%04d", $index), $form, $text);
 			}
-			if ($fulltextformat == 'markdown')
+			if ($fulltextformat === 'markdown')
 				$text = substr($text, 6, -7);
 			return $text;
 		}
 	} else {
 		// Standard formatting, each piece will be treated seperately, for  
 		// backwards compatibility
-		if ($type == 'pieces') {
+		if ($type === 'pieces') {
 			return markdown($string);
-		} elseif ($type == 'full') {
+		} elseif ($type === 'full') {
 			return $string;
 		}
 	}
