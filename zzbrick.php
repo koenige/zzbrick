@@ -314,24 +314,10 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 				} else {
 					$brick['loop_parameter'] = false;
 				}
-				$brick['cut_next_paragraph'] = false;
 				$brick = brick_format_placeholder($brick);
 			}
 		} elseif (!$fast_forward) {
-			// behind %%% -- %%% blocks, an additional newline will appear
-			// remove it, because we do not want it
-			if ($index AND substr($block, 0, 1) === "\n"
-				AND substr($block, 0, 2) != "\n\n")
-				$block = substr($block, 1);
-			// format text block (default mode)
-			$text_to_add = brick_textformat($block, 'pieces', $brick['setting']['brick_fulltextformat']);
-			// check if there's some </p>text<p>, remove it for inline results of function
-			if ($brick['cut_next_paragraph'] && substr(trim($text_to_add), 0, 3) === '<p>') {
-				$text_to_add = ' '.substr(trim($text_to_add), 3);
-				$brick['cut_next_paragraph'] = false;
-			}
-			$brick['page']['text'][$brick['position']] .= $text_to_add; // if wichtig, 
-				// sonst macht markdown auch aus leerer variable etwas
+			$brick = brick_format_text($brick, $block, $index);
 		}
 		next($blocks);
 	}
@@ -640,6 +626,9 @@ function brick_local_settings($brick) {
  * @return array
  */
 function brick_format_placeholder($brick) {
+	// don't cut text after placeholders
+	$brick['cut_next_paragraph'] = false;
+
 	// check whether $blocktype needs to be translated
 	if (array_key_exists($brick['type'], $brick['setting']['brick_types_translated'])) {
 		$brick['subtype'] = $brick['type'];
@@ -674,5 +663,29 @@ function brick_format_placeholder($brick) {
 			 '.$brick['type'].' is not a valid parameter.</strong></p>';
 	}
 
+	return $brick;
+}
+
+/**
+ * Just format text block (default mode)
+ *
+ * @param array $brick
+ * @param array $block
+ * @param int $index
+ * @return array
+ */
+function brick_format_text($brick, $block, $index) {
+	// behind %%% -- %%% blocks, an additional newline will appear
+	// remove it, because we do not want it
+	if ($index AND substr($block, 0, 1) === "\n"
+		AND substr($block, 0, 2) != "\n\n")
+		$block = substr($block, 1);
+	$text_to_add = brick_textformat($block, 'pieces', $brick['setting']['brick_fulltextformat']);
+	// check if there's some </p>text<p>, remove it for inline results of function
+	if ($brick['cut_next_paragraph'] && substr(trim($text_to_add), 0, 3) === '<p>') {
+		$text_to_add = ' '.substr(trim($text_to_add), 3);
+		$brick['cut_next_paragraph'] = false;
+	}
+	$brick['page']['text'][$brick['position']] .= $text_to_add;
 	return $brick;
 }
