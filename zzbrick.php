@@ -102,7 +102,7 @@
  * http://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2009-2014 Gustaf Mossakowski
+ * @copyright Copyright © 2009-2015 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -315,32 +315,7 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 					$brick['loop_parameter'] = false;
 				}
 				$brick['cut_next_paragraph'] = false;
-				// check whether $blocktype needs to be translated
-				if (in_array($brick['type'], array_keys($brick['setting']['brick_types_translated']))) {
-					$brick['subtype'] = $brick['type'];
-					$brick['type'] = $brick['setting']['brick_types_translated'][$brick['type']];
-				} else {
-					$brick['subtype'] = '';
-				}
-				$brick['type'] = basename($brick['type']); // for security, allow only filenames
-				$bricktype_file = dirname(__FILE__).'/'.$brick['type'].'.inc.php';
-				$brick['path'] = $brick['setting']['brick_custom_dir'].$brick['type'];
-				$brick['module_path'] = $brick['setting']['brick_module_dir'].$brick['type'];
-				if (!$brick['access_blocked'] OR $brick['access_blocked'] === $brick['type']) {
-					// just interpret bricks if access is not blocked
-					// or if it is might get unblocked
-					$function_name = 'brick_'.$brick['type'];
-					if (!function_exists($function_name) AND file_exists($bricktype_file)) {
-						require_once $bricktype_file;
-					}
-					if (function_exists($function_name)) {
-						$brick = $function_name($brick);
-					} else {
-						// output error
-						$brick['page']['text'][$brick['position']].= '<p><strong class="error">Error: 
-							 '.$brick['type'].' is not a valid parameter.</strong></p>';
-					}
-				}
+				$brick = brick_format_placeholder($brick);
 			}
 		} elseif (!$fast_forward) {
 			// behind %%% -- %%% blocks, an additional newline will appear
@@ -446,7 +421,6 @@ function brick_loop_range(&$vars, $params) {
  * Example: request news "John Doe" => 'request', 'news', 'John Doe'
  * @param string $block original string
  * @return array variables
- * @author Gustaf Mossakowski <gustaf@koenige.org>
  */
 function brick_get_variables($block) {
 	$block = trim($block); // allow whitespace around '%%%'
@@ -487,7 +461,6 @@ function brick_get_variables($block) {
  * Example: request news "John Doe" => 'request', 'news', 'John Doe'
  * @param string $block original string
  * @return array variables
- * @author Gustaf Mossakowski <gustaf@koenige.org>
  */
 function brick_textformat($string, $type, $fulltextformat) {
 	if ($fulltextformat
@@ -532,7 +505,6 @@ function brick_textformat($string, $type, $fulltextformat) {
  * this function seems to be pretty useless but it is not. ;-)
  * @param string $string original string
  * @return string unmodified string
- * @author Gustaf Mossakowski <gustaf@koenige.org>
  */
 function brick_textformat_html($string) {
 	return $string;
@@ -544,7 +516,6 @@ function brick_textformat_html($string) {
  * @param array $page $page-Array from zzbrick()
  * @param array $setting $brick['setting']-Array from zzbrick()
  * @return array modified $page['head']
- * @author Gustaf Mossakowski <gustaf@koenige.org>
  */
 function brick_head_format($page, $setting) {
 	$head = array();
@@ -659,5 +630,49 @@ function brick_local_settings($brick) {
 		}
 		array_pop($brick['vars']);
 	}
+	return $brick;
+}
+
+/**
+ * Call a placeholder function
+ *
+ * @param array $brick
+ * @return array
+ */
+function brick_format_placeholder($brick) {
+	// check whether $blocktype needs to be translated
+	if (in_array($brick['type'], array_keys($brick['setting']['brick_types_translated']))) {
+		$brick['subtype'] = $brick['type'];
+		$brick['type'] = $brick['setting']['brick_types_translated'][$brick['type']];
+	} else {
+		$brick['subtype'] = '';
+	}
+
+	// for security, allow only filenames
+	$brick['type'] = basename($brick['type']);
+
+	// just interpret bricks if access is not blocked
+	// or if it is might get unblocked
+	if ($brick['access_blocked'] AND $brick['access_blocked'] !== $brick['type'])
+		return $brick;
+
+	// include file
+	$bricktype_file = dirname(__FILE__).'/'.$brick['type'].'.inc.php';
+	$brick['path'] = $brick['setting']['brick_custom_dir'].$brick['type'];
+	$brick['module_path'] = $brick['setting']['brick_module_dir'].$brick['type'];
+	$function_name = 'brick_'.$brick['type'];
+	if (!function_exists($function_name) AND file_exists($bricktype_file)) {
+		require_once $bricktype_file;
+	}
+
+	// call function
+	if (function_exists($function_name)) {
+		$brick = $function_name($brick);
+	} else {
+		// output error
+		$brick['page']['text'][$brick['position']].= '<p><strong class="error">Error: 
+			 '.$brick['type'].' is not a valid parameter.</strong></p>';
+	}
+
 	return $brick;
 }
