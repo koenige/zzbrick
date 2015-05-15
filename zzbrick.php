@@ -314,10 +314,10 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 				} else {
 					$brick['loop_parameter'] = false;
 				}
-				$brick = brick_format_placeholder($brick);
+				$brick = brick_format_placeholderblock($brick);
 			}
 		} elseif (!$fast_forward) {
-			$brick = brick_format_text($brick, $block, $index);
+			$brick = brick_format_textblock($brick, $block, $index);
 		}
 		next($blocks);
 	}
@@ -625,7 +625,7 @@ function brick_local_settings($brick) {
  * @param array $brick
  * @return array
  */
-function brick_format_placeholder($brick) {
+function brick_format_placeholderblock($brick) {
 	// don't cut text after placeholders
 	$brick['cut_next_paragraph'] = false;
 
@@ -674,7 +674,7 @@ function brick_format_placeholder($brick) {
  * @param int $index
  * @return array
  */
-function brick_format_text($brick, $block, $index) {
+function brick_format_textblock($brick, $block, $index) {
 	// behind %%% -- %%% blocks, an additional newline will appear
 	// remove it, because we do not want it
 	if ($index AND substr($block, 0, 1) === "\n"
