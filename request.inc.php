@@ -551,12 +551,19 @@ function brick_request_links(&$text, &$media, $field_name) {
  * replaces single placeholder in text with file
  *
  * @param array $media (will change)
- * @param string $placeholder
+ * @param array $placeholder
+ *		[0]: area = typ
+ *		[1]: medium no
+ *		[2]: (optional, unless last) position
+ *		[last]: (optional) size
  * @param string $field_name
  * @return string
  */
 function brick_request_link(&$media, $placeholder, $field_name) {
-	switch ($placeholder[0]) {
+	global $zz_setting;
+
+	$area = array_shift($placeholder);
+	switch ($area) {
 	case 'bild':
 	case 'image':
 		$area = 'image';
@@ -567,12 +574,29 @@ function brick_request_link(&$media, $placeholder, $field_name) {
 		break;
 	default:
 		// not supported
-		break;
+		return '';
 	}
 	$mediakey = $area.'s';
+	$no = array_shift($placeholder);
 	foreach ($media[$mediakey] as $medium_id => $medium) {
-		if ($medium[$field_name] != $placeholder[1]) continue;
+		if ($medium[$field_name] != $no) continue;
 		unset($media[$mediakey][$medium_id]);
+		// last parameter = size
+		$size = array_pop($placeholder);
+		if ($size AND in_array($size, array_keys($zz_setting['media_sizes']))) {
+			$medium['size'] = $size;
+			$medium['path'] = $zz_setting['media_sizes'][$medium['size']]['path'];
+		} elseif (count($placeholder) > 1) {
+			$medium['size'] = 'invalid';
+		}
+		// first parameter if there's still one = position
+		if (count($placeholder)) {
+			$medium['position'] = $placeholder[0];
+		}
+		// default path?
+		if (empty($medium['path']) AND !empty($zz_setting['default_media_size'])) {
+			$medium['path'] = $zz_setting['media_sizes'][$zz_setting['default_media_size']]['path'];
+		}
 		return wrap_template($area, $medium);
 	}
 	return '';
