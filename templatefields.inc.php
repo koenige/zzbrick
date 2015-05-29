@@ -36,6 +36,7 @@ function brick_templatefields($brick) {
 
 function brick_templatefields_recursive($values) {
 	$i = 0;
+	if (!is_array($values)) return array();
 	$first = key($values);
 	if (is_numeric($first)) {
 		$values = reset($values);
