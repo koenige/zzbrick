@@ -51,7 +51,16 @@ function brick_text($brick) {
 		$text = implode(' ', $brick['vars']);
 		$sprintf_params = array();
 	}
-	$text = $brick['setting']['brick_translate_text_function']($text); 
+	$matches = array();
+	if (strstr($text, '{')) {
+		preg_match_all('/(%[a-z0-9$]+){([^}]+)}/', $text, $matches);
+		if ($matches) {
+			$text = str_replace($matches[0], $matches[1], $text);
+			$sprintf_params += $matches[2];
+		}
+	}
+	
+	$text = $brick['setting']['brick_translate_text_function']($text);
 	if ($sprintf_params) {
 		if (!empty($brick['loop_parameter'])) {
 			$item = &$brick['loop_parameter'];
