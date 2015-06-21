@@ -174,7 +174,12 @@ function brick_request_params($variables, $parameter) {
 
 	foreach ($variables as $var) {
 		if ($var === '*' OR substr($var, -1) === '*') {
-			if (!$parameter) continue; // no URL parameters, ignore *
+			if (!$parameter) {
+				// return * as parameter, better than false, so you can
+				// catch this error and return with a 404
+				$parameter_for_function[] = '*';
+				continue;
+			}
 			$url_parameters = explode('/', $parameter);
 			if (substr($var, -1) === '*' AND count($url_parameters)) {
 				$url_parameters[0] = substr($var, 0, -1).$url_parameters[0];
