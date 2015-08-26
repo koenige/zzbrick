@@ -100,6 +100,8 @@ function brick_page($brick) {
 		case 'base':
 		case 'hostname':
 		case 'host_base':
+		case 'behaviour_path':
+		case 'layout_path':
 			$content = $brick['setting'][$brick_var];
 			break;
 		case 'url_path':
