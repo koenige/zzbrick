@@ -282,7 +282,7 @@ function brick_request_cms($script, $params, $brick, $filetype = '') {
 		case 'xml':
 		case 'json':
 		case 'csv':
-			$content['error']['level'] = E_USER_WARNING;
+			$content['error']['level'] = E_USER_NOTICE;
 			$content['error']['msg_text'] = 'No input data for %s was found. Probably function `%s` is missing.';
 			$content['error']['msg_vars'] = array($script, $brick['request_function']);
 			$content['status'] = 404;
