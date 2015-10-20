@@ -331,8 +331,8 @@ function brick_request_cms($script, $params, $brick, $filetype = '') {
 		return $brick;
 	case 'jsonl':
 		$brick['text'] = '';
-		foreach ($data as $line) {
-			$brick['text'] .= json_encode($line)."\r\n";
+		foreach ($data as $key => $line) {
+			$brick['text'] .= json_encode(array($key => $line))."\r\n";
 		}
 		if (!$brick['text']) return false;
 		$brick['content_type'] = 'jsonl';
