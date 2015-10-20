@@ -264,8 +264,12 @@ function brick_request_cms($script, $params, $brick, $filetype = '') {
 		switch ($brick['setting']['brick_cms_input']) {
 		case 'xml':
 		case 'json':
-		case 'jsonl':
 			$data = brick_request_external($script, $brick['setting'], $params);
+			break;
+		case 'jsonl':
+			// trigger JSON Lines download
+			$data = brick_request_external($script, $brick['setting'], $params);
+			$data = true;
 			break;
 		case 'db':
 			$data = true; // do not return a 404
