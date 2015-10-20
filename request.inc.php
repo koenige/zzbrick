@@ -47,7 +47,7 @@ function brick_request($brick) {
 	// supported export formats
 	if (empty($brick['setting']['brick_export_formats'])) {
 		$brick['setting']['brick_export_formats'] = array(
-			'html', 'xml', 'json', 'csv'
+			'html', 'xml', 'json', 'jsonl', 'csv'
 		);
 	}
 	if (!is_array($brick['setting']['brick_export_formats'])) {
@@ -264,6 +264,7 @@ function brick_request_cms($script, $params, $brick, $filetype = '') {
 		switch ($brick['setting']['brick_cms_input']) {
 		case 'xml':
 		case 'json':
+		case 'jsonl':
 			$data = brick_request_external($script, $brick['setting'], $params);
 			break;
 		case 'db':
@@ -281,6 +282,7 @@ function brick_request_cms($script, $params, $brick, $filetype = '') {
 		switch ($output_format) {
 		case 'xml':
 		case 'json':
+		case 'jsonl':
 		case 'csv':
 			$content['error']['level'] = E_USER_NOTICE;
 			$content['error']['msg_text'] = 'No input data for %s was found. Probably function `%s` is missing.';
@@ -325,6 +327,15 @@ function brick_request_cms($script, $params, $brick, $filetype = '') {
 		$brick['text'] = json_encode($data);
 		if (!$brick['text']) return false;
 		$brick['content_type'] = 'json';
+		$brick['headers']['filename'] = $filename;
+		return $brick;
+	case 'jsonl':
+		$brick['text'] = '';
+		foreach ($data as $line) {
+			$brick['text'] .= json_encode($line)."\r\n";
+		}
+		if (!$brick['text']) return false;
+		$brick['content_type'] = 'jsonl';
 		$brick['headers']['filename'] = $filename;
 		return $brick;
 	case 'csv':
