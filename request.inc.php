@@ -133,10 +133,12 @@ function brick_request($brick) {
 	}
 
 	// get some content from the function and overwrite existing values
-	$overwrite_bricks = array('title', 'dont_show_h1', 'language_link',
-		'no_page_head', 'no_page_foot', 'last_update',
-		'style', 'breadcrumbs', 'project', 'created', 'headers',
-		'url_ending', 'no_output', 'template', 'content_type', 'status');
+	$overwrite_bricks = array(
+		'title', 'dont_show_h1', 'language_link', 'no_page_head',
+		'no_page_foot', 'last_update', 'style', 'breadcrumbs', 'project',
+		'created', 'headers', 'url_ending', 'no_output', 'template',
+		'content_type', 'status', 'redirect'
+	);
 	// extra: for all individual needs, not standardized
 	foreach ($overwrite_bricks as $part) {
 		if (!empty($content[$part]))
@@ -144,8 +146,10 @@ function brick_request($brick) {
 	}
 
 	// get even more content from the function and merge with existing values
-	$merge_bricks = array('authors', 'media', 'head', 'extra', 'meta', 'link',
-		'error', 'query_strings');
+	$merge_bricks = array(
+		'authors', 'media', 'head', 'extra', 'meta', 'link', 'error',
+		'query_strings'
+	);
 	foreach ($merge_bricks as $part) {
 		if (!empty($content[$part]) AND is_array($content[$part])) {
 			if (empty($brick['page'][$part])) $brick['page'][$part] = array();
