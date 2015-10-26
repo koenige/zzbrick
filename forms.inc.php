@@ -61,6 +61,8 @@ function brick_forms($brick) {
 	// allow default tables for inclusion, on demand only
 	if (!isset($brick['setting']['brick_default_tables']))
 		$brick['setting']['brick_default_tables'] = array();
+	if (!isset($brick['setting']['zzform_colours']))
+		$brick['setting']['zzform_colours'] = true;
 
 	// directory depending on subtype
 	if (empty($brick['subtype'])) $brick['subtype'] = 'forms';
@@ -125,6 +127,8 @@ function brick_forms($brick) {
 		'add', 'group', 'nolist', 'limit', 'referer', 'file', 'thumbs',
 		'field'
 	);
+	if (!isset($brick['page']['head'])) $brick['page']['head'] = '';
+	$brick['page']['head'] .= $brick['setting']['brick_template_function']('zzform-head', $brick['setting']);
 
 	// start zzform scripts
 	if ($auth) {
@@ -205,6 +209,7 @@ function brick_forms($brick) {
 	// goes through brick_format() again
 	$ops['output'] = str_replace('%%%', '&#37;&#37;&#37;', $ops['output']);
 	$brick['page']['text'][$brick['position']] .= $ops['output'];
+	$brick['page']['text'][$brick['position']] .= $brick['setting']['brick_template_function']('zzform-foot', $brick['setting']);
 	if (!empty($ops['title'])) {
 		$brick['page']['title'] = $ops['title'];
 		$brick['page']['dont_show_h1'] = true;
