@@ -110,6 +110,10 @@ function brick_page($brick) {
 		case 'project':
 			$content = $zz_conf['project'];
 			break;
+		case 'logged_in':
+			if (empty($_SESSION['logged_in'])) $content = false;
+			else $content = true;
+			break;
 		default:
 			if (empty($zz_page['db'][$brick_var])) break;
 			$content = $zz_page['db'][$brick_var];
