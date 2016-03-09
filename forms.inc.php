@@ -146,6 +146,11 @@ function brick_forms($brick) {
 		return $brick;
 	}
 
+	if (!empty($_POST) AND !empty($_POST['httpRequest']) AND $_POST['httpRequest'] === 'zzform') {
+		$brick['page'] = brick_xhr($_POST, $zz);
+		return $brick;
+	}
+
 	// set allowed params
 	$brick['page']['query_strings'] = array(
 		'mode', 'q', 'id', 'source_id', 'scope', 'filter', 'where', 'order',
