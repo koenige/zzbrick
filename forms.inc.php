@@ -8,7 +8,7 @@
  * http://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2009-2015 Gustaf Mossakowski
+ * @copyright Copyright © 2009-2016 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -120,16 +120,6 @@ function brick_forms($brick) {
 		return $brick;
 	}
 	
-	// set allowed params
-	$brick['page']['query_strings'] = array(
-		'mode', 'q', 'id', 'source_id', 'scope', 'filter', 'where', 'order',
-		'dir', 'delete', 'insert', 'update', 'noupdate', 'zzhash', 'export',
-		'add', 'group', 'nolist', 'limit', 'referer', 'file', 'thumbs',
-		'field'
-	);
-	if (!isset($brick['page']['head'])) $brick['page']['head'] = '';
-	$brick['page']['head'] .= $brick['setting']['brick_template_function']('zzform-head', $brick['setting']);
-
 	// start zzform scripts
 	if ($auth) {
 		if (!empty($brick['setting']['brick_authentication_file'])) {
@@ -154,7 +144,19 @@ function brick_forms($brick) {
 		$brick['page']['error']['msg_vars'] = array($brick['form_script_path']);
 		$brick['page']['status'] = 503;
 		return $brick;
-	} elseif (!empty($zz['page'])) {
+	}
+
+	// set allowed params
+	$brick['page']['query_strings'] = array(
+		'mode', 'q', 'id', 'source_id', 'scope', 'filter', 'where', 'order',
+		'dir', 'delete', 'insert', 'update', 'noupdate', 'zzhash', 'export',
+		'add', 'group', 'nolist', 'limit', 'referer', 'file', 'thumbs',
+		'field'
+	);
+	if (!isset($brick['page']['head'])) $brick['page']['head'] = '';
+	$brick['page']['head'] .= $brick['setting']['brick_template_function']('zzform-head', $brick['setting']);
+
+	if (!empty($zz['page'])) {
 		foreach ($zz['page'] as $key => $value) {
 			if (empty($brick['page'][$key])) {
 				$brick['page'][$key] = $value;
