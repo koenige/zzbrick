@@ -8,7 +8,7 @@
  * http://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2010 Gustaf Mossakowski
+ * @copyright Copyright © 2010-2011, 2013, 2016 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -25,6 +25,7 @@
  * 		%%% loopposition middle|last "blubb" %%% 
  * 		%%% loopposition first|middle "|" %%%
  * 		%%% loopposition %5 "<br>" %%% (all 5 lines)
+ *		%%% loopposition counter %%% returns current line number
  * @param array $brick
  * @return array $brick
  * @author Gustaf Mossakowski <gustaf@koenige.org>
@@ -33,41 +34,52 @@ function brick_loopposition($brick) {
 	// check for loops only
 
 	if (empty($brick['loop_counter'])) return $brick;
-	if (count($brick['vars']) != 2) return $brick;
+	if (count($brick['vars']) < 1) return $brick;
+	$positions = explode('|', $brick['vars'][0]);
+	if (count($positions) !== 1 OR $positions[0] !== 'counter') {
+		// normally, two variables are required
+		if (count($brick['vars']) !== 2) return $brick;
+	} else {
+		// counter just requires itself as variable
+		if (count($brick['vars']) !== 1) return $brick;
+	}
 
 	$display = false;
-	$positions = explode('|', $brick['vars'][0]);
 	
 	$i = $brick['loop_all'] - $brick['loop_counter'] + 1;
 	foreach ($positions as $position) {
-		if ($position == 'first' AND $brick['loop_counter'] == $brick['loop_all']
+		if ($position === 'first' AND $brick['loop_counter'] === $brick['loop_all']
 			AND $brick['loop_all'] != 1)
 			$display = true;
-		elseif ($position == 'single' AND $brick['loop_counter'] == $brick['loop_all']
-			AND $brick['loop_all'] == 1)
+		elseif ($position === 'single' AND $brick['loop_counter'] === $brick['loop_all']
+			AND $brick['loop_all'] === 1)
 			$display = true;
-		elseif ($position == 'last' AND $brick['loop_counter'] == 1
+		elseif ($position === 'last' AND $brick['loop_counter'] === 1
 			AND $brick['loop_all'] != 1)
 			$display = true;
-		elseif ($position == 'middle' AND $brick['loop_counter'] != 1
+		elseif ($position === 'middle' AND $brick['loop_counter'] != 1
 			AND $brick['loop_counter'] != $brick['loop_all'])
 			$display = true;
-		elseif ($position == 'uneven' AND ($i & 1))
+		elseif ($position === 'uneven' AND ($i & 1))
 			$display = true;
-		elseif ($position == 'odd' AND ($i & 1))
+		elseif ($position === 'odd' AND ($i & 1))
 			$display = true;
-		elseif ($position == 'even' AND !($i & 1))
+		elseif ($position === 'even' AND !($i & 1))
 			$display = true;
-		elseif (substr($position, 0, 1) == '%') {
+		elseif ($position === 'counter')
+			$display = $i;
+		elseif (substr($position, 0, 1) === '%') {
 			$num = intval(substr($position, 1));
 			if (!($i % $num)) $display = true;
 		}
 	}
-	if (!$display) return $brick;
+	if ($display === false) return $brick;
 	if (empty($brick['page']['text'][$brick['position']]))
 		$brick['page']['text'][$brick['position']] = '';
-	$brick['page']['text'][$brick['position']] .= $brick['vars'][1];
+	if ($display === true) {
+		$brick['page']['text'][$brick['position']] .= $brick['vars'][1];
+	} else {
+		$brick['page']['text'][$brick['position']] .= $display;
+	}
 	return $brick;
 }
-
-?>
