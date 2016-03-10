@@ -148,6 +148,9 @@ function brick_forms($brick) {
 
 	if (!empty($_POST) AND !empty($_POST['httpRequest']) AND $_POST['httpRequest'] === 'zzform') {
 		$brick['page'] = brick_xhr($_POST, $zz);
+		$text = $brick['page']['text'];
+		unset($brick['page']['text']);
+		$brick['page']['text'][$brick['position']] = $text;
 		return $brick;
 	}
 
