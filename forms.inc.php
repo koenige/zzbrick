@@ -151,6 +151,9 @@ function brick_forms($brick) {
 		$text = $brick['page']['text'];
 		unset($brick['page']['text']);
 		$brick['page']['text'][$brick['position']] = $text;
+		$brick['position'] = '_hidden_'; // hide rest of text
+		$brick['page']['text'][$brick['position']] = '';
+		$brick['page']['replace_db_text'] = true;
 		return $brick;
 	}
 
