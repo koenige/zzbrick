@@ -22,11 +22,12 @@
  * example: 
  *		%%% redirect http://www.example.org/ %%%
  *		%%% redirect /path/to/local.html %%%
- * @param array $brick	Array from zzbrick, in $brick['vars'][0] we need the new URL
+ *		%%% redirect 307 /path/to/local.html %%%
+ * @param array $brick	Array from zzbrick, in $brick['vars'][0] or [1] we need
+ *      the new URL, [0] might contain redirection code
  *		$brick['setting']['host_base'] will be used if set, must be something
  *		like http://www.example.org
  * @return array $brick['page']['error'] if false; this function exits if URL is correct
- * @author Gustaf Mossakowski <gustaf@koenige.org>
  */
 function brick_redirect($brick) {
 	// test if field is hidden
@@ -34,6 +35,11 @@ function brick_redirect($brick) {
 		return $brick;
 
 	// test if it's a valid URL
+	if (in_array($brick['vars'][0], array(301, 302, 303, 307))) {
+		$statuscode = array_shift($brick['vars']);	
+	} else {
+		$statuscode = 302;
+	}
 	if (brick_check_url($brick['vars'][0])) {
 		if (substr($brick['vars'][0], 0, 1) == '/') {
 			// Location needs an absolute URI
@@ -51,6 +57,9 @@ function brick_redirect($brick) {
 				$base .= $brick['setting']['base'];
 			}
 			$brick['vars'][0] = $base.$brick['vars'][0];
+		}
+		if (function_exists('wrap_http_status_header')) {
+			wrap_http_status_header($statuscode);
 		}
 		header('Location: '.$brick['vars'][0]);
 		exit;
@@ -97,7 +106,6 @@ function brick_check_url($url) {
  * This function is part of zzform, there it is called zz_is_url()
  * @param string $url	URL to be tested, only absolute URLs
  * @return string url if correct, or false
- * @author Gustaf Mossakowski <gustaf@koenige.org>
  */
 function brick_is_url($url) {
 	// @todo: give back which part of URL is incorrect
