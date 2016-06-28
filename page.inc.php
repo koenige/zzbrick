@@ -90,6 +90,7 @@ function brick_page($brick) {
 		}
 	} else {
 		// other special cases
+		// @deprecated, use 'setting' instead of 'page'
 		switch ($brick_var) {
 		case 'charset':
 			$content = $zz_conf['character_set'];
