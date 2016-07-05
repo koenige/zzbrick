@@ -162,7 +162,7 @@ function brick_forms($brick) {
 		'mode', 'q', 'id', 'source_id', 'scope', 'filter', 'where', 'order',
 		'dir', 'delete', 'insert', 'update', 'noupdate', 'zzhash', 'export',
 		'add', 'group', 'nolist', 'limit', 'referer', 'file', 'thumbs',
-		'field'
+		'field', 'zz'
 	);
 	if (!isset($brick['page']['head'])) $brick['page']['head'] = '';
 	$brick['page']['head'] .= $brick['setting']['brick_template_function']('zzform-head', $brick['setting']);
