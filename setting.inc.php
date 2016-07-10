@@ -19,6 +19,7 @@
  * examples: 
  * 		%%% setting hostname %%% 
  * 		%%% setting behaviour_path %%% 
+ * 		%%% setting local_access ".local" %%% 
  * @param array $brick
  * @return array $brick
  */
@@ -27,7 +28,7 @@ function brick_setting($brick) {
 	global $zz_conf;
 	
 	if (empty($brick['vars'][0])) return $brick;
-	if (count($brick['vars']) !== 1) return $brick;
+	if (count($brick['vars']) > 2) return $brick;
 
 	$pos = $brick['position'];
 	if (!isset($brick['page']['text'][$pos]))
@@ -64,7 +65,15 @@ function brick_setting($brick) {
 			break;
 		}
 	}
-	$brick['page']['text'][$pos] .= $content;
+	if (!empty($brick['vars'][0]) AND $content) {
+		// formatting to be done, there is some HTML and a value
+		$brick['vars'][0] = brick_translate($brick['vars'][0], $brick['setting']);
+		$brick['page']['text'][$pos] .= 
+			sprintf($brick['vars'][0], $content);
+	} else {
+		// no formatting or no value
+		$brick['page']['text'][$pos] .= $content;
+	}
 	
 	// write value to parameter for later use with conditions in page template
 	if (!is_array($brick['parameter'])) $brick['parameter'] = array($brick['parameter']);
