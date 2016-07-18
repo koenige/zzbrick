@@ -34,9 +34,9 @@ function brick_condition($brick) {
 	static $i;
 	if (!$i) $i = 0;
 
-	$if_page = false;
-	if (count($brick['vars']) === 3 AND $brick['vars'][1] === 'page') {
-		$if_page = true;
+	$if = false;
+	if (count($brick['vars']) === 3 AND in_array($brick['vars'][1], array('page', 'setting'))) {
+		$if = $brick['vars'][1];
 	}
 	
 	// default translations, cannot be changed
@@ -57,9 +57,9 @@ function brick_condition($brick) {
 
 	// check if item is empty or not
 	$content = false;
-	if ($if_page) {
+	if ($if) {
 		array_shift($brick['vars']);
-		$req = brick_format('%%% page '.$brick['vars'][0].' %%%', $brick['parameter']);
+		$req = brick_format('%%% '.$if.' '.$brick['vars'][0].' %%%', $brick['parameter']);
 		$item[$brick['vars'][0]] = $req['text'];
 	} elseif (!empty($brick['loop_parameter'])) {
 		$item = &$brick['loop_parameter'];
