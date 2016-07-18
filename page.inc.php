@@ -27,10 +27,9 @@
  * 		%%% page lang %%% 
  * 		%%% page nav %%% 
  * 		%%% page year %%% 
- * 		%%% page last_update "<p>Page last updated at %s.</p>' %%% 
+ * 		%%% page last_update "<p>Page last updated at %s.</p>" %%% 
  * @param array $brick
  * @return array $brick
- * @author Gustaf Mossakowski <gustaf@koenige.org>
  */
 function brick_page($brick) {
 	if (empty($brick['vars'][0])) return false;
