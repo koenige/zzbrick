@@ -8,7 +8,7 @@
  * http://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2009-2012, 2014-2015 Gustaf Mossakowski
+ * @copyright Copyright © 2009-2012, 2014-2016 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -609,7 +609,14 @@ function brick_request_link(&$media, $placeholder, $field_name) {
 		$size = array_pop($placeholder);
 		if ($size AND in_array($size, array_keys($zz_setting['media_sizes']))) {
 			$medium['size'] = $size;
+			$medium['width'] = $zz_setting['media_sizes'][$size]['width'];
+			$medium['height'] = $zz_setting['media_sizes'][$size]['height'];
 			$medium['path'] = $zz_setting['media_sizes'][$medium['size']]['path'];
+			foreach ($zz_setting['media_sizes'] as $medium_size) {
+				if ($medium_size['width'] > $medium['width']) {
+					$medium['bigger_size_available'] = true;
+				}
+			}
 		} elseif (count($placeholder) > 1) {
 			$medium['size'] = 'invalid';
 		}
