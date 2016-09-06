@@ -46,23 +46,6 @@ function brick_setting($brick) {
 		case 'charset':
 			$content = $zz_conf['character_set'];
 			break;
-		case 'year':
-			$content = date('Y');
-			break;
-		case 'url_path':
-			$content = $zz_page['url']['full']['path'];
-			break;
-		case 'project':
-			$content = $zz_conf['project'];
-			break;
-		case 'logged_in':
-			if (empty($_SESSION['logged_in'])) $content = false;
-			else $content = true;
-			break;
-		default:
-			if (empty($zz_page['db'][$brick_var])) break;
-			$content = $zz_page['db'][$brick_var];
-			break;
 		}
 	}
 	if (!empty($brick['vars'][0]) AND $content) {
