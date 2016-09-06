@@ -89,27 +89,12 @@ function brick_page($brick) {
 		}
 	} else {
 		// other special cases
-		// @deprecated, use 'setting' instead of 'page'
 		switch ($brick_var) {
-		case 'charset':
-			$content = $zz_conf['character_set'];
-			break;
 		case 'year':
 			$content = date('Y');
 			break;
-		case 'base':
-		case 'hostname':
-		case 'host_base':
-		case 'behaviour_path':
-		case 'layout_path':
-		case 'protocol':
-			$content = $brick['setting'][$brick_var];
-			break;
 		case 'url_path':
 			$content = $zz_page['url']['full']['path'];
-			break;
-		case 'project':
-			$content = $zz_conf['project'];
 			break;
 		case 'logged_in':
 			if (empty($_SESSION['logged_in'])) $content = false;
