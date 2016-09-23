@@ -102,7 +102,7 @@
  * http://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2009-2015 Gustaf Mossakowski
+ * @copyright Copyright © 2009-2016 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -559,7 +559,13 @@ function brick_translate($string, $settings) {
 	if (!strstr($string, "%{'")) return $string;
 	if (!isset($settings['brick_translate_text_function']))
 		$settings['brick_translate_text_function'] = 'wrap_text';
-	$string = preg_replace_callback("~%{'(.+?)'}%~", $settings['brick_translate_text_function'], $string);
+	$string = preg_replace_callback(
+		"~%{'(.+?)'}%~",
+		function ($string) use ($settings) {
+			return $settings['brick_translate_text_function']($string[1]);
+		},
+		$string
+	);
 	return $string;
 }
 
