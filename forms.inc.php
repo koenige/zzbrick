@@ -165,7 +165,9 @@ function brick_forms($brick) {
 		'field', 'zz'
 	);
 	if (!isset($brick['page']['head'])) $brick['page']['head'] = '';
-	$brick['page']['head'] .= $brick['setting']['brick_template_function']('zzform-head', $brick['setting']);
+	$brick['page']['head'] .= $brick['setting']['brick_template_function'](
+		'zzform-head', $brick['setting'], 'ignore positions'
+	);
 
 	if (!empty($zz['page'])) {
 		foreach ($zz['page'] as $key => $value) {
@@ -222,7 +224,9 @@ function brick_forms($brick) {
 	// goes through brick_format() again
 	$ops['output'] = str_replace('%%%', '&#37;&#37;&#37;', $ops['output']);
 	$brick['page']['text'][$brick['position']] .= $ops['output'];
-	$brick['page']['text'][$brick['position']] .= $brick['setting']['brick_template_function']('zzform-foot', $brick['setting']);
+	$brick['page']['text'][$brick['position']] .= $brick['setting']['brick_template_function'](
+		'zzform-foot', $brick['setting'], 'ignore positions'
+	);
 	if (!empty($ops['title'])) {
 		$brick['page']['title'] = $ops['title'];
 		$brick['page']['dont_show_h1'] = true;
