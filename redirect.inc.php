@@ -58,8 +58,9 @@ function brick_redirect($brick) {
 			}
 			$brick['vars'][0] = $base.$brick['vars'][0];
 		}
-		if (function_exists('wrap_http_status_header')) {
-			wrap_http_status_header($statuscode);
+		if (function_exists('wrap_redirect')) {
+			wrap_redirect($brick['vars'][0], $statuscode);
+			exit;
 		}
 		header('Location: '.$brick['vars'][0]);
 		exit;
