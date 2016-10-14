@@ -474,8 +474,15 @@ function brick_textformat($string, $type, $fulltextformat) {
 			foreach ($forms[0] as $index => $form) {
 				$text = str_replace($hash.sprintf("%04d", $index), $form, $text);
 			}
-			if ($fulltextformat === 'markdown')
-				$text = substr($text, 6, -7);
+			if ($fulltextformat === 'markdown') {
+				if (substr($text, 0, 18) === '<div markdown="1">') {
+					// new Markdown Lib does not replace <div markdown="1">
+					// if there was no markdown inside
+					$text = substr($text, 18, -7);
+				} else {
+					$text = substr($text, 6, -7);
+				}
+			}
 			return $text;
 		}
 	} else {
