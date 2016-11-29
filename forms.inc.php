@@ -162,7 +162,7 @@ function brick_forms($brick) {
 		'mode', 'q', 'id', 'source_id', 'scope', 'filter', 'where', 'order',
 		'dir', 'delete', 'insert', 'update', 'noupdate', 'zzhash', 'export',
 		'add', 'group', 'nolist', 'limit', 'referer', 'file', 'thumbs',
-		'field', 'zz', 'focus', 'edit', 'show'
+		'field', 'zz', 'focus', 'edit', 'show', 'revise'
 	);
 	if (!isset($brick['page']['head'])) $brick['page']['head'] = '';
 	$brick['page']['head'] .= $brick['setting']['brick_template_function'](
@@ -198,7 +198,7 @@ function brick_forms($brick) {
 	// Caching
 	$uncacheable = array(
 		'q', 'delete', 'insert', 'update', 'noupdate', 'zzhash', 'mode',
-		'thumbs', 'edit', 'show'
+		'thumbs', 'edit', 'show', 'revise'
 	);
 	foreach ($uncacheable as $query) {
 		if (!empty($_GET[$query])) {
