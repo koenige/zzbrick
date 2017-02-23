@@ -8,7 +8,7 @@
  * http://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2009-2016 Gustaf Mossakowski
+ * @copyright Copyright © 2009-2017 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -36,7 +36,6 @@
  * For the syntax of the table definition file, read the zzform documentation
  * @param array $brick	Array from zzbrick
  * @return array $brick
- * @author Gustaf Mossakowski <gustaf@koenige.org>
  */
 function brick_forms($brick) {
 	global $zz_conf;		// zzform configuration
@@ -234,6 +233,7 @@ function brick_forms($brick) {
 	}
 	if (!empty($ops['meta'])) $brick['page']['meta'] = $ops['meta'];
 	if (!empty($ops['status'])) $brick['page']['status'] = $ops['status'];
+	if (!empty($ops['error_type'])) $brick['page']['error_type'] = $ops['error_type'];
 	
 	if (!empty($zz_conf['breadcrumbs'])) {
 		foreach ($zz_conf['breadcrumbs'] as $breadcrumb) {
