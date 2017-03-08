@@ -102,7 +102,7 @@
  * http://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2009-2016 Gustaf Mossakowski
+ * @copyright Copyright © 2009-2017 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -509,12 +509,14 @@ function brick_textformat_html($string) {
  * @return array modified $page['head']
  */
 function brick_head_format($page, $setting) {
+	static $links;
 	$head = array();
 	$i = 0;
 	
 	if (empty($page['head'])) $page['head'] = '';
 	// @todo: insert $setting['page_base']; ? or do this in functions 
 	if (!empty($page['link'])) foreach ($page['link'] AS $rel => $link) {
+		if (!empty($links[$rel]) AND $links[$rel] === $link) continue;
 		if (!in_array(ucfirst($rel), $setting['html_link_types'])) continue;
 		foreach ($link as $index) {
 			if (!is_array($index)) continue;
@@ -526,6 +528,7 @@ function brick_head_format($page, $setting) {
 			$head[$i] .= '>';
 			$i++;
 		}
+		$links[$rel] = $link; // avoid duplicate links
 	}
 	if (!empty($page['meta'])) {
 		foreach ($page['meta'] as $index) {
