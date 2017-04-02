@@ -178,7 +178,7 @@ function brick_request_params($variables, $parameter) {
 
 	foreach ($variables as $var) {
 		if ($var === '*' OR substr($var, -1) === '*') {
-			if (!$parameter) {
+			if (!$parameter AND $parameter !== '0' AND $parameter !== 0) {
 				// return * as parameter, better than false, so you can
 				// catch this error and return with a 404
 				$parameter_for_function[] = '*';
@@ -209,7 +209,7 @@ function brick_request_params($variables, $parameter) {
 				$var_safe[] = substr($var, 0, -1);
 				$parameter_for_function[] = implode(" ", $var_safe);
 				$var_safe = array();
-			} elseif ($var) {
+			} elseif ($var OR $var === '0' OR $var === 0) {
 				// parameter like given to function but newly indexed
 				// ignore empty parameters
 				$parameter_for_function[] = $var;
