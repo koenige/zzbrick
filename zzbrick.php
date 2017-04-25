@@ -122,7 +122,7 @@
  		'title' => (string) pagetitle
  		'breadcrumbs' => (array) breadcrumbs, each breadcrumb has it's own index
  			might be 0 => '<a href="/">Page</a>' or
- 			0 => array('url_path' => '/', 'title' => 'Page')
+ 			0 => ['url_path' => '/', 'title' => 'Page']
  		'language_link' => (string) link to same page in other language (...)
  		'dont_show_h1' => (bool) zzwrap: do not repeat page title in h1
 		'no_page_head' => (bool) zzwrap: do not output page head
@@ -162,7 +162,7 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 	if (empty($brick['setting']['brick_default_position'])) 
 		$brick['setting']['brick_default_position'] = 'none';
 	if (empty($brick['setting']['brick_types_translated']))
-		$brick['setting']['brick_types_translated'] = array();
+		$brick['setting']['brick_types_translated'] = [];
 	if (empty($brick['setting']['brick_fulltextformat']))
 		$brick['setting']['brick_fulltextformat'] = '';
 	if (empty($brick['setting']['brick_custom_dir']))
@@ -175,8 +175,8 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 	$brick['page']['title'] = false;			// page title and h1 element
 	$brick['page']['head'] = false;				// something for the head section
 	$brick['page']['breadcrumbs'] = false;		// additional breadcrumbs
-	$brick['page']['authors'] = array();		// authors of page
-	$brick['page']['media'] = array();			// media linked from page
+	$brick['page']['authors'] = [];				// authors of page
+	$brick['page']['media'] = [];				// media linked from page
 	$brick['page']['language_link'] = false;	// language links to other language(s)
 	$brick['page']['status'] = 200;				// everything ok
 
@@ -195,16 +195,16 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 	$brick['page']['text'][$brick['position']] = false;
 
 	// standardize line breaks
-	$block = str_replace(array("\r\n", "\r"), "\n", $block);
+	$block = str_replace(["\r\n", "\r"], "\n", $block);
 	// cut content and query blocks
 	$blocks = explode('%%%', $block); 
 	unset($block);
 	
 	$i = 0;
-	$loop_start = array();
+	$loop_start = [];
 	$fast_forward = 0;
-	$loop_parameter = array();
-	$params = array();
+	$loop_parameter = [];
+	$params = [];
 
 	while (is_numeric(key($blocks))) { // used instead of foreach because we would like to jump back
 		$index = key($blocks);
@@ -241,7 +241,7 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 							// main record is not in a loop
 							$loop_parameter[$i] = $brick['parameter'][$brick['vars'][0]];
 						} else {
-							$loop_parameter[$i] = array();
+							$loop_parameter[$i] = [];
 							if (!empty($brick['vars'][2])) {
 								// output no data text
 								$brick['page']['text'][$brick['position']] .= $brick['vars'][2];
@@ -357,7 +357,7 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 		}
 	} elseif (!count($page['text']) AND $brick['access_forbidden']) {
 	// no text, access forbidden
-		$page = array(); // @todo: maybe unnecessary
+		$page = []; // @todo: maybe unnecessary
 		$page['status'] = 403;
 	} else {
 	// new
@@ -387,7 +387,7 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
  * @return $params
  */
 function brick_loop_range(&$vars, $params) {
-	if (!$params) return array();
+	if (!$params) return [];
 	if (empty($vars[1])) return $params;
 	if (!preg_match('/^[0-9-]+$/', $vars[1])) return $params;
 	if (strstr('-', $vars[1]) > 1) return $params;
@@ -510,7 +510,7 @@ function brick_textformat_html($string) {
  */
 function brick_head_format($page, $setting) {
 	static $links;
-	$head = array();
+	$head = [];
 	$i = 0;
 	
 	if (empty($page['head'])) $page['head'] = '';
@@ -581,16 +581,23 @@ function brick_translate($string, $settings) {
  * @param string $parameter
  * @return array $page
  */
-function brick_xhr($xmlHttpRequest, $parameter, $zz_setting = array()) {
+function brick_xhr($xmlHttpRequest, $parameter, $zz_setting = []) {
 	if (empty($zz_setting)) global $zz_setting;
 
 	$function = $xmlHttpRequest['httpRequest'];
 	$file = $zz_setting['custom'].'/zzbrick_xhr/'.$function.'.inc.php';
 	if (file_exists($file)) {
 		require_once $file;
-		$function = 'cms_xhr_'.$function;
+		$function = 'cms_xhr_'.str_replace('-', '_', $function);
 	} else {
+		$chosen_module = '';
+		if (strstr($function, '-')) {
+			$chosen_module = explode('-', $function);
+			$function = $chosen_module[1];
+			$chosen_module = $chosen_module[0];
+		}
 		foreach ($zz_setting['modules'] as $module) {
+			if ($chosen_module AND $module !== $chosen_module) continue;
 			if (file_exists($file = $zz_setting['modules_dir'].'/'.$module.'/zzbrick_xhr/'.$function.'.inc.php')) {
 				require_once $file;
 				$zz_setting['active_module'] = $module;
@@ -619,7 +626,7 @@ function brick_xhr($xmlHttpRequest, $parameter, $zz_setting = array()) {
  */
 function brick_local_settings($brick) {
 	// get settings out of parameters
-	$brick['local_settings'] = array();
+	$brick['local_settings'] = [];
 	$url_settings = array_reverse($brick['vars']);
 	foreach ($url_settings as $setting) {
 		// '=' is not an allowed symbol for a folder identifier
