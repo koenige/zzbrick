@@ -59,7 +59,7 @@ function brick_forms($brick) {
 		$brick['setting']['brick_template_function'] = 'wrap_template';
 	// allow default tables for inclusion, on demand only
 	if (!isset($brick['setting']['brick_default_tables']))
-		$brick['setting']['brick_default_tables'] = array();
+		$brick['setting']['brick_default_tables'] = [];
 	if (!isset($brick['setting']['zzform_colours']))
 		$brick['setting']['zzform_colours'] = true;
 
@@ -140,12 +140,12 @@ function brick_forms($brick) {
 		// no definitions for zzform, this will not work
 		$brick['page']['error']['level'] = E_USER_ERROR;
 		$brick['page']['error']['msg_text'] = 'No table definition for zzform found ($zz).';
-		$brick['page']['error']['msg_vars'] = array($brick['form_script_path']);
+		$brick['page']['error']['msg_vars'] = [$brick['form_script_path']];
 		$brick['page']['status'] = 503;
 		return $brick;
 	}
 
-	if (!empty($_POST) AND !empty($_POST['httpRequest']) AND $_POST['httpRequest'] === 'zzform') {
+	if (!empty($_POST) AND !empty($_POST['httpRequest']) AND substr($_POST['httpRequest'], 0, 6) === 'zzform') {
 		$brick['page'] = brick_xhr($_POST, $zz);
 		$text = $brick['page']['text'];
 		unset($brick['page']['text']);
@@ -157,12 +157,12 @@ function brick_forms($brick) {
 	}
 
 	// set allowed params
-	$brick['page']['query_strings'] = array(
+	$brick['page']['query_strings'] = [
 		'mode', 'q', 'id', 'source_id', 'scope', 'filter', 'where', 'order',
 		'dir', 'delete', 'insert', 'update', 'noupdate', 'zzhash', 'export',
 		'add', 'group', 'nolist', 'limit', 'referer', 'file', 'thumbs',
 		'field', 'zz', 'focus', 'edit', 'show', 'revise'
-	);
+	];
 	if (!isset($brick['page']['head'])) $brick['page']['head'] = '';
 	$brick['page']['head'] .= $brick['setting']['brick_template_function'](
 		'zzform-head', $brick['setting'], 'ignore positions'
@@ -195,10 +195,10 @@ function brick_forms($brick) {
 	$brick = brick_forms_wmd_editor($brick);
 	
 	// Caching
-	$uncacheable = array(
+	$uncacheable = [
 		'q', 'delete', 'insert', 'update', 'noupdate', 'zzhash', 'mode',
 		'thumbs', 'edit', 'show', 'revise'
-	);
+	];
 	foreach ($uncacheable as $query) {
 		if (!empty($_GET[$query])) {
 			$zz_setting['cache'] = false;
@@ -292,7 +292,7 @@ function brick_forms_file($brick) {
 				if (substr($var, 0, 1) === '.') $found = true;
 			}
 			if (!$found) {
-				$brick['vars'] = array();
+				$brick['vars'] = [];
 				return $brick;
 			}
 		}
