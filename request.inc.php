@@ -8,7 +8,7 @@
  * http://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2009-2012, 2014-2016 Gustaf Mossakowski
+ * @copyright Copyright © 2009-2012, 2014-2017 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -33,9 +33,9 @@ function brick_request($brick) {
 	if (empty($brick['subtype'])) 
 		$brick['subtype'] = '';
 	if (empty($brick['setting']['brick_request_shortcuts'])) 
-		$brick['setting']['brick_request_shortcuts'] = array();
+		$brick['setting']['brick_request_shortcuts'] = [];
 	if (empty($brick['setting']['brick_request_url_params'])) 
-		$brick['setting']['brick_request_url_params'] = array();
+		$brick['setting']['brick_request_url_params'] = [];
 	if (in_array($brick['subtype'], $brick['setting']['brick_request_shortcuts'])) {
 		array_unshift($brick['vars'], $brick['subtype']);
 		// to transport additional variables which are needed
@@ -46,12 +46,12 @@ function brick_request($brick) {
 	}
 	// supported export formats
 	if (empty($brick['setting']['brick_export_formats'])) {
-		$brick['setting']['brick_export_formats'] = array(
+		$brick['setting']['brick_export_formats'] = [
 			'html', 'xml', 'json', 'jsonl', 'csv'
-		);
+		];
 	}
 	if (!is_array($brick['setting']['brick_export_formats'])) {
-		$brick['setting']['brick_export_formats'] = array($brick['setting']['brick_export_formats']);
+		$brick['setting']['brick_export_formats'] = [$brick['setting']['brick_export_formats']];
 	}
 
 	$brick = brick_local_settings($brick);
@@ -81,7 +81,7 @@ function brick_request($brick) {
 		if (!function_exists($brick['request_function'])) {
 			$brick['page']['error']['level'] = E_USER_ERROR;
 			$brick['page']['error']['msg_text'] = 'The function "%s" is not supported by the CMS.';
-			$brick['page']['error']['msg_vars'] = array($brick['request_function']);
+			$brick['page']['error']['msg_vars'] = [$brick['request_function']];
 			$brick['text'] = false;
 			return $brick;
 		}
@@ -133,12 +133,12 @@ function brick_request($brick) {
 	}
 
 	// get some content from the function and overwrite existing values
-	$overwrite_bricks = array(
+	$overwrite_bricks = [
 		'title', 'dont_show_h1', 'language_link', 'no_page_head',
 		'no_page_foot', 'last_update', 'style', 'breadcrumbs', 'project',
 		'created', 'headers', 'url_ending', 'no_output', 'template',
 		'content_type', 'status', 'redirect'
-	);
+	];
 	// extra: for all individual needs, not standardized
 	foreach ($overwrite_bricks as $part) {
 		if (!empty($content[$part]))
@@ -146,13 +146,13 @@ function brick_request($brick) {
 	}
 
 	// get even more content from the function and merge with existing values
-	$merge_bricks = array(
+	$merge_bricks = [
 		'authors', 'media', 'head', 'extra', 'meta', 'link', 'error',
 		'query_strings'
-	);
+	];
 	foreach ($merge_bricks as $part) {
 		if (!empty($content[$part]) AND is_array($content[$part])) {
-			if (empty($brick['page'][$part])) $brick['page'][$part] = array();
+			if (empty($brick['page'][$part])) $brick['page'][$part] = [];
 			$brick['page'][$part] = array_merge($brick['page'][$part], $content[$part]);
 		} elseif (!empty($content[$part])) {
 			if (empty($brick['page'][$part])) $brick['page'][$part] = '';
@@ -173,8 +173,8 @@ function brick_request($brick) {
  * @author Gustaf Mossakowski <gustaf@koenige.org>
  */
 function brick_request_params($variables, $parameter) {
-	$parameter_for_function = array();
-	$var_safe = array();
+	$parameter_for_function = [];
+	$var_safe = [];
 
 	foreach ($variables as $var) {
 		if ($var === '*' OR substr($var, -1) === '*') {
@@ -208,7 +208,7 @@ function brick_request_params($variables, $parameter) {
 			elseif ($var_safe && substr($var, -1) == '"') {
 				$var_safe[] = substr($var, 0, -1);
 				$parameter_for_function[] = implode(" ", $var_safe);
-				$var_safe = array();
+				$var_safe = [];
 			} elseif ($var OR $var === '0' OR $var === 0) {
 				// parameter like given to function but newly indexed
 				// ignore empty parameters
@@ -245,11 +245,6 @@ function brick_request_cms($script, $params, $brick, $filetype = '') {
 	// brick_cms_input is variable to check where input comes from
 	if (empty($brick['setting']['brick_cms_input'])) 
 		$brick['setting']['brick_cms_input'] = '';
-
-	if (empty($brick['setting']['syndication_function'])) {
-		$brick['setting']['syndication_library'] = '/zzwrap/syndication.inc.php';
-		$brick['setting']['syndication_function'] = 'wrap_syndication_get';
-	}
 
 	if (in_array($brick['subtype'], $brick['setting']['brick_export_formats'])) {
 		$output_format = $brick['subtype'];
@@ -294,7 +289,7 @@ function brick_request_cms($script, $params, $brick, $filetype = '') {
 		case 'csv':
 			$content['error']['level'] = E_USER_NOTICE;
 			$content['error']['msg_text'] = 'No input data for %s was found. Probably function `%s` is missing.';
-			$content['error']['msg_vars'] = array($script, $brick['request_function']);
+			$content['error']['msg_vars'] = [$script, $brick['request_function']];
 			$content['status'] = 404;
 			return $content;
 			break;
@@ -340,7 +335,7 @@ function brick_request_cms($script, $params, $brick, $filetype = '') {
 	case 'jsonl':
 		$brick['text'] = '';
 		foreach ($data as $key => $line) {
-			$brick['text'] .= json_encode(array($key => $line))."\r\n";
+			$brick['text'] .= json_encode([$key => $line])."\r\n";
 		}
 		if (!$brick['text']) return false;
 		$brick['content_type'] = 'jsonl';
@@ -361,7 +356,7 @@ function brick_request_cms($script, $params, $brick, $filetype = '') {
 		if (!function_exists($brick['request_function'])) {
 			$content['error']['level'] = E_USER_ERROR;
 			$content['error']['msg_text'] = 'The function "%s" is not supported by the CMS.';
-			$content['error']['msg_vars'] = array($brick['request_function']);
+			$content['error']['msg_vars'] = [$brick['request_function']];
 			return $content;
 		}
 		return $brick['request_function']($data, $params, $brick['local_settings']);
@@ -448,17 +443,17 @@ function brick_request_script($script, $path) {
  * @param array $setting
  * @param array $params (optional)
  */
-function brick_request_external($script, $setting, $params = array()) {
+function brick_request_external($script, $setting, $params = []) {
 	$url = brick_request_url($script, $params, $setting);
 	if ($url === true) return true;
-	if (!$url) return array();
+	if (!$url) return [];
 
-	if (empty($setting['syndication_function'])) {
-		$setting['syndication_library'] = '/zzwrap/syndication.inc.php';
+	if (empty($setting['syndication_function']) AND !empty($setting['core'])) {
+		$setting['syndication_library'] = $setting['core'].'/syndication.inc.php';
 		$setting['syndication_function'] = 'wrap_syndication_get';
 	}
 
-	require_once $setting['lib'].$setting['syndication_library'];
+	require_once $setting['syndication_library'];
 	$data = $setting['syndication_function']($url, $setting['brick_cms_input']);
 	return $data;
 }
@@ -471,7 +466,7 @@ function brick_request_external($script, $setting, $params = array()) {
  * @param array $setting (optional)
  * @return array
  */
-function brick_request_url($script, $params = array(), $setting = array()) {
+function brick_request_url($script, $params = [], $setting = []) {
 	// get from URL
 	$params = implode('/', $params);
 	if (isset($setting['brick_json_source_url'][$script])) {
