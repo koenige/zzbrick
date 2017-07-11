@@ -632,6 +632,11 @@ function brick_local_settings($brick) {
 		// '=' is not an allowed symbol for a folder identifier
 		if (!strstr($setting, '=')) continue;
 		parse_str($setting, $new_settings);
+		foreach ($new_settings as $index => $new_setting) {
+			if (substr($new_setting, 0, 1) === '[' AND substr($new_setting, -1) === ']') {
+				$new_settings[$index] = explode(',', substr($new_setting, 1, -1));
+			}
+		}
 		if ($new_settings) {
 			$brick['local_settings'] = array_merge($brick['local_settings'], $new_settings);
 		}
