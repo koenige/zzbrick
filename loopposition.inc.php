@@ -8,7 +8,7 @@
  * http://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2010-2011, 2013, 2016 Gustaf Mossakowski
+ * @copyright Copyright © 2010-2011, 2013, 2016-2017 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -25,10 +25,10 @@
  * 		%%% loopposition middle|last "blubb" %%% 
  * 		%%% loopposition first|middle "|" %%%
  * 		%%% loopposition %5 "<br>" %%% (all 5 lines)
+ * 		%%% loopposition 5 "<br>" %%% (on line 5, counting starting with 1)
  *		%%% loopposition counter %%% returns current line number
  * @param array $brick
  * @return array $brick
- * @author Gustaf Mossakowski <gustaf@koenige.org>
  */
 function brick_loopposition($brick) {
 	// check for loops only
@@ -68,6 +68,8 @@ function brick_loopposition($brick) {
 			$display = true;
 		elseif ($position === 'counter')
 			$display = $i;
+		elseif (is_numeric($position) AND $position.'' === $i.'')
+			$display = true;
 		elseif (substr($position, 0, 1) === '%') {
 			$num = intval(substr($position, 1));
 			if (!($i % $num)) $display = true;
