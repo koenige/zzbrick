@@ -395,16 +395,9 @@ function brick_forms_geo_url($type = 'kml') {
 	$map_url = $url['path'];
 	if (!empty($url['query'])) {
 		parse_str($url['query'], $query);
-		if (isset($query['limit']) AND !$query['limit']) {
-			// don't set limit = 0 as this is default for export
-			unset($query['limit']);
-		} elseif (!isset($query['limit']))  {
-			$query['limit'] = $zz_conf['limit'];
-		}
+		// set no limit, default for export is to show all records
+		unset($query['limit']);
 		unset($query['referer']);
-	} else {
-		// no limit = default limit
-		$query['limit'] = $zz_conf['limit'];
 	}
 	$query['export'] = $type;
 	$map_url .= '?'.str_replace('&amp;', '&', http_build_query($query));
