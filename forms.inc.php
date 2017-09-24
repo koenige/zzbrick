@@ -416,21 +416,15 @@ function brick_forms_wmd_editor($brick) {
 
 	if (empty($zz_conf['wmd_editor'])) return $brick;
 	if ($zz_conf['wmd_editor'] === true) return $brick;
-	$head  = '<script type="text/javascript" src="%s/pagedown/Markdown.Converter.js"></script>'."\n";
-	$head .= '<script type="text/javascript" src="%s/pagedown/Markdown.Sanitizer.js"></script>'."\n";
-	$head .= '<script type="text/javascript" src="%s/pagedown/Markdown.Editor.js"></script>'."\n";
+	
+	$pagedown = [];
 	if (!empty($zz_conf['wmd_editor_languages'])) {
 		if (in_array($zz_conf['language'], $zz_conf['wmd_editor_languages'])) {
-			$head .= sprintf('<script type="text/javascript" src="%s/pagedown/local/Markdown.local.de.js" charset="utf-8"></script>'."\n",
-				$brick['setting']['behaviour_path']
-			);
+			$pagedown['language'] = $zz_conf['language'];
 		}
 	}
-	$head = sprintf($head, $brick['setting']['behaviour_path'],
-		$brick['setting']['behaviour_path'], $brick['setting']['behaviour_path']
-	);
 	if (!isset($brick['page']['head'])) $brick['page']['head'] = '';
-	$brick['page']['head'] .= $head;
+	$brick['page']['head'] .= wrap_template('pagedown-head', $pagedown);
 	return $brick;		
 }
 
