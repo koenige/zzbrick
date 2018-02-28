@@ -29,6 +29,9 @@
 function brick_explain($brick) {
 	$pos = $brick['position'];
 	if (!isset($brick['page']['text'][$pos])) $brick['page']['text'][$pos] = '';
+	foreach ($brick['vars'] as $index => $var) {
+		if (strstr($var, ' ')) $brick['vars'][$index] = sprintf('"%s"', $var);
+	}
 	$brick['page']['text'][$pos] .= '%\%\% '.implode(' ', $brick['vars']).' %\%\%';
 	return $brick;
 }
