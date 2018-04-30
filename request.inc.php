@@ -8,7 +8,7 @@
  * http://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2009-2012, 2014-2017 Gustaf Mossakowski
+ * @copyright Copyright © 2009-2012, 2014-2018 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -26,7 +26,6 @@
  * @param array $brick	Array from zzbrick
  *	- brick_export_formats = html, xml, json
  * @return array $brick
- * @author Gustaf Mossakowski <gustaf@koenige.org>
  */
 function brick_request($brick) {
 	// shortcuts
@@ -56,8 +55,16 @@ function brick_request($brick) {
 
 	$brick = brick_local_settings($brick);
 	
-	if (file_exists($brick['path'].'/_common.inc.php'))
+	if (file_exists($brick['path'].'/_common.inc.php')) {
+		// include modules _common.inc.php here if needed
 		require $brick['path'].'/_common.inc.php';
+	} elseif (!empty($brick['setting']['modules'])) {
+		foreach ($brick['setting']['modules'] as $module) {
+			if (file_exists($file = $brick['setting']['modules_dir'].'/'.$module.'/zzbrick_request/_common.inc.php')) {
+				require $file;
+			}
+		}
+	}
 
 	// get parameter for function
 	$filetype = '';
