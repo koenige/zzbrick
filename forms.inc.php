@@ -8,7 +8,7 @@
  * http://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2009-2017 Gustaf Mossakowski
+ * @copyright Copyright © 2009-2018 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -292,6 +292,15 @@ function brick_forms_file($brick) {
 	} elseif (!empty($brick['tables_path']) AND $brick['path'] !== $brick['tables_path']
 		AND file_exists($brick['tables_path'].'/_common.inc.php')) {
 		$brick['common_script_path'] = $brick['tables_path'].'/_common.inc.php';
+	} elseif (!empty($brick['setting']['modules'])) {
+		$dir = substr($brick['path'], strrpos($brick['path'], '/'));
+		$brick['common_script_path'] = '';
+		foreach ($brick['setting']['modules'] as $module) {
+			// just get first common script
+			if (!file_exists($file = $brick['setting']['modules_dir'].'/'.$module.$dir.'/_common.inc.php')) continue;
+			$brick['common_script_path'] = $file;
+			break;
+		}
 	} else {
 		$brick['common_script_path'] = '';
 	}
