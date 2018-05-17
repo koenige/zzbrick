@@ -102,7 +102,7 @@
  * http://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2009-2017 Gustaf Mossakowski
+ * @copyright Copyright © 2009-2018 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -633,12 +633,20 @@ function brick_local_settings($brick) {
 		if (!strstr($setting, '=')) continue;
 		parse_str($setting, $new_settings);
 		foreach ($new_settings as $index => $new_setting) {
-			if (substr($new_setting, 0, 1) === '[' AND substr($new_setting, -1) === ']') {
-				$new_settings[$index] = explode(',', substr($new_setting, 1, -1));
+			if (is_array($new_setting)) {
+				foreach ($new_setting as $nindex => $nnew_setting) {
+					if (substr($nnew_setting, 0, 1) === '[' AND substr($nnew_setting, -1) === ']') {
+						$new_settings[$index][$nindex] = explode(',', substr($nnew_setting, 1, -1));
+					}
+				}
+			} else {
+				if (substr($new_setting, 0, 1) === '[' AND substr($new_setting, -1) === ']') {
+					$new_settings[$index] = explode(',', substr($new_setting, 1, -1));
+				}
 			}
 		}
 		if ($new_settings) {
-			$brick['local_settings'] = array_merge($brick['local_settings'], $new_settings);
+			$brick['local_settings'] = array_merge_recursive($brick['local_settings'], $new_settings);
 		}
 		array_pop($brick['vars']);
 	}
