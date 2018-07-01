@@ -24,7 +24,6 @@
  * @return array $brick
  */
 function brick_setting($brick) {
-	global $zz_page;
 	global $zz_conf;
 	
 	if (empty($brick['vars'][0])) return $brick;
