@@ -220,20 +220,6 @@ function brick_forms($brick) {
 		}
 	}
 
-	// Export?
-	// @todo allow caching
-	if (!empty($ops['mode']) AND $ops['mode'] === 'export') {
-		// in export mode, there is no html, just pdf, csv or something else
-		// output it directly
-		foreach ($ops['headers'] as $index) {
-			foreach ($index as $bool => $header) {
-				header($header, $bool);
-			}
-		}
-		echo $ops['output'];
-		exit;
-	}
-
 	// replace %%% placeholders from zzbrick just in case the whole output
 	// goes through brick_format() again
 	$ops['output'] = str_replace('%%%', '&#37;&#37;&#37;', $ops['output']);
