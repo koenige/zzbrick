@@ -125,7 +125,7 @@ function brick_forms($brick) {
 			require_once $brick['setting']['brick_authentication_file'];
 			$brick['setting']['brick_authentication_function']();
 		}
-		if (!empty($_SESSION) AND empty($zz_conf['user']))
+		if (!empty($_SESSION) AND empty($zz_conf['user']) AND array_key_exists($brick['setting']['brick_username_in_session'], $_SESSION))
 			$zz_conf['user'] = $_SESSION[$brick['setting']['brick_username_in_session']];
 	}
 	require_once $zz_conf['dir'].'/zzform.php';
