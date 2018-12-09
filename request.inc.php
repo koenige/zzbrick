@@ -599,8 +599,8 @@ function brick_request_link(&$media, $placeholder, $field_name) {
 		$area = 'link';
 		break;
 	default:
-		// not supported
-		return '';
+		// not supported, return unchanged
+		return '%%% '.$area.' '.implode(' ', $placeholder).' %%%';
 	}
 	$mediakey = $area.'s';
 	$no = array_shift($placeholder);
