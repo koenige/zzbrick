@@ -8,7 +8,7 @@
  * http://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2009-2016 Gustaf Mossakowski
+ * @copyright Copyright © 2009-2016, 2019 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -25,8 +25,8 @@
  * 		%%% condition : %%% -- if !item =, this content will be shown
  * 		%%% condition - %%% -- resume normal operations (end) 
  * 		%%% condition ! %%% -- if !item , this will be shown
- * 		%%% condition itemcontent | itemcontent2 | itemconten2 %%% -- OR
- * 		%%% condition itemcontent & itemcontent2 & itemconten2 %%% -- AND
+ * 		%%% condition itemcontent | itemcontent2 | itemcontent2 %%% -- OR
+ * 		%%% condition itemcontent & itemcontent2 & itemcontent2 %%% -- AND
  * @param array $brick	Array from zzbrick
  * @return array $brick
  */
@@ -35,7 +35,8 @@ function brick_condition($brick) {
 	if (!$i) $i = 0;
 
 	$if = false;
-	if (count($brick['vars']) === 3 AND in_array($brick['vars'][1], array('page', 'setting'))) {
+	$if_keywords = ['page', 'setting'];
+	if (count($brick['vars']) === 3 AND in_array($brick['vars'][1], $if_keywords)) {
 		$if = $brick['vars'][1];
 	}
 	
@@ -59,8 +60,7 @@ function brick_condition($brick) {
 	$content = false;
 	if ($if) {
 		array_shift($brick['vars']);
-		$req = brick_format('%%% '.$if.' '.$brick['vars'][0].' %%%', $brick['parameter']);
-		$item[$brick['vars'][0]] = $req['text'];
+		$item[$brick['vars'][0]] = brick_condition_if($if, $brick['vars'][0], $brick['parameter']);
 	} elseif (!empty($brick['loop_parameter'])) {
 		$item = &$brick['loop_parameter'];
 	} else {
@@ -68,15 +68,42 @@ function brick_condition($brick) {
 	}
 	$operator = '';
 	if (count($brick['vars']) > 1) {
+		$error = false;
 		// possible: uneven number of brick vars, separated by | = or
 		// or & = and, currently no combination possible
-		$operator = $brick['vars'][1];
-		$brick_vars = array();
-		for ($j = 0; $j < count($brick['vars']); $j++) {
-			if ($j & 1) continue;
-			$brick_vars[] = $brick['vars'][$j];
+		if (in_array('|', $brick['vars'])) $operator = '|';
+		elseif (in_array('&', $brick['vars'])) $operator = '&';
+		if ($operator) {
+			$vars = implode(' ', $brick['vars']);
+			$vars = explode($operator, $vars);
+			foreach ($vars as $var) {
+				$var = trim($var);
+				$var = explode(' ', $var);
+				if (count($var) === 2) {
+					if (in_array($var[0], $if_keywords)) {
+						$item[$var[1]] = brick_condition_if($var[0], $var[1], $brick['parameter']);
+						$brick_vars[] = $var[1];
+					} else {
+						$brick_vars = [];
+						$error = true;
+					}
+				} else {
+					$brick_vars[] = $var[0];
+				}
+			}
+			$brick['vars'] = [];
+		} else {
+			$brick_vars = [];
+			$error = true;
 		}
-		$brick['vars'] = array();
+		if ($error) {
+			$brick['page']['error']['level'] = E_USER_NOTICE;
+			$brick['page']['error']['msg_text']
+				= 'There’s an error in one of the conditions in the template `%s`: too many variables are present.';
+			if (!empty($brick['setting']['current_template'])) {
+				$brick['page']['error']['msg_vars'] = $brick['setting']['current_template'];
+			}
+		}
 	} else {
 		$brick_vars[0] = array_shift($brick['vars']);
 	}
@@ -106,7 +133,8 @@ function brick_condition($brick) {
 	if ($i === 0) {
 		// this means the template is somehow wrong
 		$brick['page']['error']['level'] = E_USER_NOTICE;
-		$brick['page']['error']['msg_text'] = 'There’s an error in the nesting of conditions in the template `%s`: There are more endifs than ifs.';
+		$brick['page']['error']['msg_text']
+			= 'There’s an error in the nesting of conditions in the template `%s`: There are more endifs than ifs.';
 		if (!empty($brick['setting']['current_template'])) {
 			$brick['page']['error']['msg_vars'] = $brick['setting']['current_template'];
 		}
@@ -186,4 +214,17 @@ function brick_condition($brick) {
 		$brick['access_blocked'] = 'condition';
 	}
 	return $brick;
+}
+
+/**
+ * get content for if condition
+ *
+ * @param string $if
+ * @param string $vars
+ * @param array $parameter
+ * @return string
+ */
+function brick_condition_if($if, $vars, $parameter) {
+	$req = brick_format('%%% '.$if.' '.$vars.' %%%', $parameter);
+	return $req['text'];
 }
