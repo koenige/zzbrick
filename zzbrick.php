@@ -325,6 +325,15 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 		next($blocks);
 	}
 	foreach ($brick['page']['text'] as $index => $text) {
+		$last_line = '';
+		foreach ($text as $lineindex => $line) {
+			if (!$line) continue; // ignore empty lines without whitespace
+			if (substr($last_line, -2) === "\n\n" AND substr($line, 0, 2) === "\n\n")
+				$line = $text[$lineindex] = substr($line, 2);
+			elseif (substr($last_line, -1) === "\n" AND substr($line, 0, 1) === "\n")
+				$line = $text[$lineindex] = substr($line, 1);
+			$last_line = $line;
+		}
 		$brick['page']['text'][$index] = implode('', $text);
 	}
 
