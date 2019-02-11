@@ -8,7 +8,7 @@
  * http://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2009-2012, 2014-2018 Gustaf Mossakowski
+ * @copyright Copyright © 2009-2012, 2014-2019 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -110,33 +110,34 @@ function brick_request($brick) {
 	// check if there's some </p>text<p>, remove it for inline results of function
 	if (!empty($content['text']) AND !is_array($content['text'])) {
 		if (substr($content['text'], 0, 1) != '<' AND substr($content['text'], -1) != '>') {
-			if (substr(trim($brick['page']['text'][$brick['position']]), -4) == '</p>') {
-				$brick['page']['text'][$brick['position']] 
-					= substr(trim($brick['page']['text'][$brick['position']]), 0, -4).' ';
+			$last_block = array_pop($brick['page']['text'][$brick['position']]);
+			if (substr(trim($last_block), -4) === '</p>') {
+				$last_block = substr(trim($last_block), 0, -4).' ';
 				$brick['cut_next_paragraph'] = true;
 			}
+			$brick['page']['text'][$brick['position']][] = $last_block;
 		}
 	}
 
 	if (!empty($content['replace_db_text'])) {
 		// hide previous textblocks
 		$brick['replace_db_text'][$brick['position']] = true;
-		$brick['page']['text'][$brick['position']] = '';
+		$brick['page']['text'][$brick['position']] = [];
 	}
 
 	if (!empty($content['text']) AND is_array($content['text'])) {
 		foreach (array_keys($content['text']) AS $pos) {
 			if (empty($brick['page']['text'][$pos])) 
-				$brick['page']['text'][$pos] = '';
-			$brick['page']['text'][$pos] .= $content['text'][$pos];
+				$brick['page']['text'][$pos] = [];
+			$brick['page']['text'][$pos][] = $content['text'][$pos];
 		}
 	} elseif (!empty($content['text']))
-		$brick['page']['text'][$brick['position']] .= $content['text'];
+		$brick['page']['text'][$brick['position']][] = $content['text'];
 
 	if (!empty($content['replace_db_text'])) {
 		// hide next textblocks
 		$brick['position'] = '_hidden_';
-		$brick['page']['text'][$brick['position']] = '';
+		$brick['page']['text'][$brick['position']] = [];
 	}
 
 	// get some content from the function and overwrite existing values
@@ -177,7 +178,6 @@ function brick_request($brick) {
  * @param array $variables = parameter from %%%-brick
  * @param string $parameter = parameter from URL
  * @return array $parameter_for_function
- * @author Gustaf Mossakowski <gustaf@koenige.org>
  */
 function brick_request_params($variables, $parameter) {
 	$parameter_for_function = [];
@@ -206,13 +206,13 @@ function brick_request_params($variables, $parameter) {
 				$parameter_for_function = $url_parameters;
 			}
 		} else {
-			if (substr($var, 0, 1) == '"' && substr($var, -1) == '"')
+			if (substr($var, 0, 1) === '"' && substr($var, -1) === '"')
 				$parameter_for_function[] = substr($var, 1, -1);
-			elseif (substr($var, 0, 1) == '"')
+			elseif (substr($var, 0, 1) === '"')
 				$var_safe[] = substr($var, 1);
-			elseif ($var_safe && substr($var, -1) != '"') 
+			elseif ($var_safe && substr($var, -1) !== '"') 
 				$var_safe[] = $var;
-			elseif ($var_safe && substr($var, -1) == '"') {
+			elseif ($var_safe && substr($var, -1) === '"') {
 				$var_safe[] = substr($var, 0, -1);
 				$parameter_for_function[] = implode(" ", $var_safe);
 				$var_safe = [];
@@ -246,7 +246,6 @@ function brick_request_params($variables, $parameter) {
  * @param array $brick - settings for brick-scripts, here:
  *	- brick_cms_input = db, xml, json (defaults to db)
  * @return mixed output of function (html: $page; other cases: direct output, headers
- * @author Gustaf Mossakowski <gustaf@koenige.org>
  */
 function brick_request_cms($script, $params, $brick, $filetype = '') {
 	// brick_cms_input is variable to check where input comes from

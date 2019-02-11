@@ -8,7 +8,7 @@
  * http://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2009 Gustaf Mossakowski
+ * @copyright Copyright © 2009, 2019 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -25,7 +25,6 @@
  *		%%% language - %%%
  * @param array $brick	Array from zzbrick
  * @return array $brick
- * @author Gustaf Mossakowski <gustaf@koenige.org>
  */
 function brick_language($brick) {
 	global $zz_conf;
@@ -33,10 +32,10 @@ function brick_language($brick) {
 		// no language was defined
 		$access = true;
 	} else {
-		if ($brick['vars'][0] == '-') {
+		if ($brick['vars'][0] === '-') {
 			// stop negotiating languages
 			$access = true;
-		} elseif ($brick['vars'][0] == $brick['setting']['lang']) {
+		} elseif ($brick['vars'][0] === $brick['setting']['lang']) {
 			// language block is in correct language
 			$access = true;
 		} else {
@@ -59,11 +58,9 @@ function brick_language($brick) {
 			$brick['position_old'] = $brick['position'];
 		$brick['position'] = '_hidden_';
 		// initialize text at _hidden_ position
-		$brick['page']['text'][$brick['position']] = false;
+		$brick['page']['text'][$brick['position']] = [];
 		// block access scripts until this script unblocks access
 		$brick['access_blocked'] = 'language';
 	}
 	return $brick;
 }
-
-?>

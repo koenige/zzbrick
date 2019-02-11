@@ -8,7 +8,7 @@
  * http://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2016, 2018 Gustaf Mossakowski
+ * @copyright Copyright © 2016, 2018-2019 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -31,7 +31,7 @@ function brick_setting($brick) {
 
 	$pos = $brick['position'];
 	if (!isset($brick['page']['text'][$pos]))
-		$brick['page']['text'][$pos] = '';
+		$brick['page']['text'][$pos] = [];
 
 	$brick_var = str_replace('-', '_', array_shift($brick['vars']));
 	$content = '';
@@ -52,11 +52,11 @@ function brick_setting($brick) {
 	if (!empty($brick['vars'][0]) AND $content) {
 		// formatting to be done, there is some HTML and a value
 		$brick['vars'][0] = brick_translate($brick['vars'][0], $brick['setting']);
-		$brick['page']['text'][$pos] .= 
+		$brick['page']['text'][$pos][] = 
 			sprintf($brick['vars'][0], $content);
 	} else {
 		// no formatting or no value
-		$brick['page']['text'][$pos] .= $content;
+		$brick['page']['text'][$pos][] = $content;
 	}
 	
 	// write value to parameter for later use with conditions in page template

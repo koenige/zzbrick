@@ -8,7 +8,7 @@
  * http://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2009-2010 Gustaf Mossakowski
+ * @copyright Copyright © 2009-2010, 2019 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -30,7 +30,6 @@
  * 		%%% item comments "%s comments" 0 "0 comments" 1 "1 comment" %%% 
  * @param array $brick
  * @return array $brick
- * @author Gustaf Mossakowski <gustaf@koenige.org>
  */
 function brick_item($brick) {
 	if (empty($brick['vars'][0])) return false;
@@ -43,7 +42,7 @@ function brick_item($brick) {
 	}
 	// keep the standard position
 	$pos = $brick['position'];
-	if (!isset($brick['page']['text'][$pos])) $brick['page']['text'][$pos] = '';
+	if (!isset($brick['page']['text'][$pos])) $brick['page']['text'][$pos] = [];
 
 	$content = false;
 	$brick_var = str_replace('-', '_', array_shift($brick['vars']));
@@ -78,13 +77,13 @@ function brick_item($brick) {
 				}
 			}
 			$format = brick_translate($format, $brick['setting']);
-			$brick['page']['text'][$pos] .= sprintf($format, $content);
+			$brick['page']['text'][$pos][] = sprintf($format, $content);
 		} else {
-			$brick['page']['text'][$pos] .= $content;
+			$brick['page']['text'][$pos][] = $content;
 		}
 	} else {
 		// allow for (OR)
-		if (count($brick['vars']) == 3 AND $brick['vars'][1] == '|') {
+		if (count($brick['vars']) === 3 AND $brick['vars'][1] === '|') {
 			if ($content) {
 				// condition is true, choose first value (= nothing)
 				$content = '';
@@ -94,9 +93,7 @@ function brick_item($brick) {
 			}
 		}
 		// no formatting or no value
-		$brick['page']['text'][$pos] .= $content;
+		$brick['page']['text'][$pos][] = $content;
 	}
 	return $brick;
 }
-
-?>

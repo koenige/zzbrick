@@ -8,7 +8,7 @@
  * http://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2015, 2018 Gustaf Mossakowski
+ * @copyright Copyright © 2015, 2018-2019 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -24,14 +24,13 @@
  * 		will output %%% request test %%% in HTML
  * @param array $brick
  * @return array $brick
- * @author Gustaf Mossakowski <gustaf@koenige.org>
  */
 function brick_explain($brick) {
 	$pos = $brick['position'];
-	if (!isset($brick['page']['text'][$pos])) $brick['page']['text'][$pos] = '';
+	if (!isset($brick['page']['text'][$pos])) $brick['page']['text'][$pos] = [];
 	foreach ($brick['vars'] as $index => $var) {
 		if (strstr($var, ' ')) $brick['vars'][$index] = sprintf('"%s"', $var);
 	}
-	$brick['page']['text'][$pos] .= '%\%\% '.implode(' ', $brick['vars']).' %\%\%';
+	$brick['page']['text'][$pos][] = '%\%\% '.implode(' ', $brick['vars']).' %\%\%';
 	return $brick;
 }

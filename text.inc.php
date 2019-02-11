@@ -8,7 +8,7 @@
  * http://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2009, 2014 Gustaf Mossakowski
+ * @copyright Copyright © 2009, 2014, 2019 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -25,7 +25,6 @@
  * 		%%% text "We found %d items" item_count %%%
  * @param array $brick
  * @return array $brick
- * @author Gustaf Mossakowski <gustaf@koenige.org>
  */
 function brick_text($brick) {
 	// to translate text, you need to use a translation function
@@ -37,7 +36,7 @@ function brick_text($brick) {
 
 	// Translate text
 	if (!isset($brick['page']['text'][$brick['position']]))
-		$brick['page']['text'][$brick['position']] = '';
+		$brick['page']['text'][$brick['position']] = [];
 	$function = end($brick['vars']);
 	if (in_array($function, $brick['setting']['brick_formatting_functions'])) {
 		array_pop($brick['vars']);	
@@ -75,7 +74,7 @@ function brick_text($brick) {
 		$text = vsprintf($text, $params);
 	}
 	if ($function) $text = $function($text);
-	$brick['page']['text'][$brick['position']] .= $text;
+	$brick['page']['text'][$brick['position']][] = $text;
 	unset($brick['vars']);
 
 	return $brick;

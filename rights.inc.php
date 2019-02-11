@@ -8,7 +8,7 @@
  * http://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2009 Gustaf Mossakowski
+ * @copyright Copyright © 2009, 2019 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -30,7 +30,6 @@
  * 		%%% rights - %%% -- resume normal operations (end) 
  * @param array $brick	Array from zzbrick
  * @return array $brick
- * @author Gustaf Mossakowski <gustaf@koenige.org>
  */
 function brick_rights($brick) {
 	// default translations, cannot be changed
@@ -113,7 +112,7 @@ function brick_rights($brick) {
 			$brick['position_old'] = $brick['position'];
 		$brick['position'] = '_hidden_';
 		// initialize text at _hidden_ position
-		$brick['page']['text'][$brick['position']] = false;
+		$brick['page']['text'][$brick['position']] = [];
 		// ok, something is forbidden, will not be shown
 		// mark it as forbidden, so if nothing will be shown, we can
 		// answer with 403 forbidden
@@ -123,5 +122,3 @@ function brick_rights($brick) {
 	}
 	return $brick;
 }
-
-?>

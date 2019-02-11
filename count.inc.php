@@ -8,7 +8,7 @@
  * http://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2013 Gustaf Mossakowski
+ * @copyright Copyright © 2013, 2019 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -23,7 +23,6 @@
  *		%%% count media %%%
  * @param array $brick	Array from zzbrick
  * @return array
- * @author Gustaf Mossakowski <gustaf@koenige.org>
  */
 function brick_count($brick) {
 	if (count($brick['vars']) !== 1) return $brick;
@@ -32,9 +31,7 @@ function brick_count($brick) {
 	$number = count($brick['parameter'][$brick['vars'][0]]);
 
 	$pos = $brick['position'];
-	if (!isset($brick['page']['text'][$pos])) $brick['page']['text'][$pos] = '';
-	$brick['page']['text'][$pos] .= $number;
+	if (!isset($brick['page']['text'][$pos])) $brick['page']['text'][$pos] = [];
+	$brick['page']['text'][$pos][] = $number;
 	return $brick;
 }
-
-?>

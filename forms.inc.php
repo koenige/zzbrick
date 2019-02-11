@@ -8,7 +8,7 @@
  * http://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2009-2018 Gustaf Mossakowski
+ * @copyright Copyright © 2009-2019 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -149,9 +149,9 @@ function brick_forms($brick) {
 		$brick['page'] = brick_xhr($_POST, $zz);
 		$text = $brick['page']['text'];
 		unset($brick['page']['text']);
-		$brick['page']['text'][$brick['position']] = $text;
+		$brick['page']['text'][$brick['position']] = [$text];
 		$brick['position'] = '_hidden_'; // hide rest of text
-		$brick['page']['text'][$brick['position']] = '';
+		$brick['page']['text'][$brick['position']] = [];
 		$brick['page']['replace_db_text'] = true;
 		return $brick;
 	}
@@ -223,8 +223,8 @@ function brick_forms($brick) {
 	// replace %%% placeholders from zzbrick just in case the whole output
 	// goes through brick_format() again
 	$ops['output'] = str_replace('%%%', '&#37;&#37;&#37;', $ops['output']);
-	$brick['page']['text'][$brick['position']] .= $ops['output'];
-	$brick['page']['text'][$brick['position']] .= $brick['setting']['brick_template_function'](
+	$brick['page']['text'][$brick['position']][] = $ops['output'];
+	$brick['page']['text'][$brick['position']][] = $brick['setting']['brick_template_function'](
 		'zzform-foot', $brick['setting'], 'ignore positions'
 	);
 	if (!empty($ops['title'])) {

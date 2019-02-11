@@ -102,7 +102,7 @@
  * http://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2009-2018 Gustaf Mossakowski
+ * @copyright Copyright © 2009-2019 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -152,7 +152,6 @@
 	undocumented or not standardised:
  		'media' => (array) page media
  			'position' => array
- * @author Gustaf Mossakowski <gustaf@koenige.org>
  */
 function brick_format($block, $parameter = false, $zz_setting = false) {
 	if (empty($zz_setting)) global $zz_setting;
@@ -171,7 +170,7 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 		$brick['setting']['brick_module_dir'] = '/zzbrick_';
 
 	// initialize page variables
-	$brick['page']['text'] = false;				// textbody
+	$brick['page']['text'] = [];				// textbody
 	$brick['page']['title'] = false;			// page title and h1 element
 	$brick['page']['head'] = false;				// something for the head section
 	$brick['page']['breadcrumbs'] = false;		// additional breadcrumbs
@@ -192,7 +191,7 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 		$brick['setting']['url_parameter'] = $parameter;
 
 	// initialize text at given position
-	$brick['page']['text'][$brick['position']] = false;
+	$brick['page']['text'][$brick['position']] = [];
 
 	// standardize line breaks
 	$block = str_replace(["\r\n", "\r"], "\n", $block);
@@ -244,7 +243,7 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 							$loop_parameter[$i] = [];
 							if (!empty($brick['vars'][2])) {
 								// output no data text
-								$brick['page']['text'][$brick['position']] .= $brick['vars'][2];
+								$brick['page']['text'][$brick['position']][] = $brick['vars'][2];
 							}
 						}
 						$loop_parameter[$i] = brick_loop_range($brick['vars'], $loop_parameter[$i]);
@@ -257,7 +256,7 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 						$fast_forward++;
 					} else {
 						if (!empty($brick['vars'][1])) {
-							$brick['page']['text'][$brick['position']] .= $brick['vars'][1];
+							$brick['page']['text'][$brick['position']][] = $brick['vars'][1];
 						}
 						// set parameters for first loop, using most recently added loop parameters
 						$params[$i] = array_shift($loop_parameter[$i]);
@@ -296,7 +295,7 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 						$i--;
 						// closing HTML if there is something
 						if (!empty($brick['vars'][1]) AND $there_was_data)
-							$brick['page']['text'][$brick['position']] .= $brick['vars'][1];
+							$brick['page']['text'][$brick['position']][] = $brick['vars'][1];
 					}
 				}
 			} elseif (!$fast_forward) {
@@ -324,6 +323,9 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 			$brick = brick_format_textblock($brick, $block, $index);
 		}
 		next($blocks);
+	}
+	foreach ($brick['page']['text'] as $index => $text) {
+		$brick['page']['text'][$index] = implode('', $text);
 	}
 
 	$page = $brick['page'];
@@ -693,7 +695,7 @@ function brick_format_placeholderblock($brick) {
 		$brick = $function_name($brick);
 	} else {
 		// output error
-		$brick['page']['text'][$brick['position']].= '<p><strong class="error">Error: 
+		$brick['page']['text'][$brick['position']][] = '<p><strong class="error">Error: 
 			 '.$brick['type'].' is not a valid parameter.</strong></p>';
 	}
 
@@ -720,6 +722,6 @@ function brick_format_textblock($brick, $block, $index) {
 		$text_to_add = ' '.substr(trim($text_to_add), 3);
 		$brick['cut_next_paragraph'] = false;
 	}
-	$brick['page']['text'][$brick['position']] .= $text_to_add;
+	$brick['page']['text'][$brick['position']][] = $text_to_add;
 	return $brick;
 }

@@ -8,7 +8,7 @@
  * http://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2011, 2014 Gustaf Mossakowski
+ * @copyright Copyright © 2011, 2014, 2019 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -25,14 +25,13 @@
  * 		%%% link /some/internal/link "Link text" "title='title text'" %%% 
  * @param array $brick
  * @return array $brick
- * @author Gustaf Mossakowski <gustaf@koenige.org>
  */
 function brick_link($brick) {
 	if (count($brick['vars']) < 2) return $brick;
 	if (!isset($brick['setting']['nolink_template']))
 		$brick['setting']['nolink_template'] = '<strong>%s</strong>';
 	if (!isset($brick['page']['text'][$brick['position']]))
-		$brick['page']['text'][$brick['position']] = '';
+		$brick['page']['text'][$brick['position']] = [];
 
 	$text = '';
 	$link = $brick['setting']['base'].$brick['vars'][0];
@@ -45,6 +44,6 @@ function brick_link($brick) {
 		$template = '<a href="%s" %s>%s</a>';
 		$text = sprintf($template, $link, $brick['vars'][2], $brick['vars'][1]);
 	}
-	$brick['page']['text'][$brick['position']] .= $text;
+	$brick['page']['text'][$brick['position']][] = $text;
 	return $brick;
 }

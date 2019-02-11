@@ -209,7 +209,7 @@ function brick_condition($brick) {
 			$brick['position_old'] = $brick['position'];
 		$brick['position'] = '_hidden_';
 		// initialize text at _hidden_ position
-		$brick['page']['text'][$brick['position']] = false;
+		$brick['page']['text'][$brick['position']] = [];
 		// block access scripts until this script unblocks access
 		$brick['access_blocked'] = 'condition';
 	}

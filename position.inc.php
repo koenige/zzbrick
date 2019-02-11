@@ -8,7 +8,7 @@
  * http://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2009 Gustaf Mossakowski
+ * @copyright Copyright © 2009, 2019 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -25,7 +25,6 @@
  *		%%% position C 3 %%%
  * @param array $brick	Array from zzbrick
  * @return array $brick
- * @author Gustaf Mossakowski <gustaf@koenige.org>
  */
 function brick_position($brick) {
 	$brick['position'] = array_shift($brick['vars']);
@@ -33,10 +32,8 @@ function brick_position($brick) {
 	if (!empty($brick['vars']))
 		$brick['position'] .= array_shift($brick['vars']);
 	if (empty($brick['page']['text'][$brick['position']])) {
-		$brick['page']['text'][$brick['position']] = false; // initialisieren
+		$brick['page']['text'][$brick['position']] = []; // initialisieren
 		$brick['replace_db_text'][$brick['position']] = false;
 	}
 	return $brick;
 }
-
-?>
