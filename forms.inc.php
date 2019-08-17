@@ -393,6 +393,7 @@ function brick_forms_geo_url($type = 'kml') {
 		// set no limit, default for export is to show all records
 		unset($query['limit']);
 		unset($query['referer']);
+		unset($query['delete']);
 	}
 	$query['export'] = $type;
 	$map_url .= '?'.str_replace('&amp;', '&', http_build_query($query));
