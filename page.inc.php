@@ -37,7 +37,7 @@ function brick_page($brick) {
 	global $zz_conf;
 	
 	if (empty($brick['setting']['brick_page_shortcuts']))
-		$brick['setting']['brick_page_shortcuts'] = array();
+		$brick['setting']['brick_page_shortcuts'] = [];
 	if (empty($brick['subtype'])) 
 		$brick['subtype'] = '';
 	if (in_array($brick['subtype'], $brick['setting']['brick_page_shortcuts'])) {
@@ -68,7 +68,7 @@ function brick_page($brick) {
 		if (!function_exists($request)) {
 			$brick['page']['error']['level'] = E_USER_ERROR;
 			$brick['page']['error']['msg_text'] = 'The function "%s" is not supported by the CMS.';
-			$brick['page']['error']['msg_vars'] = array($request);
+			$brick['page']['error']['msg_vars'] = [$request];
 			return $brick;
 		}
 		break;
@@ -116,7 +116,7 @@ function brick_page($brick) {
 		$brick['page']['text'][$pos][] = $content;
 	}
 	// write value to parameter for later use with conditions in page template
-	if (!is_array($brick['parameter'])) $brick['parameter'] = array($brick['parameter']);
+	if (!is_array($brick['parameter'])) $brick['parameter'] = [$brick['parameter']];
 	$brick['parameter'][$brick_var] = $content;
 	return $brick;
 }

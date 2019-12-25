@@ -32,7 +32,7 @@ function brick_text($brick) {
 	if (!isset($brick['setting']['brick_translate_text_function']))
 		$brick['setting']['brick_translate_text_function'] = 'wrap_text';
 	if (!isset($brick['setting']['brick_formatting_functions']))
-		$brick['setting']['brick_formatting_functions'] = array();
+		$brick['setting']['brick_formatting_functions'] = [];
 
 	// Translate text
 	if (!isset($brick['page']['text'][$brick['position']]))
@@ -48,9 +48,9 @@ function brick_text($brick) {
 		$sprintf_params = $brick['vars'];
 	} else {
 		$text = implode(' ', $brick['vars']);
-		$sprintf_params = array();
+		$sprintf_params = [];
 	}
-	$matches = array();
+	$matches = [];
 	if (strstr($text, '{')) {
 		preg_match_all('/(%[a-z0-9$]+){([^}]+)}/', $text, $matches);
 		if ($matches) {
@@ -66,7 +66,7 @@ function brick_text($brick) {
 		} else {
 			$item = &$brick['parameter'];
 		}
-		$params = array();
+		$params = [];
 		foreach ($sprintf_params as $key) {
 			if (!isset($item[$key])) continue;
 			$params[] = $item[$key];

@@ -8,7 +8,7 @@
  * http://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2009-2013, 2016 Gustaf Mossakowski
+ * @copyright Copyright © 2009-2013, 2016, 2019 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -35,7 +35,7 @@ function brick_redirect($brick) {
 		return $brick;
 
 	// test if it's a valid URL
-	if (in_array($brick['vars'][0], array(301, 302, 303, 307))) {
+	if (in_array($brick['vars'][0], [301, 302, 303, 307])) {
 		$statuscode = array_shift($brick['vars']);	
 	} else {
 		$statuscode = 302;
@@ -68,7 +68,7 @@ function brick_redirect($brick) {
 	// ok, it's not a URL, we do not care, send an error and return
 	$brick['page']['error']['level'] = E_USER_NOTICE;
 	$brick['page']['error']['msg_text'] = '"%s" is not a valid URI.';
-	$brick['page']['error']['msg_vars'] = array($brick['vars'][0]);
+	$brick['page']['error']['msg_vars'] = [$brick['vars'][0]];
 	return $brick;
 }
 
@@ -109,8 +109,8 @@ function brick_check_url($url) {
  * @return string url if correct, or false
  */
 function brick_is_url($url) {
-	// @todo: give back which part of URL is incorrect
-	$possible_schemes = array('http', 'https', 'ftp', 'gopher');
+	// @todo give back which part of URL is incorrect
+	$possible_schemes = ['http', 'https', 'ftp', 'gopher'];
 	if (!$url) return false;
 	$parts = parse_url($url);
 	if (!$parts) return false;
