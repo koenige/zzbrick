@@ -8,7 +8,7 @@
  * http://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2009-2019 Gustaf Mossakowski
+ * @copyright Copyright © 2009-2020 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -153,6 +153,8 @@ function brick_forms($brick) {
 		$brick['position'] = '_hidden_'; // hide rest of text
 		$brick['page']['text'][$brick['position']] = [];
 		$brick['page']['replace_db_text'] = true;
+		$brick['page']['url_ending'] = 'ignore';
+		$brick['page']['query_strings'] = ['field_no', 'subtable_no'];
 		return $brick;
 	}
 
