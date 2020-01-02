@@ -147,15 +147,6 @@ function brick_forms($brick) {
 
 	if (!empty($_POST) AND !empty($_POST['httpRequest']) AND substr($_POST['httpRequest'], 0, 6) === 'zzform') {
 		$brick['page'] = brick_xhr($_POST, $zz);
-		$text = $brick['page']['text'];
-		unset($brick['page']['text']);
-		$brick['page']['text'][$brick['position']] = [$text];
-		$brick['position'] = '_hidden_'; // hide rest of text
-		$brick['page']['text'][$brick['position']] = [];
-		$brick['page']['replace_db_text'] = true;
-		$brick['page']['url_ending'] = 'ignore';
-		$brick['page']['query_strings'] = ['field_no', 'subtable_no'];
-		return $brick;
 	}
 
 	// set allowed params
@@ -165,6 +156,20 @@ function brick_forms($brick) {
 		'add', 'group', 'nolist', 'limit', 'referer', 'file', 'thumbs',
 		'field', 'zz', 'focus', 'edit', 'show', 'revise'
 	];
+
+	if (!empty($_POST) AND !empty($_POST['httpRequest']) AND substr($_POST['httpRequest'], 0, 6) === 'zzform') {
+		$text = $brick['page']['text'];
+		unset($brick['page']['text']);
+		$brick['page']['text'][$brick['position']] = [$text];
+		$brick['position'] = '_hidden_'; // hide rest of text
+		$brick['page']['text'][$brick['position']] = [];
+		$brick['page']['replace_db_text'] = true;
+		$brick['page']['url_ending'] = 'ignore';
+		$brick['page']['query_strings'][] = 'field_no';
+		$brick['page']['query_strings'][] = 'subtable_no';
+		return $brick;
+	}
+
 	if (!isset($brick['page']['head'])) $brick['page']['head'] = '';
 	$brick['page']['head'] .= $brick['setting']['brick_template_function'](
 		'zzform-head', $brick['setting'], 'ignore positions'
