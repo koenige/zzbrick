@@ -8,7 +8,7 @@
  * http://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2009-2012, 2014-2019 Gustaf Mossakowski
+ * @copyright Copyright © 2009-2012, 2014-2020 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -323,6 +323,10 @@ function brick_request_cms($script, $params, $brick, $filetype = '') {
 	if (is_array($data) AND array_key_exists('_setting', $data)) {
 		$setting = array_merge($setting, $data['_setting']);
 		unset($data['_setting']);
+	}
+	if (is_array($data) AND array_key_exists('_query_strings', $data)) {
+		$brick['query_strings'] = $data['_query_strings'];
+		unset($data['_query_strings']);
 	}
 	
 	// output data, depending on parameter
