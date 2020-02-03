@@ -102,7 +102,7 @@
  * http://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2009-2019 Gustaf Mossakowski
+ * @copyright Copyright © 2009-2020 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -618,7 +618,12 @@ function brick_xhr($xmlHttpRequest, $parameter, $zz_setting = []) {
 	if (!function_exists($function)) {
 		$page['status'] = 503;
 	} else {
-		$page['text'] = json_encode($function($xmlHttpRequest, $parameter));
+		$return = $function($xmlHttpRequest, $parameter);
+		if (!empty($return['_query_strings'])) {
+			$page['query_strings'] = $return['_query_strings'];
+			unset($return['_query_strings']);
+		}
+		$page['text'] = json_encode($return);
 		$page['status'] = 200;
 		$page['content_type'] = 'json';
 	}
