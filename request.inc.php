@@ -54,6 +54,8 @@ function brick_request($brick) {
 	}
 
 	$brick = brick_local_settings($brick);
+	if (!empty($brick['local_settings']['brick_request_cms']))
+		$brick['setting']['brick_request_cms'] = true;
 	
 	if (file_exists($brick['path'].'/_common.inc.php')) {
 		// include modules _common.inc.php here if needed
