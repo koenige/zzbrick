@@ -85,7 +85,11 @@ function brick_request($brick) {
 		// call function
 		$content = brick_request_cms($script, $function_params, $brick, $filetype);
 	} else {
-		$brick = brick_request_file($script, $brick);
+		if ($brick['subtype'] === 'make') {
+			$brick = brick_request_file($script, $brick, 'make');
+		} else {
+			$brick = brick_request_file($script, $brick);
+		}
 
 		if (!function_exists($brick['request_function'])) {
 			$brick['page']['error']['level'] = E_USER_ERROR;
@@ -381,7 +385,7 @@ function brick_request_cms($script, $params, $brick, $filetype = '') {
  *
  * @param string $script
  * @param array $brick
- * @param string $type (optional: false, 'get' or 'htmlout')
+ * @param string $type (optional: false, 'make', 'get' or 'htmlout')
  * @return array $brick
  *		'request_function' => function name if script was found, or false
  *		'active_module' => name of module, if applicable
@@ -409,6 +413,12 @@ function brick_request_file($script, $brick, $type = false) {
 		$brick['request_function'] = 'cms_htmlout_'.$script;
 		$path = $brick['path'];
 		$function_name = 'mod_%s_htmlout_%s';
+		break;
+	case 'make':
+		$brick['request_function'] = 'cms_make_'.$script;
+		$path = substr($brick['path'], 0, -7).'make';
+		$my_module_path = substr($my_module_path, 0, -7).'make';
+		$function_name = 'mod_%s_make_%s';
 		break;
 	default:
 		$brick['request_function'] = 'cms_'.$script;
