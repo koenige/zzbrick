@@ -8,7 +8,7 @@
  * http://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2016, 2018-2019 Gustaf Mossakowski
+ * @copyright Copyright © 2016, 2018-2020 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -37,6 +37,15 @@ function brick_setting($brick) {
 	$content = '';
 	if (array_key_exists($brick_var, $brick['setting']) AND !is_array($brick['setting'][$brick_var])) {
 		$content = $brick['setting'][$brick_var];
+	} elseif (substr($brick_var, 0, 11) === 'zzform_int_') {
+		$key = substr($brick_var, 11);
+		if (array_key_exists($key, $zz_conf['int'])) {
+			$content = $zz_conf['int'][$key];
+		} elseif (strpos($key, '_')) {
+			$key = explode('_', $key);
+			if (count($key) === 2 AND isset($zz_conf['int'][$key[0]][$key[1]]))
+				$content = $zz_conf['int'][$key[0]][$key[1]];
+		}
 	} elseif (array_key_exists($brick_var, $zz_conf) AND !is_array($zz_conf[$brick_var])) {
 		$content = $zz_conf[$brick_var];
 	} elseif (function_exists('wrap_get_setting') AND $s = wrap_get_setting($brick_var)) {
