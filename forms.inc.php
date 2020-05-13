@@ -423,8 +423,8 @@ function brick_forms_wmd_editor($brick) {
 	
 	$pagedown = [];
 	if (!empty($zz_conf['wmd_editor_languages'])) {
-		if (in_array($zz_conf['language'], $zz_conf['wmd_editor_languages'])) {
-			$pagedown['language'] = $zz_conf['language'];
+		if (in_array($brick['setting']['lang'], $zz_conf['wmd_editor_languages'])) {
+			$pagedown['language'] = $brick['setting']['lang'];
 		}
 	}
 	if (!isset($brick['page']['head'])) $brick['page']['head'] = '';
