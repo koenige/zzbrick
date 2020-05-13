@@ -131,7 +131,7 @@
 			last-modified header
 		'created' => (date) creation date of page
 		'project' => (string) project title; zzwrap: this will be output in
-			TITLE instead of $zz_conf['project']
+			TITLE instead of config variable 'project'
  		'status' => (int) http status code
 		'style' => (string) defines style of page, might be used to include
 			different page heads or footers, separate css files and so on
