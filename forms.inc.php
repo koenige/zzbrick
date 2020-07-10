@@ -167,6 +167,7 @@ function brick_forms($brick) {
 		$brick['page']['url_ending'] = 'ignore';
 		$brick['page']['query_strings'][] = 'field_no';
 		$brick['page']['query_strings'][] = 'subtable_no';
+		$brick['page']['query_strings'][] = 'rec';
 		$brick['page']['query_strings'][] = 'unrestricted';
 		$brick['page']['query_strings'][] = 'zz_id_value';
 		return $brick;
