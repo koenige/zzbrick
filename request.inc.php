@@ -580,6 +580,7 @@ function brick_request_links(&$text, &$media, $field_name) {
 		if ($index & 1) {
 			$part = trim($part);
 			$medium = explode(' ', $part);
+			$medium = brick_request_params($medium, '');
 			$formatted .= brick_request_link($media, $medium, $field_name);
 		} else {
 			$formatted .= ltrim($part);
@@ -602,19 +603,26 @@ function brick_request_links(&$text, &$media, $field_name) {
  */
 function brick_request_link(&$media, $placeholder, $field_name) {
 	global $zz_setting;
-
 	$area = array_shift($placeholder);
 	switch ($area) {
 	case 'bild':
 	case 'image':
 		$area = 'image';
+		$template = 'image'; // inline image
 		break;
 	case 'link':
+		$area = 'link';
+		$template = 'link'; // just plain link
+		break;
 	case 'doc':
 		$area = 'link';
+		$template = 'doc'; // link with anchor
 		break;
 	default:
 		// not supported, return unchanged
+		foreach ($placeholder as $index => $p) {
+			if (strstr($p, ' ')) $placeholder[$index] = sprintf('"%s"', $p);
+		}
 		return '%%% '.$area.' '.implode(' ', $placeholder).' %%%';
 	}
 	$mediakey = $area.'s';
@@ -623,29 +631,33 @@ function brick_request_link(&$media, $placeholder, $field_name) {
 		if ($medium[$field_name] != $no) continue;
 		unset($media[$mediakey][$medium_id]);
 		// last parameter = size
-		$size = array_pop($placeholder);
-		if ($size AND in_array($size, array_keys($zz_setting['media_sizes']))) {
-			$medium['size'] = $size;
-			$medium['width'] = $zz_setting['media_sizes'][$size]['width'];
-			$medium['height'] = $zz_setting['media_sizes'][$size]['height'];
-			$medium['path'] = $zz_setting['media_sizes'][$medium['size']]['path'];
-			foreach ($zz_setting['media_sizes'] as $medium_size) {
-				if ($medium_size['width'] > $medium['width']) {
-					$medium['bigger_size_available'] = true;
+		if ($area === 'image') {
+			$size = array_pop($placeholder);
+			if ($size AND in_array($size, array_keys($zz_setting['media_sizes']))) {
+				$medium['size'] = $size;
+				$medium['width'] = $zz_setting['media_sizes'][$size]['width'];
+				$medium['height'] = $zz_setting['media_sizes'][$size]['height'];
+				$medium['path'] = $zz_setting['media_sizes'][$medium['size']]['path'];
+				foreach ($zz_setting['media_sizes'] as $medium_size) {
+					if ($medium_size['width'] > $medium['width']) {
+						$medium['bigger_size_available'] = true;
+					}
 				}
+			} elseif (count($placeholder) > 1) {
+				$medium['size'] = 'invalid';
 			}
-		} elseif (count($placeholder) > 1) {
-			$medium['size'] = 'invalid';
-		}
-		// first parameter if there's still one = position
-		if (count($placeholder)) {
-			$medium['position'] = $placeholder[0];
+			// first parameter if there's still one = position
+			if (count($placeholder)) {
+				$medium['position'] = $placeholder[0];
+			}
+		} else {
+			$medium['custom_title'] = array_pop($placeholder);
 		}
 		// default path?
 		if (empty($medium['path']) AND !empty($zz_setting['default_media_size'])) {
 			$medium['path'] = $zz_setting['media_sizes'][$zz_setting['default_media_size']]['path'];
 		}
-		return wrap_template($area, $medium);
+		return wrap_template($template, $medium);
 	}
 	return '';
 }
