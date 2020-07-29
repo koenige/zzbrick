@@ -632,7 +632,14 @@ function brick_request_link(&$media, $placeholder, $field_name) {
 		unset($media[$mediakey][$medium_id]);
 		// last parameter = size
 		if ($area === 'image') {
+			if (count($placeholder) === 3)
+				$medium['custom_title'] = array_pop($placeholder);
 			$size = array_pop($placeholder);
+			if ($size AND !in_array($size, array_keys($zz_setting['media_sizes']))) {
+				// do not care about order of parameters position, size
+				$medium['position'] = $size;
+				$size = array_pop($placeholder);
+			}
 			if ($size AND in_array($size, array_keys($zz_setting['media_sizes']))) {
 				$medium['size'] = $size;
 				$medium['width'] = $zz_setting['media_sizes'][$size]['width'];
@@ -647,7 +654,7 @@ function brick_request_link(&$media, $placeholder, $field_name) {
 				$medium['size'] = 'invalid';
 			}
 			// first parameter if there's still one = position
-			if (count($placeholder)) {
+			if (count($placeholder) AND empty($medium['position'])) {
 				$medium['position'] = $placeholder[0];
 			}
 		} else {
