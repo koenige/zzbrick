@@ -26,11 +26,11 @@ function brick_set($brick) {
 	$brick = brick_local_settings($brick);
 	if (empty($brick['local_settings'])) return $brick;
 	
-	$overwrite_allow = ['content_type'];
-	foreach (array_keys($brick['local_settings']) as $key) {
-		if (!in_array($key, $overwrite_allow)) unset ($brick['local_settings'][$key]);
+	$overwrite_page = ['content_type', 'dont_show_h1', 'template'];
+	$overwrite_setting = ['brick_fulltextformat'];
+	foreach ($brick['local_settings'] as $key => $value) {
+		if (in_array($key, $overwrite_page)) $brick['page'][$key] = $value;
+		if (in_array($key, $overwrite_setting)) $brick['setting'][$key] = $value;
 	}
-	
-	$brick['page'] = array_merge($brick['page'], $brick['local_settings']);
 	return $brick;
 }
