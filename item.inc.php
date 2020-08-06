@@ -33,7 +33,6 @@
  */
 function brick_item($brick) {
 	if (empty($brick['vars'][0])) return false;
-	global $zz_conf;
 
 	if (!empty($brick['loop_parameter'])) {
 		$item = &$brick['loop_parameter'];
