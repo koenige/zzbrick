@@ -728,11 +728,15 @@ function brick_format_textblock($brick, $block, $index) {
 	if ($index AND substr($block, 0, 1) === "\n"
 		AND substr($block, 0, 2) != "\n\n")
 		$block = substr($block, 1);
-	$text_to_add = brick_textformat($block, 'pieces', $brick['setting']['brick_fulltextformat']);
-	// check if there's some </p>text<p>, remove it for inline results of function
-	if ($brick['cut_next_paragraph'] && substr(trim($text_to_add), 0, 3) === '<p>') {
-		$text_to_add = ' '.substr(trim($text_to_add), 3);
-		$brick['cut_next_paragraph'] = false;
+	if ($block) {
+		$text_to_add = brick_textformat($block, 'pieces', $brick['setting']['brick_fulltextformat']);
+		// check if there's some </p>text<p>, remove it for inline results of function
+		if ($brick['cut_next_paragraph'] && substr(trim($text_to_add), 0, 3) === '<p>') {
+			$text_to_add = ' '.substr(trim($text_to_add), 3);
+			$brick['cut_next_paragraph'] = false;
+		}
+	} else {
+		$text_to_add = '';
 	}
 	$brick['page']['text'][$brick['position']][] = $text_to_add;
 	return $brick;
