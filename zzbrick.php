@@ -203,6 +203,9 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 	$loop_parameter = [];
 	$params = [];
 
+	// check for includes
+	list($brick, $blocks) = brick_include($brick, $blocks);
+
 	while (is_numeric(key($blocks))) { // used instead of foreach because we would like to jump back
 		$index = key($blocks);
 		$block = $blocks[$index];
@@ -740,4 +743,47 @@ function brick_format_textblock($brick, $block, $index) {
 	}
 	$brick['page']['text'][$brick['position']][] = $text_to_add;
 	return $brick;
+}
+
+/**
+ * include other templates
+ *
+ * @param array $brick
+ * @param array $blocks
+ * @return array
+ */
+function brick_include($brick, $blocks = []) {
+	static $includes;
+	if (empty($includes)) $includes = [];
+
+	// not replaced include because of error? has no blocks
+	// @see brick_format_placeholderblock()
+	if (empty($blocks)) return $brick;
+
+	if (!isset($brick['setting']['brick_template_function']))
+		$brick['setting']['brick_template_function'] = 'wrap_template';
+
+	$pos = 0;
+	foreach ($blocks as $index => $block) {
+		$pos++;
+		if ($index & 1) {
+			$block = explode(' ', trim($block));
+			if ($block[0] !== 'include') continue;
+			$block[1] = trim($block[1]);
+			if (in_array($block[1], $includes)) {
+				$brick['page']['error']['level'] = E_USER_ERROR;
+				$brick['page']['error']['msg_text']
+					= 'Template %s includes itself';
+				$brick['page']['error']['msg_vars'] = $block[1];
+				return [$brick, $blocks];
+			}
+			$includes[] = $block[1];
+			$tpl = $brick['setting']['brick_template_function']($block[1], [], 'error');
+			$new_blocks = explode('%%%', $tpl);
+			list($brick, $new_blocks) = brick_include($brick, $new_blocks);
+			array_splice($blocks, $pos - 2, 3, $new_blocks);
+			$pos += count($new_blocks);
+		}
+	}
+	return [$brick, $blocks];
 }
