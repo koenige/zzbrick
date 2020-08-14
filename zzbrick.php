@@ -325,6 +325,9 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 		}
 		next($blocks);
 	}
+	
+	$brick = brick_blocks_cleanup($brick);
+
 	foreach ($brick['page']['text'] as $index => $text) {
 		$last_line = '';
 		foreach ($text as $lineindex => $line) {
@@ -786,4 +789,21 @@ function brick_include($brick, $blocks = []) {
 		}
 	}
 	return [$brick, $blocks];
+}
+
+/**
+ * move blocks from page text to blocks_definition
+ *
+ * @param array $blocks
+ * @return array
+ */
+function brick_blocks_cleanup($brick) {
+	if (empty($brick['blocks'])) return $brick;
+
+	foreach ($brick['blocks'] as $block) {
+		if (!array_key_exists('zzblock-'.$block, $brick['page']['text'])) continue;
+		$brick['blocks_definition'][$block] = $brick['page']['text']['zzblock-'.$block];
+		unset($brick['page']['text']['zzblock-'.$block]);
+	}
+	return $brick;
 }
