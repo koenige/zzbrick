@@ -56,7 +56,7 @@ function brick_item($brick) {
 			AND in_array($brick['vars'][0], $brick['setting']['brick_formatting_functions'])
 			AND function_exists($brick['vars'][0])) {
 			$format_function = array_shift($brick['vars']);
-			if (strstr($content, '%%%')) {
+			if (strstr($content, '%%%') AND empty($brick['setting']['no_brick_format_inside'])) {
 				$content = brick_format($content);
 				$content = $content['text'];
 			}
