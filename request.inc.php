@@ -452,7 +452,12 @@ function brick_request_file($script, $brick, $type = false) {
  */
 function brick_request_script($script, $path) {
 	$file = substr(strtolower($script), 0, strpos($script.'_', '_')).'.inc.php';
-	if (!file_exists($path.'/'.$file)) return false;
+	if (!file_exists($path.'/'.$file)) {
+		$file = strtolower(str_replace('_', '-', $script)).'.inc.php';
+		if (!file_exists($path.'/'.$file)) {
+			return false;
+		}
+	}
 	require_once $path.'/'.$file;
 	return true;
 }
