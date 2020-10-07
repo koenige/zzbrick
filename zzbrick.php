@@ -352,10 +352,12 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 	}
 	unset($page['text']['_hidden_']);
 	
+	$fulltextformat = $brick['setting']['brick_fulltextformat'];
+	
 	// check if it's html or different
 	if (!empty($page['content_type']) AND $page['content_type'] != 'html') {
 		// no formatting, if it's not HTML!
-		$brick['setting']['brick_fulltextformat'] = 'html';
+		$fulltextformat = 'html';
 		$brick['setting']['brick_default_position'] = 'none';
 	}
 	
@@ -363,11 +365,10 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 	// if position is not wanted, remove unnecessary complexity in array
 		if ($brick['setting']['brick_default_position'] === 'none') {
 			$page['text'] = brick_textformat($page['text']['none'], 'full', 
-				$brick['setting']['brick_fulltextformat']);
+				$fulltextformat);
 		} else {
 			$page['text'][$brick['setting']['brick_default_position']] 
-				= brick_textformat($page['text']['none'], 'full', 
-					$brick['setting']['brick_fulltextformat']);
+				= brick_textformat($page['text']['none'], 'full', $fulltextformat);
 			unset ($page['text']['none']);
 		}
 	} elseif (!count($page['text']) AND $brick['access_forbidden']) {
@@ -377,8 +378,7 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 	} else {
 	// new
 		foreach ($page['text'] AS $pos => $text) {
-			$page['text'][$pos] = brick_textformat($text, 'full', 
-				$brick['setting']['brick_fulltextformat']);
+			$page['text'][$pos] = brick_textformat($text, 'full', $fulltextformat);
 		}
 	}
 	// get stuff for page head in order
