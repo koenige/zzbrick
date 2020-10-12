@@ -525,6 +525,7 @@ function brick_textformat_html($string) {
  */
 function brick_head_format($page, $setting) {
 	static $links;
+	if (empty($links)) $links = [];
 	$head = [];
 	$i = 0;
 	
@@ -548,11 +549,14 @@ function brick_head_format($page, $setting) {
 	if (!empty($page['meta'])) {
 		foreach ($page['meta'] as $index) {
 			if (!is_array($index)) continue;
+			$unique = json_encode($index);
+			if (array_key_exists($unique, $links)) continue;
 			$head[$i] = '<meta';
 			foreach ($index as $attribute => $value)
 				$head[$i] .= ' '.$attribute.'="'.$value.'"';
 			if (!empty($zz_setting['xml_close_empty_tags'])) $head[$i] .= ' /';
 			$head[$i] .= '>';
+			$links[$unique] = true; // avoid duplicate meta tags
 			$i++;
 		}
 	}
