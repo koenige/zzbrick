@@ -34,7 +34,6 @@
 function brick_page($brick) {
 	if (empty($brick['vars'][0])) return false;
 	global $zz_page;
-	global $zz_conf;
 	
 	if (empty($brick['setting']['brick_page_shortcuts']))
 		$brick['setting']['brick_page_shortcuts'] = [];
@@ -77,6 +76,9 @@ function brick_page($brick) {
 	if ($request) {
 		// call function
 		$content = $request($brick['vars'], $page);
+		if (isset($page['media']) AND $page['media'] !== []) {
+			$brick['page']['media'] = $page['media'];
+		}
 	} elseif (!empty($page[$brick_var])) {
 		// we have it in $page, so return this.
 		if (is_array($page[$brick_var])) {
