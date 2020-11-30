@@ -704,7 +704,7 @@ function brick_format_placeholderblock($brick) {
 		return $brick;
 
 	// include file
-	$bricktype_file = dirname(__FILE__).'/'.$brick['type'].'.inc.php';
+	$bricktype_file = __DIR__.'/'.$brick['type'].'.inc.php';
 	$brick['path'] = $brick['setting']['brick_custom_dir'].$brick['type'];
 	$brick['module_path'] = $brick['setting']['brick_module_dir'].$brick['type'];
 	$function_name = 'brick_'.$brick['type'];
