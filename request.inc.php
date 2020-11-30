@@ -666,8 +666,22 @@ function brick_request_link(&$media, $placeholder, $field_name) {
 			$medium['custom_title'] = array_pop($placeholder);
 		}
 		// default path?
-		if (empty($medium['path']) AND !empty($zz_setting['default_media_size'])) {
-			$medium['path'] = $zz_setting['media_sizes'][$zz_setting['default_media_size']]['path'];
+		if (empty($medium['path'])) {
+			if (!empty($zz_setting['default_media_size'])) {
+				$medium['path'] = $zz_setting['media_sizes'][$zz_setting['default_media_size']]['path'];
+			} elseif (!empty($zz_setting['media_standard_image_size'])) {
+				$medium['path'] = $zz_setting['media_standard_image_size'];
+			}
+		}
+		if (empty($medium['path_x2'])) {
+			if (!empty($zz_setting['media_standard_image_size_x2'])) {
+				$medium['path_x2'] = $zz_setting['media_sizes'][$zz_setting['media_standard_image_size_x2']]['path'];
+			} elseif (!empty($medium['path'])) {
+				foreach ($zz_setting['media_sizes'] as $medium_size) {
+					if (is_numeric($medium['path']) AND $medium['path'] * 2 == $medium_size['path'])
+						$medium['path_x2'] = $medium_size['path'];
+				}
+			}
 		}
 		return wrap_template($template, $medium);
 	}
