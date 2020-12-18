@@ -8,7 +8,7 @@
  * http://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2015, 2019 Gustaf Mossakowski
+ * @copyright Copyright © 2015, 2019-2020 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -36,7 +36,8 @@ function brick_templatefields($brick) {
 
 function brick_templatefields_recursive($values) {
 	$i = 0;
-	if (!is_array($values)) return [];
+	$keys = [];
+	if (!is_array($values)) return $keys;
 	$first = key($values);
 	if (is_numeric($first)) {
 		$values = reset($values);
