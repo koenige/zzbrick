@@ -8,7 +8,7 @@
  * http://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2016, 2018-2020 Gustaf Mossakowski
+ * @copyright Copyright © 2016, 2018-2021 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -48,6 +48,9 @@ function brick_setting($brick) {
 		}
 	} elseif (array_key_exists($brick_var, $zz_conf) AND !is_array($zz_conf[$brick_var])) {
 		$content = $zz_conf[$brick_var];
+	} elseif (substr($brick_var, 0, 7) === 'zzform_'
+		AND array_key_exists(substr($brick_var, 7) , $zz_conf) AND !is_array($zz_conf[substr($brick_var, 7)])) {
+		$content = $zz_conf[substr($brick_var, 7)];
 	} elseif (function_exists('wrap_get_setting') AND $s = wrap_get_setting($brick_var)) {
 		$content = $s;
 	} else {
