@@ -8,7 +8,7 @@
  * http://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2009-2020 Gustaf Mossakowski
+ * @copyright Copyright © 2009-2021 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -309,6 +309,9 @@ function brick_forms_file($brick) {
 	if (count($brick['vars']) === 2) {
 		$brick['form_script_path'] = $brick['path'].'/'.implode('/', $brick['vars']).'.php';
 		if (file_exists($brick['form_script_path'])) {
+			$brick['page']['error']['level'] = E_USER_DEPRECATED;
+			$brick['page']['error']['msg_text'] = 'Using two variables `tables %s` is deprecated';
+			$brick['page']['error']['msg_vars'] = $brick['vars'];
 			$found = false;
 			foreach ($brick['vars'] as $var) {
 				if (substr($var, 0, 1) === '.') $found = true;
@@ -331,6 +334,11 @@ function brick_forms_file($brick) {
 	}
 	
 	$brick['form_script_path'] = $brick['path'].'/'.($folder ? $folder.'/' : '').$script.'.php';
+	// allow to use script without recursion
+	$backtrace = debug_backtrace();
+	foreach ($backtrace as $step) {
+		if ($step['file'] === $brick['form_script_path']) $brick['form_script_path'] = false;
+	}
 	if (file_exists($brick['form_script_path'])) return $brick;
 	
 	foreach ($brick['setting']['modules'] as $module) {
