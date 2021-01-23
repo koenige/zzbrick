@@ -647,14 +647,7 @@ function brick_request_link(&$media, $placeholder, $field_name) {
 			}
 			if ($size AND in_array($size, array_keys($zz_setting['media_sizes']))) {
 				$medium['size'] = $size;
-				$medium['width'] = $zz_setting['media_sizes'][$size]['width'];
-				$medium['height'] = $zz_setting['media_sizes'][$size]['height'];
-				$medium['path'] = $zz_setting['media_sizes'][$medium['size']]['path'];
-				foreach ($zz_setting['media_sizes'] as $medium_size) {
-					if ($medium_size['width'] > $medium['width']) {
-						$medium['bigger_size_available'] = true;
-					}
-				}
+				$medium['path'] = $zz_setting['media_sizes'][$size]['path'];
 			} elseif (count($placeholder) > 1) {
 				$medium['size'] = 'invalid';
 			}
@@ -684,6 +677,21 @@ function brick_request_link(&$media, $placeholder, $field_name) {
 			}
 		}
 		if (!empty($medium['position']) AND $medium['position'] === 'hidden') continue;
+		if (empty($medium['size']) AND !empty($medium['path'])) {
+			foreach ($zz_setting['media_sizes'] as $size => $medium_size) {
+				if ($medium_size['path'].'' !== $medium['path'].'') continue;
+				$medium['size'] = $size;
+			}
+		}
+		if (!empty($medium['size'])) {
+			$medium['max_width'] = $zz_setting['media_sizes'][$medium['size']]['width'];
+			$medium['max_height'] = $zz_setting['media_sizes'][$medium['size']]['height'];
+			foreach ($zz_setting['media_sizes'] as $medium_size) {
+				if ($medium_size['width'] > $medium['max_width']) {
+					$medium['bigger_size_available'] = true;
+				}
+			}
+		}
 		return wrap_template($template, $medium);
 	}
 	return '';
