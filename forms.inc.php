@@ -194,6 +194,9 @@ function brick_forms($brick) {
 	}
 	$zz_conf['show_output'] = false;
 	$ops = zzform($zz);
+	if (!empty($ops['html_fragment'])) {
+		$brick['page']['template'] = 'empty';
+	}
 	
 	// Map? Only in list-mode and if there are records
 	if (!empty($zz['geo_map_html']) AND $ops['mode'] === 'list_only' AND $ops['records_total']) {
