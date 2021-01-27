@@ -35,7 +35,10 @@ function brick_setting($brick) {
 
 	$brick_var = str_replace('-', '_', array_shift($brick['vars']));
 	$content = '';
-	if (array_key_exists($brick_var, $brick['setting']) AND !is_array($brick['setting'][$brick_var])) {
+	if ($brick_var === 'php') {
+		$content = !empty(ini_get($brick['vars'][0])) ? ini_get($brick['vars'][0]) : '';
+		array_shift($brick['vars']);
+	} elseif (array_key_exists($brick_var, $brick['setting']) AND !is_array($brick['setting'][$brick_var])) {
 		$content = $brick['setting'][$brick_var];
 	} elseif (substr($brick_var, 0, 11) === 'zzform_int_') {
 		$key = substr($brick_var, 11);
