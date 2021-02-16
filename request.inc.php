@@ -668,7 +668,10 @@ function brick_request_link(&$media, $placeholder, $field_name) {
 		}
 		if (empty($medium['path_x2'])) {
 			if (!empty($zz_setting['media_standard_image_size_x2'])) {
-				$medium['path_x2'] = $zz_setting['media_sizes'][$zz_setting['media_standard_image_size_x2']]['path'];
+				foreach ($zz_setting['media_sizes'] as $size => $medium_size) {
+					if ($medium_size['path'].'' !== $zz_setting['media_standard_image_size_x2'].'') continue;
+					$medium['path_x2'] = $medium_size['path'];
+				}
 			} elseif (!empty($medium['path'])) {
 				foreach ($zz_setting['media_sizes'] as $medium_size) {
 					if (is_numeric($medium['path']) AND $medium['path'] * 2 == $medium_size['path'])
