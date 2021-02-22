@@ -195,7 +195,12 @@ function brick_forms($brick) {
 	$zz_conf['show_output'] = false;
 	$ops = zzform($zz);
 	if (!empty($ops['html_fragment'])) {
-		$brick['page']['template'] = 'empty';
+		$output = [
+			'html' => $ops['output'],
+			'title' => $ops['title'],
+			'url' => $ops['redirect_url']
+		];
+		return wrap_send_text(json_encode($output), 'json', 200);
 	}
 	
 	// Map? Only in list-mode and if there are records
