@@ -615,6 +615,10 @@ function brick_request_link(&$media, $placeholder, $field_name) {
 		$area = 'image';
 		$template = 'image'; // inline image
 		break;
+	case 'video':
+		$area = 'video';
+		$template = 'video'; // inline video
+		break;
 	case 'link':
 		$area = 'link';
 		$template = 'link'; // just plain link
