@@ -157,7 +157,7 @@ function brick_forms($brick) {
 		'mode', 'q', 'id', 'source_id', 'scope', 'filter', 'where', 'order',
 		'dir', 'delete', 'insert', 'update', 'noupdate', 'zzhash', 'export',
 		'add', 'group', 'nolist', 'limit', 'referer', 'file', 'thumbs',
-		'field', 'zz', 'focus', 'edit', 'show', 'revise'
+		'field', 'zz', 'focus', 'edit', 'show', 'revise', 'zzmsg'
 	];
 
 	if (!empty($_POST) AND !empty($_POST['httpRequest']) AND substr($_POST['httpRequest'], 0, 6) === 'zzform') {
@@ -232,7 +232,7 @@ function brick_forms($brick) {
 	// Caching
 	$uncacheable = [
 		'q', 'delete', 'insert', 'update', 'noupdate', 'zzhash', 'mode',
-		'thumbs', 'edit', 'show', 'revise'
+		'thumbs', 'edit', 'show', 'revise', 'zzmsg'
 	];
 	foreach ($uncacheable as $query) {
 		if (!empty($_GET[$query])) {
