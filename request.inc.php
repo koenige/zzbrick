@@ -212,9 +212,9 @@ function brick_request_params($variables, $parameter) {
 				$parameter_for_function = $url_parameters;
 			}
 		} else {
-			if (substr($var, 0, 1) === '"' && substr($var, -1) === '"')
+			if (strlen($var) > 1 AND substr($var, 0, 1) === '"' && substr($var, -1) === '"')
 				$parameter_for_function[] = substr($var, 1, -1);
-			elseif (substr($var, 0, 1) === '"')
+			elseif ((strlen($var) > 1 OR empty($var_safe)) AND substr($var, 0, 1) === '"')
 				$var_safe[] = substr($var, 1);
 			elseif ($var_safe && substr($var, -1) !== '"') 
 				$var_safe[] = $var;
