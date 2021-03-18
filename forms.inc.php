@@ -5,7 +5,7 @@
  * Include forms via zzform scripts
  *
  * Part of »Zugzwang Project«
- * http://www.zugzwang.org/projects/zzbrick
+ * https://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
  * @copyright Copyright © 2009-2021 Gustaf Mossakowski
@@ -245,9 +245,6 @@ function brick_forms($brick) {
 	// goes through brick_format() again
 	$ops['output'] = str_replace('%%%', '&#37;&#37;&#37;', $ops['output']);
 	$brick['page']['text'][$brick['position']][] = $ops['output'];
-	$brick['page']['text'][$brick['position']][] = $brick['setting']['brick_template_function'](
-		'zzform-foot', $brick['setting'], 'ignore positions'
-	);
 	if (!empty($ops['title'])) {
 		$brick['page']['title'] = $ops['title'];
 		$brick['page']['dont_show_h1'] = true;
