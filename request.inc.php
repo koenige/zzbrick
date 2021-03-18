@@ -5,7 +5,7 @@
  * Requests
  *
  * Part of »Zugzwang Project«
- * http://www.zugzwang.org/projects/zzbrick
+ * https://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
  * @copyright Copyright © 2009-2012, 2014-2021 Gustaf Mossakowski
@@ -151,7 +151,7 @@ function brick_request($brick) {
 		'title', 'dont_show_h1', 'language_link',
 		'last_update', 'style', 'breadcrumbs', 'project',
 		'created', 'headers', 'url_ending', 'no_output', 'template',
-		'content_type', 'status', 'redirect'
+		'content_type', 'status', 'redirect', 'send_as_json', 'url'
 	];
 	// extra: for all individual needs, not standardized
 	foreach ($overwrite_bricks as $part) {
