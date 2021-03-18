@@ -99,10 +99,10 @@
  * 	- text - translates text string
  * 
  * Part of »Zugzwang Project«
- * http://www.zugzwang.org/projects/zzbrick
+ * https://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2009-2020 Gustaf Mossakowski
+ * @copyright Copyright © 2009-2021 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -176,6 +176,7 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 	$brick['page']['media'] = [];				// media linked from page
 	$brick['page']['language_link'] = false;	// language links to other language(s)
 	$brick['page']['status'] = 200;				// everything ok
+	$brick['page']['url'] = '';					// own URL for JS redirects
 
 	// further variables
 	$brick['access_forbidden'] = false;			// access is allowed
