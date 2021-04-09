@@ -823,7 +823,7 @@ function brick_blocks_cleanup($brick) {
 function brick_merge_page_bricks($brick, $content) {
 	// get some content from the function and overwrite existing values
 	$overwrite_bricks = [
-		'title', 'dont_show_h1', 'language_link',
+		'title', 'dont_show_h1', 'language_link', 'error_type'
 		'last_update', 'style', 'breadcrumbs', 'project',
 		'created', 'headers', 'url_ending', 'no_output', 'template',
 		'content_type', 'status', 'redirect', 'send_as_json', 'url'
