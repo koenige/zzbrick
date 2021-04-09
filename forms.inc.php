@@ -178,7 +178,7 @@ function brick_forms($brick) {
 
 	$zz_conf['show_output'] = false;
 	$ops = zzform($zz);
-	$brick = brick_merge_page_bricks($brick, $ops['page']);
+	$brick['page'] = brick_merge_page_bricks($brick['page'], $ops['page']);
 
 	// Map? Only in list-mode and if there are records
 	if (!isset($brick['page']['head'])) $brick['page']['head'] = '';

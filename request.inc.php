@@ -146,7 +146,7 @@ function brick_request($brick) {
 		$brick['page']['text'][$brick['position']] = [];
 	}
 
-	$brick = brick_merge_page_bricks($brick, $content);
+	$brick['page'] = brick_merge_page_bricks($brick['page'], $content);
 	return $brick;
 }
 

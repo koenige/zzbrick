@@ -816,21 +816,21 @@ function brick_blocks_cleanup($brick) {
 /**
  * merge existing $brick['page'] array with one returned from function
  *
- * @param array $brick
+ * @param array $page = $brick['page'] or similar
  * @param array $content
  * @return array merged $brick
  */
-function brick_merge_page_bricks($brick, $content) {
+function brick_merge_page_bricks($page, $content) {
 	// get some content from the function and overwrite existing values
 	$overwrite_bricks = [
-		'title', 'dont_show_h1', 'language_link', 'error_type'
+		'title', 'dont_show_h1', 'language_link', 'error_type',
 		'last_update', 'style', 'breadcrumbs', 'project',
 		'created', 'headers', 'url_ending', 'no_output', 'template',
 		'content_type', 'status', 'redirect', 'send_as_json', 'url'
 	];
 	foreach ($overwrite_bricks as $part) {
 		if (!empty($content[$part]))
-			$brick['page'][$part] = $content[$part];	
+			$page[$part] = $content[$part];	
 	}
 
 	// get even more content from the function and merge with existing values
@@ -841,14 +841,14 @@ function brick_merge_page_bricks($brick, $content) {
 	];
 	foreach ($merge_bricks as $part) {
 		if (!empty($content[$part]) AND is_array($content[$part])) {
-			if (empty($brick['page'][$part])) $brick['page'][$part] = [];
-			$brick['page'][$part] = array_merge($brick['page'][$part], $content[$part]);
+			if (empty($page[$part])) $page[$part] = [];
+			$page[$part] = array_merge($page[$part], $content[$part]);
 		} elseif (!empty($content[$part])) {
-			if (empty($brick['page'][$part])) $brick['page'][$part] = '';
+			if (empty($page[$part])) $page[$part] = '';
 			// check if part of that string is already on page, then don't repeat it!
-			if (stripos($brick['page'][$part], $content[$part]) === false)
-				$brick['page'][$part] .= $content[$part];
+			if (stripos($page[$part], $content[$part]) === false)
+				$page[$part] .= $content[$part];
 		}
 	}
-	return $brick;
+	return $page;
 }
