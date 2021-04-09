@@ -178,6 +178,7 @@ function brick_forms($brick) {
 
 	$zz_conf['show_output'] = false;
 	$ops = zzform($zz);
+	$ops = brick_forms_request($brick, $ops, $zz);
 	$brick['page'] = brick_merge_page_bricks($brick['page'], $ops['page']);
 
 	// Map? Only in list-mode and if there are records
@@ -427,4 +428,49 @@ function brick_forms_include(&$brick) {
 
 	// no definitions for zzform, this will not work
 	return false;
+}
+
+/**
+ * include request functions depending on form
+ *
+ * @param array $ops
+ * @param array $zz
+ * @return array
+ */
+function brick_forms_request($brick, $ops, $zz) {
+	// settings are from zzform
+	$settings = array_merge($ops, $zz);
+
+	// path ends with _request, not _forms
+	$brick['path'] = substr($brick['path'], 0, strrpos($brick['path'], '_'));
+	$brick['path'] .= '_request';
+	$brick['module_path'] = substr($brick['module_path'], 0, strrpos($brick['module_path'], '_'));
+	$brick['module_path'] .= '_request';
+
+	// init list of scripts, always add module request scripts	
+	if (empty($zz['request'])) $zz['request'] = [];
+
+	// request data from all scripts
+	require_once __DIR__.'/request.inc.php';
+	$pages = [];
+	foreach ($zz['request'] as $function) {
+		$brick = brick_request_file($function, $brick);
+		if (empty($brick['request_function'])) continue;
+		if (!function_exists($brick['request_function'])) continue;
+		$pages[] = $brick['request_function']($brick['vars'], $settings);
+	}
+	$text = [];
+	foreach ($pages as $page) {
+		if (!$page) continue;
+		$ops['page'] = brick_merge_page_bricks($ops['page'], $page);
+		if (!empty($page['text'])) $text[] = $page['text'];
+	}
+	if ($text) {
+		$ops['output'] = str_replace(
+			"<div class='explanation_dynamic'></div>",
+			sprintf("<div class='explanation_dynamic'>%s</div>", implode("\n", $text)),
+			$ops['output']
+		);
+	}
+	return $ops;
 }
