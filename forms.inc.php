@@ -101,6 +101,7 @@ function brick_forms($brick) {
 	}
 
 	// check whether script shall be made accessible from public
+	// @deprecated, use public=1 instead, see below
 	$auth = ((count($brick['vars']) > 1) AND end($brick['vars']) === 'public') ? false : true;
 	if (!$auth) {
 		array_pop($brick['vars']);
@@ -108,6 +109,8 @@ function brick_forms($brick) {
 	}
 	
 	$brick = brick_local_settings($brick);
+	if (!empty($brick['local_settings']['public']))
+		$brick['public_access'] = $brick['local_settings']['public'];
 	
 	// script path must be first variable
 	$brick = brick_forms_file($brick);
