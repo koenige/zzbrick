@@ -177,10 +177,6 @@ function brick_forms($brick) {
 	}
 
 	if (!isset($brick['page']['head'])) $brick['page']['head'] = '';
-	$brick['page']['head'] .= $brick['setting']['brick_template_function'](
-		'zzform-head', $brick['setting'], 'ignore positions'
-	);
-
 	if (!empty($zz['page'])) {
 		foreach ($zz['page'] as $key => $value) {
 			if (empty($brick['page'][$key])) {
@@ -214,7 +210,6 @@ function brick_forms($brick) {
 		case 'geojson':
 			$map['geojson'] = brick_forms_geo_url('geojson');
 			$zz['geo_map_html'] = $brick['setting']['brick_template_function']($zz['geo_map_html'], $map);
-			if (!isset($brick['page']['head'])) $brick['page']['head'] = '';
 			$brick['page']['head'] .= $brick['setting']['brick_template_function']($head_template, $map);
 			break;
 		}
@@ -224,7 +219,6 @@ function brick_forms($brick) {
 			$ops['output']
 		);
 	}
-	$brick = brick_forms_wmd_editor($brick);
 	
 	// Caching
 	$uncacheable = [
@@ -246,6 +240,7 @@ function brick_forms($brick) {
 		$brick['page']['title'] = $ops['title'];
 		$brick['page']['dont_show_h1'] = true;
 	}
+	if (!empty($ops['head'])) $brick['page']['head'] .= $ops['head'];
 	if (!empty($ops['meta'])) $brick['page']['meta'] = $ops['meta'];
 	if (!empty($ops['status'])) $brick['page']['status'] = $ops['status'];
 	if (!empty($ops['error_type'])) $brick['page']['error_type'] = $ops['error_type'];
@@ -423,30 +418,6 @@ function brick_forms_geo_url($type = 'kml') {
 	$query['export'] = $type;
 	$map_url .= '?'.str_replace('&amp;', '&', http_build_query($query));
 	return $map_url;
-}
-
-/**
- * include JavaScript for WMD Editor
- *
- * @param array $brick
- * @global array $zz_conf
- * @return array $brick
- */
-function brick_forms_wmd_editor($brick) {
-	global $zz_conf;
-
-	if (empty($zz_conf['wmd_editor'])) return $brick;
-	if ($zz_conf['wmd_editor'] === true) return $brick;
-	
-	$pagedown = [];
-	if (!empty($zz_conf['wmd_editor_languages'])) {
-		if (in_array($brick['setting']['lang'], $zz_conf['wmd_editor_languages'])) {
-			$pagedown['language'] = $brick['setting']['lang'];
-		}
-	}
-	if (!isset($brick['page']['head'])) $brick['page']['head'] = '';
-	$brick['page']['head'] .= wrap_template('pagedown-head', $pagedown);
-	return $brick;		
 }
 
 /**
