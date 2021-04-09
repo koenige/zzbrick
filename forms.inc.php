@@ -176,27 +176,12 @@ function brick_forms($brick) {
 		return $brick;
 	}
 
-	if (!isset($brick['page']['head'])) $brick['page']['head'] = '';
-	if (!empty($zz['page'])) {
-		foreach ($zz['page'] as $key => $value) {
-			if (empty($brick['page'][$key])) {
-				$brick['page'][$key] = $value;
-			} elseif (is_array($value)) {
-				$brick['page'][$key] = array_merge($brick['page'][$key], $value);
-			} else {
-				$brick['page'][$key] .= $value;
-			}
-		}
-	}
 	$zz_conf['show_output'] = false;
 	$ops = zzform($zz);
-	if (!empty($ops['html_fragment'])) {
-		$brick['page']['template'] = 'empty';
-		$brick['page']['url'] = $ops['redirect_url'];
-		$brick['page']['send_as_json'] = true;
-	}
-	
+	$brick = brick_merge_page_bricks($brick, $ops['page']);
+
 	// Map? Only in list-mode and if there are records
+	if (!isset($brick['page']['head'])) $brick['page']['head'] = '';
 	if (!empty($zz['geo_map_html']) AND $ops['mode'] === 'list_only' AND $ops['records_total']) {
 		// set defaults
 		if (empty($zz['geo_map_export'])) $zz['geo_map_export'] = 'kml';
@@ -240,10 +225,6 @@ function brick_forms($brick) {
 		$brick['page']['title'] = $ops['title'];
 		$brick['page']['dont_show_h1'] = true;
 	}
-	if (!empty($ops['head'])) $brick['page']['head'] .= $ops['head'];
-	if (!empty($ops['meta'])) $brick['page']['meta'] = $ops['meta'];
-	if (!empty($ops['status'])) $brick['page']['status'] = $ops['status'];
-	if (!empty($ops['error_type'])) $brick['page']['error_type'] = $ops['error_type'];
 	
 	if (!empty($zz_conf['breadcrumbs'])) {
 		foreach ($zz_conf['breadcrumbs'] as $breadcrumb) {
