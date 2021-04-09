@@ -390,5 +390,12 @@ function brick_forms_request($brick, $ops, $zz) {
 			$ops['output']
 		);
 	}
+	if (!empty($ops['page']['title'])) {
+		$ops['output'] = preg_replace('/<h1>(.+?)<\/h1>/'
+			, sprintf('<h1>%s</h1>', $ops['page']['title'])
+			, $ops['output']
+		);
+		$ops['title'] = $ops['page']['title'];
+	}
 	return $ops;
 }
