@@ -54,9 +54,6 @@ function brick_forms($brick) {
 	// default: use wrap_text() from core/language.inc.php from zzwrap
 	if (!isset($brick['setting']['brick_translate_text_function']))
 		$brick['setting']['brick_translate_text_function'] = 'wrap_text';
-	// format HTML templates
-	if (!isset($brick['setting']['brick_template_function']))
-		$brick['setting']['brick_template_function'] = 'wrap_template';
 	// allow default tables for inclusion, on demand only
 	if (!isset($brick['setting']['brick_default_tables']))
 		$brick['setting']['brick_default_tables'] = [];
@@ -180,31 +177,6 @@ function brick_forms($brick) {
 	$ops = zzform($zz);
 	$ops = brick_forms_request($brick, $ops, $zz);
 	$brick['page'] = brick_merge_page_bricks($brick['page'], $ops['page']);
-
-	// Map? Only in list-mode and if there are records
-	if (!isset($brick['page']['head'])) $brick['page']['head'] = '';
-	if (!empty($zz['geo_map_html']) AND $ops['mode'] === 'list_only' AND $ops['records_total']) {
-		// set defaults
-		if (empty($zz['geo_map_export'])) $zz['geo_map_export'] = 'kml';
-		$head_template = !empty($zz['geo_map_head']) ? $zz['geo_map_head'] : 'map';
-
-		// output depending on export format
-		switch ($zz['geo_map_export']) {
-		case 'kml':
-			$brick = brick_forms_geo_map_kml($brick, $head_template);
-			break;
-		case 'geojson':
-			$map['geojson'] = brick_forms_geo_url('geojson');
-			$zz['geo_map_html'] = $brick['setting']['brick_template_function']($zz['geo_map_html'], $map);
-			$brick['page']['head'] .= $brick['setting']['brick_template_function']($head_template, $map);
-			break;
-		}
-		$ops['output'] = str_replace(
-			"<div class='explanation_dynamic'></div>",
-			sprintf("<div class='explanation_dynamic'>%s</div>", $zz['geo_map_html']),
-			$ops['output']
-		);
-	}
 	
 	// Caching
 	$uncacheable = [
@@ -348,61 +320,6 @@ function brick_forms_file($brick) {
 }
 
 /**
- * outputs map based on a corresponding KML file to the table output
- * (e. g. an OpenLayers map)
- * HTML output goes into {$template}.template.txt
- *
- * @param array $brick
- * @param string $template name of map template, defaults to map
- * @global array $zz_conf
- * @global array $zz_setting
- *		*_maps_api_key will be made available for map template
- * @return array $brick;
- */
-function brick_forms_geo_map_kml($brick, $template) {
-	global $zz_conf;
-	global $zz_setting;
-
-	// get map URL
-	$map['kml_url'] = brick_forms_geo_url('kml');
-
-	// set maps API key if needed
-	foreach ($zz_setting as $key => $value) {
-		if (substr($key, -13) !== '_maps_api_key') continue;
-		$map[$key] = $value;
-	}
-
-	if (!isset($brick['page']['head'])) $brick['page']['head'] = '';
-	$brick['page']['head'] .= $brick['setting']['brick_template_function']($template, $map);
-	$brick['page']['extra']['body_attributes'] = ' onload="init()"';
-	return $brick;
-}
-
-/**
- * get own zzform URL stripped from unnecessary parts for map export
- *
- * @param string $type type of export
- * @global array $zz_conf
- * @return string $map_url
- */
-function brick_forms_geo_url($type = 'kml') {
-	global $zz_conf;
-
-	$url = parse_url($_SERVER['REQUEST_URI']);
-	$map_url = $url['path'];
-	if (!empty($url['query'])) {
-		parse_str($url['query'], $query);
-		// set no limit, default for export is to show all records
-		unset($query['limit']);
-		unset($query['referer']);
-		unset($query['delete']);
-	}
-	$query['export'] = $type;
-	$map_url .= '?'.str_replace('&amp;', '&', http_build_query($query));
-	return $map_url;
-}
-
-/**
  * include a table definition file
  * with just $zz_conf, $zz_setting and $brick available for reading, $zz for
  * writing
@@ -449,6 +366,7 @@ function brick_forms_request($brick, $ops, $zz) {
 
 	// init list of scripts, always add module request scripts	
 	if (empty($zz['request'])) $zz['request'] = [];
+	array_unshift($zz['request'], 'zzformmap');
 
 	// request data from all scripts
 	require_once __DIR__.'/request.inc.php';
