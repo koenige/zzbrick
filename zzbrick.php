@@ -826,7 +826,7 @@ function brick_merge_page_bricks($page, $content) {
 		'title', 'dont_show_h1', 'language_link', 'error_type',
 		'last_update', 'style', 'breadcrumbs', 'project',
 		'created', 'headers', 'url_ending', 'no_output', 'template',
-		'content_type', 'status', 'redirect', 'send_as_json', 'url'
+		'content_type', 'status', 'redirect', 'send_as_json', 'url', 'h1'
 	];
 	foreach ($overwrite_bricks as $part) {
 		if (!empty($content[$part]))
