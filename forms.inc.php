@@ -359,7 +359,8 @@ function brick_forms_include(&$brick) {
  */
 function brick_forms_request($brick, $ops, $zz) {
 	// settings are from zzform
-	$settings = array_merge($ops, $zz);
+	$settings = array_merge($zz, $ops);
+	$settings['zz_title'] = $zz['title'];
 
 	// path ends with _request, not _forms
 	$brick['path'] = substr($brick['path'], 0, strrpos($brick['path'], '_'));
@@ -399,6 +400,12 @@ function brick_forms_request($brick, $ops, $zz) {
 			, $ops['output']
 		);
 		$ops['title'] = $ops['page']['title'];
+	}
+	if (!empty($ops['page']['h1'])) {
+		$ops['output'] = preg_replace('/<h1>(.+?)<\/h1>/'
+			, sprintf('<h1>%s</h1>', $ops['page']['h1'])
+			, $ops['output']
+		);
 	}
 	return $ops;
 }
