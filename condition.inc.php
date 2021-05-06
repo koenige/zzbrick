@@ -8,7 +8,7 @@
  * http://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2009-2016, 2019 Gustaf Mossakowski
+ * @copyright Copyright © 2009-2016, 2019, 2021 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -35,7 +35,8 @@ function brick_condition($brick) {
 	if (!$i) $i = 0;
 
 	$if = false;
-	$if_keywords = ['page', 'setting'];
+	$if_keywords = ['page', 'setting', 'cookie'];
+
 	if (count($brick['vars']) === 3 AND in_array($brick['vars'][1], $if_keywords)) {
 		$if = $brick['vars'][1];
 	}
@@ -108,7 +109,8 @@ function brick_condition($brick) {
 		$brick_vars[0] = array_shift($brick['vars']);
 	}
 	foreach ($brick_vars as $brick_var) {
-		$brick_var = str_replace('-', '_', $brick_var);
+		if (!strstr($brick_var, '='))
+			$brick_var = str_replace('-', '_', $brick_var);
 		if (is_array($item) AND isset($item[$brick_var])) {
 			// we have it in $item, so return this.
 			$content = $item[$brick_var];
@@ -225,6 +227,26 @@ function brick_condition($brick) {
  * @return string
  */
 function brick_condition_if($if, $vars, $parameter) {
+	if ($if === 'cookie') return brick_condition_if_cookie($vars);
 	$req = brick_format('%%% '.$if.' '.$vars.' %%%', $parameter);
 	return $req['text'];
+}
+
+/**
+ * check if a cookie has a certain value
+ *
+ * example: %%% condition if cookie privacy=hr %%%
+ * @param string $vars
+ * @return bool
+ */
+function brick_condition_if_cookie($vars) {
+	parse_str($vars, $cookie_values);
+	foreach ($cookie_values as $key => $value) {
+		if (!array_key_exists($key, $_COOKIE)) continue;
+		$settings = explode(',', $_COOKIE[$key]);
+		if (in_array($value, $settings)) {
+			return true;
+		}
+	}
+	return false;
 }
