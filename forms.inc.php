@@ -291,7 +291,7 @@ function brick_forms_file($brick) {
 	// allow to use script without recursion
 	$backtrace = debug_backtrace();
 	foreach ($backtrace as $step) {
-		if ($step['file'] === $brick['form_script_path']) $brick['form_script_path'] = false;
+		if (!empty($step['file']) AND $step['file'] === $brick['form_script_path']) $brick['form_script_path'] = false;
 	}
 	if (file_exists($brick['form_script_path'])) return $brick;
 	
