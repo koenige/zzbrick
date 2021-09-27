@@ -594,6 +594,37 @@ function brick_translate($string, $settings) {
 }
 
 /**
+ * get filename from brick type and function
+ * look in custom folder first, then in module folders
+ *
+ * @param string $type
+ * @param string $function
+ * @return string name of function
+ */
+function brick_file($type, $function) {
+	global $zz_setting;
+	$function_name = str_replace('-', '_', $function);
+	$file = sprintf(
+		'%s%s/%s.inc.php', $zz_setting['brick_custom_dir'], $type, $function
+	);
+	if (file_exists($file)) {
+		require_once $file;
+		return sprintf('cms_%s_%s', $type, $function_name);
+	}
+	foreach ($zz_setting['modules'] as $module) {
+		$file = sprintf(
+			'%s/%s%s%s/%s.inc.php', $zz_setting['modules_dir'], $module
+			, $zz_setting['brick_module_dir'], $type, $function
+		);
+		if (!file_exists($file)) continue;
+		require_once $file;
+		$zz_setting['active_module'] = $module;
+		return sprintf('mod_%s_%s_%s', $module, $type, $function_name);
+	}
+	return '';
+}
+
+/**
  * send response to an xmlHTTPrequest
  *
  * @param string $xmlHttpRequest
@@ -674,6 +705,10 @@ function brick_local_settings($brick) {
 			$brick['local_settings'] = array_merge_recursive($brick['local_settings'], $new_settings);
 		}
 		array_pop($brick['vars']);
+	}
+	if (!empty($brick['local_settings']['*'])) {
+		$function = brick_file('placeholder', $brick['local_settings']['*']);
+		if (function_exists($function)) $brick = $function($brick);
 	}
 	return $brick;
 }
