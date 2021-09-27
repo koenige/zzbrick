@@ -859,7 +859,7 @@ function brick_merge_page_bricks($page, $content) {
 	// get some content from the function and overwrite existing values
 	$overwrite_bricks = [
 		'title', 'dont_show_h1', 'language_link', 'error_type',
-		'last_update', 'style', 'breadcrumbs', 'project',
+		'last_update', 'style', 'project',
 		'created', 'headers', 'url_ending', 'no_output', 'template',
 		'content_type', 'status', 'redirect', 'send_as_json', 'url', 'h1'
 	];
@@ -872,7 +872,7 @@ function brick_merge_page_bricks($page, $content) {
 	// extra: for all individual needs, not standardized
 	$merge_bricks = [
 		'authors', 'media', 'head', 'extra', 'meta', 'link', 'error',
-		'query_strings'
+		'query_strings', 'breadcrumbs'
 	];
 	foreach ($merge_bricks as $part) {
 		if (!empty($content[$part]) AND is_array($content[$part])) {
