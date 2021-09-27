@@ -99,7 +99,7 @@ function brick_request($brick) {
 			return $brick;
 		}
 		// call function
-		$content = $brick['request_function']($function_params, $brick['local_settings']);
+		$content = $brick['request_function']($function_params, $brick['local_settings'], $brick['data'] ?? []);
 	}
 
 	if (empty($content)) {
@@ -241,7 +241,7 @@ function brick_request_cms($script, $params, $brick, $filetype = '') {
 	// get data for input, depending on settings
 	$brick = brick_request_file($script, $brick, 'get');
 	if (function_exists($brick['request_function'])) {
-		$data = $brick['request_function']($params, $brick['local_settings']);
+		$data = $brick['request_function']($params, $brick['local_settings'], $brick['data'] ?? []);
 	} else {
 		// function does not exist, probably no database data is needed
 		switch ($brick['setting']['brick_cms_input']) {
