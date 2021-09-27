@@ -212,8 +212,8 @@ function brick_forms($brick) {
 		}
 	}
 	if (empty($zz_conf['dont_show_title_as_breadcrumb'])
-		AND (!empty($brick['page']['title'])))
-		$brick['page']['breadcrumbs'][] = $brick['page']['title'];
+		AND (!empty($ops['breadcrumb'])))
+		$brick['page']['breadcrumbs'][] = $ops['breadcrumb'];
 	return $brick;
 }
 
