@@ -78,12 +78,13 @@ function brick_request($brick) {
 			$filetype = $matches[2];
 		}
 	}
-	$function_params = brick_request_params($brick['vars'], $brick['setting']['url_parameter']);
-	$script = array_shift($function_params);
+	$brick['vars'] = brick_request_params($brick['vars'], $brick['setting']['url_parameter']);
+	$brick = brick_placeholder_script($brick);
+	$script = array_shift($brick['vars']);
 
 	if (!empty($brick['setting']['brick_request_cms'])) {
 		// call function
-		$content = brick_request_cms($script, $function_params, $brick, $filetype);
+		$content = brick_request_cms($script, $brick, $filetype);
 	} else {
 		if ($brick['subtype'] === 'make') {
 			$brick = brick_request_file($script, $brick, 'make');
@@ -99,7 +100,7 @@ function brick_request($brick) {
 			return $brick;
 		}
 		// call function
-		$content = $brick['request_function']($function_params, $brick['local_settings'], $brick['data'] ?? []);
+		$content = $brick['request_function']($brick['vars'], $brick['local_settings'], $brick['data'] ?? []);
 	}
 
 	if (empty($content)) {
@@ -220,12 +221,11 @@ function brick_request_params($variables, $parameter) {
  * 		%%% request news 2004 %%% (no alias needed)
  *
  * @param string $script - script name ('func') for brick_request
- * @param array $params - parameter from URL
  * @param array $brick - settings for brick-scripts, here:
  *	- brick_cms_input = db, xml, json (defaults to db)
  * @return mixed output of function (html: $page; other cases: direct output, headers
  */
-function brick_request_cms($script, $params, $brick, $filetype = '') {
+function brick_request_cms($script, $brick, $filetype = '') {
 	// brick_cms_input is variable to check where input comes from
 	if (empty($brick['setting']['brick_cms_input'])) 
 		$brick['setting']['brick_cms_input'] = '';
@@ -241,17 +241,17 @@ function brick_request_cms($script, $params, $brick, $filetype = '') {
 	// get data for input, depending on settings
 	$brick = brick_request_file($script, $brick, 'get');
 	if (function_exists($brick['request_function'])) {
-		$data = $brick['request_function']($params, $brick['local_settings'], $brick['data'] ?? []);
+		$data = $brick['request_function']($brick['vars'], $brick['local_settings'], $brick['data'] ?? []);
 	} else {
 		// function does not exist, probably no database data is needed
 		switch ($brick['setting']['brick_cms_input']) {
 		case 'xml':
 		case 'json':
-			$data = brick_request_external($script, $brick['setting'], $params);
+			$data = brick_request_external($script, $brick['setting'], $brick['vars']);
 			break;
 		case 'jsonl':
 			// trigger JSON Lines download
-			$data = brick_request_external($script, $brick['setting'], $params);
+			$data = brick_request_external($script, $brick['setting'], $brick['vars']);
 			$data = true;
 			break;
 		case 'db':
@@ -347,7 +347,7 @@ function brick_request_cms($script, $params, $brick, $filetype = '') {
 			$content['error']['msg_vars'] = [$brick['request_function']];
 			return $content;
 		}
-		return $brick['request_function']($data, $params, $brick['local_settings']);
+		return $brick['request_function']($data, $brick['vars'], $brick['local_settings']);
 	}
 }
 

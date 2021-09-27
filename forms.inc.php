@@ -111,6 +111,7 @@ function brick_forms($brick) {
 	$brick = brick_local_settings($brick);
 	if (!empty($brick['local_settings']['public']))
 		$brick['public_access'] = $brick['local_settings']['public'];
+	$brick = brick_placeholder_script($brick);
 	
 	// script path must be first variable
 	$brick = brick_forms_file($brick);

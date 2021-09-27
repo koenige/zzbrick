@@ -706,10 +706,20 @@ function brick_local_settings($brick) {
 		}
 		array_pop($brick['vars']);
 	}
-	if (!empty($brick['local_settings']['*'])) {
-		$function = brick_file('placeholder', $brick['local_settings']['*']);
-		if (function_exists($function)) $brick = $function($brick);
-	}
+	return $brick;
+}
+
+/**
+ * call placeholder script for parameter inside zzbrick_placeholder folder
+ * activated with local parameter *=script, where 'script' is the script to call
+ *
+ * @param array $brick
+ * @return array
+ */
+function brick_placeholder_script($brick) {
+	if (empty($brick['local_settings']['*'])) return $brick;
+	$function = brick_file('placeholder', $brick['local_settings']['*']);
+	if (function_exists($function)) $brick = $function($brick);
 	return $brick;
 }
 
