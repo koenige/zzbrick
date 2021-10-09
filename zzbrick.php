@@ -897,3 +897,17 @@ function brick_merge_page_bricks($page, $content) {
 	}
 	return $page;
 }
+
+/**
+ * add function prefix for brick_formatting_functions
+ *
+ * @param string $function
+ * @param array $settings
+ * @return string
+ */
+function brick_format_function_prefix($function, $settings) {
+	if (!empty($settings['brick_formatting_functions_prefix'][$function])) {
+		$function = $settings['brick_formatting_functions_prefix'][$function].'_'.$function;
+	}
+	return $function;
+}

@@ -5,10 +5,10 @@
  * Items for page templates
  *
  * Part of »Zugzwang Project«
- * http://www.zugzwang.org/projects/zzbrick
+ * https://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2009-2010, 2019-2020 Gustaf Mossakowski
+ * @copyright Copyright © 2009-2010, 2019-2021 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -53,14 +53,16 @@ function brick_item($brick) {
 	if (!empty($brick['vars'][0]) AND ($content OR $content === 0 OR $content === '0')) {
 		// first variable might be formatting function
 		if (!empty($brick['setting']['brick_formatting_functions'])
-			AND in_array($brick['vars'][0], $brick['setting']['brick_formatting_functions'])
-			AND function_exists($brick['vars'][0])) {
+			AND in_array($brick['vars'][0], $brick['setting']['brick_formatting_functions'])) {
 			$format_function = array_shift($brick['vars']);
-			if (strstr($content, '%%%') AND empty($brick['setting']['no_brick_format_inside'])) {
-				$content = brick_format($content);
-				$content = $content['text'];
+			$format_function = brick_format_function_prefix($format_function, $brick['setting']);
+			if (function_exists($format_function)) {
+				if (strstr($content, '%%%') AND empty($brick['setting']['no_brick_format_inside'])) {
+					$content = brick_format($content);
+					$content = $content['text'];
+				}
+				$content = $format_function($content);
 			}
-			$content = $format_function($content);
 		}
 		if (!empty($brick['vars'])) {
 			// formatting to be done, there is some HTML and a value

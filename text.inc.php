@@ -5,10 +5,10 @@
  * Text blocks, translated if applicable
  *
  * Part of »Zugzwang Project«
- * http://www.zugzwang.org/projects/zzbrick
+ * https://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2009, 2014, 2019 Gustaf Mossakowski
+ * @copyright Copyright © 2009, 2014, 2019, 2021 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -40,6 +40,7 @@ function brick_text($brick) {
 	$function = end($brick['vars']);
 	if (in_array($function, $brick['setting']['brick_formatting_functions'])) {
 		array_pop($brick['vars']);	
+		$function = brick_format_function_prefix($function, $brick['setting']);
 	} else {
 		$function = false;
 	}
