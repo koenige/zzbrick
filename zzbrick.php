@@ -834,7 +834,16 @@ function brick_include($brick, $blocks = []) {
 			$tpl = $brick['setting']['brick_template_function']($block[1], [], 'error');
 			$new_blocks = explode('%%%', $tpl);
 			list($brick, $new_blocks) = brick_include($brick, $new_blocks);
-			array_splice($blocks, $pos - 2, 3, $new_blocks);
+			// there now are two or three text blocks adjacent, glue them together
+			if (isset($blocks[$pos - 2])) {
+				$first_new_block = array_shift($new_blocks);
+				$blocks[$pos - 2] .= $first_new_block;
+			}
+			if (isset($blocks[$pos])) {
+				$last_new_block = array_pop($new_blocks);
+				$blocks[$pos] = $last_new_block.$blocks[$pos];
+			}
+			array_splice($blocks, $pos - 1, 1, $new_blocks);
 			$pos += count($new_blocks);
 		}
 	}
