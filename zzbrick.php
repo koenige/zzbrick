@@ -841,7 +841,12 @@ function brick_include($brick, $blocks = []) {
 			}
 			if (isset($blocks[$pos])) {
 				$last_new_block = array_pop($new_blocks);
-				$blocks[$pos] = $last_new_block.$blocks[$pos];
+				if ($new_blocks) {
+					$blocks[$pos] = $last_new_block.$blocks[$pos];
+				} else {
+					$blocks[$pos - 2] .= $last_new_block.$blocks[$pos];
+					unset($blocks[$pos]);
+				}
 			}
 			array_splice($blocks, $pos - 1, 1, $new_blocks);
 			$pos += count($new_blocks);
