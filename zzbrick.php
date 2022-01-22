@@ -102,7 +102,7 @@
  * https://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2009-2021 Gustaf Mossakowski
+ * @copyright Copyright © 2009-2022 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -171,7 +171,7 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 	$brick['page']['text'] = [];				// textbody
 	$brick['page']['title'] = false;			// page title and h1 element
 	$brick['page']['head'] = false;				// something for the head section
-	$brick['page']['breadcrumbs'] = false;		// additional breadcrumbs
+	$brick['page']['breadcrumbs'] = [];			// additional breadcrumbs
 	$brick['page']['authors'] = [];				// authors of page
 	$brick['page']['media'] = [];				// media linked from page
 	$brick['page']['language_link'] = false;	// language links to other language(s)
