@@ -5,10 +5,10 @@
  * Show content depending on condition
  *
  * Part of »Zugzwang Project«
- * http://www.zugzwang.org/projects/zzbrick
+ * https://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2009-2016, 2019, 2021 Gustaf Mossakowski
+ * @copyright Copyright © 2009-2016, 2019, 2021-2022 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -109,6 +109,7 @@ function brick_condition($brick) {
 		$brick_vars[0] = array_shift($brick['vars']);
 	}
 	foreach ($brick_vars as $brick_var) {
+		if (!$brick_var) continue;
 		if (!strstr($brick_var, '='))
 			$brick_var = str_replace('-', '_', $brick_var);
 		if (is_array($item) AND isset($item[$brick_var])) {
