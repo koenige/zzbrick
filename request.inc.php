@@ -8,7 +8,7 @@
  * https://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2009-2012, 2014-2021 Gustaf Mossakowski
+ * @copyright Copyright © 2009-2012, 2014-2022 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -551,6 +551,7 @@ function brick_csv_encode($data, $setting) {
  * @return void
  */
 function brick_request_links(&$text, &$media, $field_name) {
+	if (!$text) return;
 	$parts = explode('%%%', $text);
 	$formatted = '';
 	foreach ($parts as $index => $part) {
