@@ -580,7 +580,7 @@ function brick_head_format_html($page, $setting, $tags) {
 			$i++;
 		}
 	}
-	if ($tags['opengraph']) {
+	if ($tags['opengraph'] OR !empty($setting['opengraph'])) {
 		$tags['meta'] = array_merge($tags['meta'], brick_head_opengraph($tags['opengraph'], $page, $setting));
 	}
 	foreach ($tags['meta'] as $index) {
