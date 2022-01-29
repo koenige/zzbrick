@@ -540,6 +540,16 @@ function brick_head_format($page, $setting, $build = false) {
 		}
 		unset($page[$key]); // avoid duplication
 	}
+
+	// head via %%% position head %%%
+	if (is_array($page['text']) AND in_array('head', array_keys($page['text']))) {
+		$tags['head'][] = $page['text']['head'];
+		unset($page['text']['head']);
+		if (count($page['text']) === 1 AND !empty($page['text']['text'])) {
+			$page['text'] = $page['text']['text'];
+		}
+	}
+
 	if (!$build) return $page;
 	return brick_head_format_html($page, $setting, $tags);
 }
