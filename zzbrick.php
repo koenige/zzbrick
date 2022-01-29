@@ -527,7 +527,7 @@ function brick_textformat_html($string) {
  */
 function brick_head_format($page, $setting, $build = false) {
 	static $tags;
-	$keys = ['head', 'link', 'meta'];
+	$keys = ['head', 'link', 'meta', 'opengraph'];
 	foreach ($keys as $key) {
 		if (empty($tags[$key])) $tags[$key] = [];
 		if (empty($page[$key])) continue;
@@ -580,6 +580,9 @@ function brick_head_format_html($page, $setting, $tags) {
 			$i++;
 		}
 	}
+	if ($tags['opengraph']) {
+		$tags['meta'] = array_merge($tags['meta'], brick_head_opengraph($tags['opengraph'], $page, $setting));
+	}
 	foreach ($tags['meta'] as $index) {
 		if (!is_array($index)) continue;
 		$head[$i] = '<meta';
@@ -599,6 +602,48 @@ function brick_head_format_html($page, $setting, $tags) {
 		$page['head'] .= "\t".implode("\n\t", $head)."\n";
 	}
 	return $page;
+}
+
+/**
+ * put OpenGraph tags on page
+ *
+ * @param array $tags
+ * @param array $page
+ * @param array $setting
+ */
+function brick_head_opengraph($tags, $page, $setting) {
+	// defaults
+	$tags['og:title'] = $tags['og:title'] ?? $page['title'];
+	$tags['og:type'] = $tags['og:type'] ?? 'website';
+	$tags['og:url'] = $tags['og:url'] ?? $setting['host_base'].$setting['request_uri'];
+	$tags['og:site_name'] = $tags['og:site_name'] ?? $setting['project'];
+	$tags['og:locale'] = $tags['og:locale'] ?? $setting['lang'];
+
+	// default image: opengraph.png from theme folder
+	if (!empty($setting['active_theme']) AND empty($tags['og:image'])) {
+		$filename = sprintf('%s/%s/opengraph.png', $setting['themes_dir'], $setting['active_theme']);
+		if (file_exists($filename)) {
+			$size = getimagesize($filename);
+			$tags['og:image'] = $setting['host_base'].'/opengraph.png';
+			$tags['og:image:width'] = $size[0];
+			$tags['og:image:height'] = $size[1];
+		}
+	}
+	// image is required
+	if (empty($tags['og:image'])) return [];
+
+	$meta = [];
+	foreach ($tags as $property => $list) {
+		// there might be more than one property of the same name
+		if (!is_array($list)) $list = [$list];
+		foreach ($list as $content) {
+			$meta[] = [
+				'property' => $property,
+				'content' => $content
+			];
+		}
+	}
+	return $meta;
 }
 
 /** 
@@ -927,7 +972,7 @@ function brick_merge_page_bricks($page, $content) {
 	// extra: for all individual needs, not standardized
 	$merge_bricks = [
 		'authors', 'media', 'head', 'extra', 'meta', 'link', 'error',
-		'query_strings', 'breadcrumbs'
+		'query_strings', 'breadcrumbs', 'opengraph'
 	];
 	foreach ($merge_bricks as $part) {
 		if (!empty($content[$part]) AND is_array($content[$part])) {
