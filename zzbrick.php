@@ -637,6 +637,14 @@ function brick_head_opengraph($tags, $page, $setting) {
 	}
 	// image is required
 	if (empty($tags['og:image'])) return [];
+	if (!empty($setting['opengraph_properties'])) {
+		$global = explode(' ', $setting['opengraph_properties']);
+		foreach ($global as $property) {
+			list($property, $content) = explode('=', $property);
+			if (!$content) continue;
+			$tags[$property] = $tags[$property] ?? $content;
+		}
+	}
 
 	$meta = [];
 	foreach ($tags as $property => $list) {
