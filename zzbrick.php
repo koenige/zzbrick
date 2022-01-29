@@ -643,6 +643,7 @@ function brick_head_opengraph($tags, $page, $setting) {
 		// there might be more than one property of the same name
 		if (!is_array($list)) $list = [$list];
 		foreach ($list as $content) {
+			if (!$content) continue;
 			$meta[] = [
 				'property' => $property,
 				'content' => $content
