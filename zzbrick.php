@@ -627,6 +627,7 @@ function brick_head_opengraph($tags, $page, $setting) {
 			$tags['og:image'] = $setting['host_base'].'/opengraph.png';
 			$tags['og:image:width'] = $size[0];
 			$tags['og:image:height'] = $size[1];
+			$tags['og:image:alt'] = $setting['project'].' '.$setting['brick_translate_text_function']('Logo');
 		}
 	}
 	// image is required
