@@ -383,7 +383,7 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 		}
 	}
 	// get stuff for page head in order
-	$page['head'] = brick_head_format($page, $brick['setting']);
+	$page = brick_head_format($page, $brick['setting']);
 	// get simple access to extra-Array
 	if (!empty($page['extra'])) foreach ($page['extra'] as $key => $value) {
 		if (!is_array($value)) $page['extra_'.$key] = $value;
@@ -522,18 +522,42 @@ function brick_textformat_html($string) {
  * 
  * @param array $page $page-Array from zzbrick()
  * @param array $setting $brick['setting']-Array from zzbrick()
- * @return array modified $page['head']
+ * @param bool $build build final HTML
+ * @return array $page, modified
  */
-function brick_head_format($page, $setting) {
-	static $links;
-	if (empty($links)) $links = [];
+function brick_head_format($page, $setting, $build = false) {
+	static $tags;
+	$keys = ['head', 'link', 'meta'];
+	foreach ($keys as $key) {
+		if (empty($tags[$key])) $tags[$key] = [];
+		if (empty($page[$key])) continue;
+		if (is_array($page[$key])) {
+			if (empty($tags[$key])) $tags[$key] = [];
+			$tags[$key] = array_merge($tags[$key], $page[$key]);
+		} else {
+			// head
+			$tags[$key][] = $page[$key];
+		}
+		unset($page[$key]); // avoid duplication
+	}
+	if (!$build) return $page;
+	return brick_head_format_html($page, $setting, $tags);
+}
+
+/**
+ * build HTML output for HEAD
+ *
+ * @param array $page
+ * @param array $setting
+ * @param array $tags
+ * @return array
+ */
+function brick_head_format_html($page, $setting, $tags) {
 	$head = [];
 	$i = 0;
 	
-	if (empty($page['head'])) $page['head'] = '';
 	// @todo: insert $setting['page_base']; ? or do this in functions 
-	if (!empty($page['link'])) foreach ($page['link'] AS $rel => $link) {
-		if (!empty($links[$rel]) AND $links[$rel] === $link) continue;
+	foreach ($tags['link'] AS $rel => $link) {
 		if (!in_array(ucfirst($rel), $setting['html_link_types'])) continue;
 		foreach ($link as $index) {
 			if (!is_array($index)) continue;
@@ -541,33 +565,30 @@ function brick_head_format($page, $setting) {
 			foreach ($index as $attribute => $value) {
 				$head[$i] .= ' '.$attribute.'="'.$value.'"';
 			}
-			if (!empty($zz_setting['xml_close_empty_tags'])) $head[$i] .= ' /';
+			if (!empty($setting['xml_close_empty_tags'])) $head[$i] .= ' /';
 			$head[$i] .= '>';
 			$i++;
 		}
-		$links[$rel] = $link; // avoid duplicate links
 	}
-	if (!empty($page['meta'])) {
-		foreach ($page['meta'] as $index) {
-			if (!is_array($index)) continue;
-			$unique = json_encode($index);
-			if (array_key_exists($unique, $links)) continue;
-			$head[$i] = '<meta';
-			foreach ($index as $attribute => $value)
-				$head[$i] .= ' '.$attribute.'="'.$value.'"';
-			if (!empty($zz_setting['xml_close_empty_tags'])) $head[$i] .= ' /';
-			$head[$i] .= '>';
-			$links[$unique] = true; // avoid duplicate meta tags
-			$i++;
-		}
+	foreach ($tags['meta'] as $index) {
+		if (!is_array($index)) continue;
+		$head[$i] = '<meta';
+		foreach ($index as $attribute => $value)
+			$head[$i] .= ' '.$attribute.'="'.$value.'"';
+		if (!empty($setting['xml_close_empty_tags'])) $head[$i] .= ' /';
+		$head[$i] .= '>';
+		$i++;
+	}
+	
+	$page['head'] = '';
+	if ($tags['head']) {
+		$page['head'] = trim(implode("\n\t", $tags['head']));
+		$page['head'] = sprintf("\t%s\n", $page['head']);
 	}
 	if ($head) {
-		// add new lines to already defined head elements in $page['head']
-		$head = $page['head']."\t".implode("\n\t", $head)."\n";
-	} else {
-		$head = $page['head'];
+		$page['head'] .= "\t".implode("\n\t", $head)."\n";
 	}
-	return $head;
+	return $page;
 }
 
 /** 
