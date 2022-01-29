@@ -166,6 +166,10 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 		$brick['setting']['brick_custom_dir'] = $zz_setting['custom'].'/zzbrick_';
 	if (empty($brick['setting']['brick_module_dir']))
 		$brick['setting']['brick_module_dir'] = '/zzbrick_';
+	// to translate error messages, you might use a translation function
+	// default: use wrap_text() from core/language.inc.php from zzwrap
+	if (!isset($brick['setting']['brick_translate_text_function']))
+		$brick['setting']['brick_translate_text_function'] = 'wrap_text';
 
 	// initialize page variables
 	$brick['page']['text'] = [];				// textbody
@@ -618,6 +622,7 @@ function brick_head_opengraph($tags, $page, $setting) {
 	$tags['og:url'] = $tags['og:url'] ?? $setting['host_base'].$setting['request_uri'];
 	$tags['og:site_name'] = $tags['og:site_name'] ?? $setting['project'];
 	$tags['og:locale'] = $tags['og:locale'] ?? $setting['lang'];
+	$tags['og:description'] = $tags['og:description'] ?? $page['description'];
 
 	// default image: opengraph.png from theme folder
 	if (!empty($setting['active_theme']) AND empty($tags['og:image'])) {
@@ -658,8 +663,6 @@ function brick_head_opengraph($tags, $page, $setting) {
  */
 function brick_translate($string, $settings) {
 	if (!strstr($string, "%{'")) return $string;
-	if (!isset($settings['brick_translate_text_function']))
-		$settings['brick_translate_text_function'] = 'wrap_text';
 	$string = preg_replace_callback(
 		"~%{'(.+?)'}%~",
 		function ($string) use ($settings) {
@@ -962,7 +965,8 @@ function brick_merge_page_bricks($page, $content) {
 		'title', 'dont_show_h1', 'language_link', 'error_type',
 		'last_update', 'style', 'project',
 		'created', 'headers', 'url_ending', 'no_output', 'template',
-		'content_type', 'status', 'redirect', 'send_as_json', 'url', 'h1'
+		'content_type', 'status', 'redirect', 'send_as_json', 'url', 'h1',
+		'description'
 	];
 	foreach ($overwrite_bricks as $part) {
 		if (!empty($content[$part]))
