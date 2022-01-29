@@ -8,7 +8,7 @@
  * https://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2009, 2014, 2019, 2021 Gustaf Mossakowski
+ * @copyright Copyright © 2009, 2014, 2019, 2021-2022 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -27,10 +27,6 @@
  * @return array $brick
  */
 function brick_text($brick) {
-	// to translate text, you need to use a translation function
-	// default: use wrap_text() from core/language.inc.php from zzwrap
-	if (!isset($brick['setting']['brick_translate_text_function']))
-		$brick['setting']['brick_translate_text_function'] = 'wrap_text';
 	if (!isset($brick['setting']['brick_formatting_functions']))
 		$brick['setting']['brick_formatting_functions'] = [];
 

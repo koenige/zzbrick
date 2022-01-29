@@ -8,7 +8,7 @@
  * https://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2009-2021 Gustaf Mossakowski
+ * @copyright Copyright © 2009-2022 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -50,10 +50,6 @@ function brick_forms($brick) {
 		$brick['setting']['brick_authentication_file'] = $brick['setting']['core'].'/auth.inc.php';
 	if (!isset($brick['setting']['brick_authentication_function']))
 		$brick['setting']['brick_authentication_function'] = 'wrap_auth';
-	// to translate error messages, you might use a translation function
-	// default: use wrap_text() from core/language.inc.php from zzwrap
-	if (!isset($brick['setting']['brick_translate_text_function']))
-		$brick['setting']['brick_translate_text_function'] = 'wrap_text';
 	// allow default tables for inclusion, on demand only
 	if (!isset($brick['setting']['brick_default_tables']))
 		$brick['setting']['brick_default_tables'] = [];
