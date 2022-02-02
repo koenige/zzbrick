@@ -546,7 +546,7 @@ function brick_head_format($page, $setting, $build = false) {
 	}
 
 	// head via %%% position head %%%
-	if (is_array($page['text']) AND in_array('head', array_keys($page['text']))) {
+	if (!empty($page['text']) AND is_array($page['text']) AND in_array('head', array_keys($page['text']))) {
 		$tags['head'][] = $page['text']['head'];
 		unset($page['text']['head']);
 		if (count($page['text']) === 1 AND !empty($page['text']['text'])) {
