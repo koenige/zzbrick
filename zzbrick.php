@@ -154,6 +154,7 @@
 function brick_format($block, $parameter = false, $zz_setting = false) {
 	if (empty($zz_setting)) global $zz_setting;
 	$brick['setting'] = &$zz_setting;
+	if (!$block) return ['text' => ''];
 
 	// set defaults
 	if (empty($brick['setting']['brick_default_position'])) 
