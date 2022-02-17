@@ -417,7 +417,8 @@ function brick_request_file($script, $brick, $type = false) {
 	}
 	
 	if (!$function) {
-		$brick['request_function'] = ($folder ? $folder.'/' : '').$script;
+		// prefix cms_ is needed, e. g. for centrally defined functions like cms_login()
+		$brick['request_function'] = 'cms_'.($folder ? $folder.'/' : '').$script;
 		return $brick;
 	}
 	require_once reset($files);
