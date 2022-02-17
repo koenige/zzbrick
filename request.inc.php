@@ -377,12 +377,9 @@ function brick_request_file($script, $brick, $type = false) {
 	// get path
 	$path = substr($brick['setting']['brick_module_dir'], 1);
 	switch ($type) {
-	case 'get':
-	case 'make':
-		$path .= $type;
-		break;
-	default:
-		$path .= 'request';
+		case 'get': $path .= 'request_get'; break;
+		case 'make': $path .= $type; break;
+		default: $path .= 'request'; break;
 	}
 
 	// check for alternatives
