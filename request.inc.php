@@ -363,6 +363,8 @@ function brick_request_cms($script, $brick, $filetype = '') {
  *		'active_module' => name of module, if applicable
  */
 function brick_request_file($script, $brick, $type = false) {
+	$script = strtolower($script);
+
 	// check if script is in subdirectory
 	if (strstr($script, '/')) {
 		$script = explode('/', $script);
@@ -371,67 +373,61 @@ function brick_request_file($script, $brick, $type = false) {
 	} else {
 		$folder = '';
 	}
-	// get name of function to be called
-	$script = strtolower(str_replace('-', '_', $script));
-	$my_module_path = $brick['module_path'];
+
+	// get path
+	$path = substr($brick['setting']['brick_module_dir'], 1);
 	switch ($type) {
 	case 'get':
-		$brick['request_function'] = 'cms_get_'.$script;
-		$path = $brick['path'].'_get/';
-		$my_module_path .= '_get';
-		$function_name = 'mod_%s_get_%s';
-		break;
-	case 'htmlout':
-		$brick['request_function'] = 'cms_htmlout_'.$script;
-		$path = $brick['path'];
-		$function_name = 'mod_%s_htmlout_%s';
-		break;
 	case 'make':
-		$brick['request_function'] = 'cms_make_'.$script;
-		$path = substr($brick['path'], 0, -7).'make';
-		$my_module_path = substr($my_module_path, 0, -7).'make';
-		$function_name = 'mod_%s_make_%s';
+		$path .= $type;
 		break;
 	default:
-		$brick['request_function'] = 'cms_'.$script;
-		$path = $brick['path'];
-		$function_name = 'mod_%s_%s';
-		break;
+		$path .= 'request';
 	}
 
-	// include function file and check if function exists
-	$exists = brick_request_script(($folder ? $folder.'/' : '').$script, $path);
-	if (!$exists AND !empty($brick['setting']['modules'])) {
-		foreach ($brick['setting']['modules'] as $module) {
-			if ($folder AND $folder !== $module) continue;
-			$module_path = $brick['setting']['modules_dir'].'/'.$module.$my_module_path;
-			$exists = brick_request_script($script, $module_path);
-			if ($exists) {
-				$brick['request_function'] = sprintf($function_name, $module, $script);
-				$brick['setting']['active_module'] = $module;
-			}
+	// check for alternatives
+	$filenames[1] = str_replace('_', '-', $script);
+	if ($pos = strpos($filenames[1], '-'))
+		$filenames[0] = substr($filenames[1], 0, $pos);
+	ksort($filenames);
+	
+	// custom?
+	$function = [];
+	foreach ($filenames as $filename) {
+		$filename = sprintf('%s%s/%s', $path, ($folder ? '/'.$folder : ''), $filename);
+		$files = wrap_collect_files($filename, 'custom');
+		if ($files) {
+			$function[] = 'cms';
+			$filenames = [];
+			break;
 		}
 	}
+
+	// modules?
+	foreach ($filenames as $filename) {
+		$filename = sprintf('%s/%s', $path, $filename);
+		$files = wrap_collect_files($filename, ($folder ? $folder : 'modules'));
+		if ($files) {
+			$module = key($files);
+			wrap_module_activate($module);
+			$function[] = 'mod';
+			$function[] = $module;
+			break;
+		}
+	}
+	
+	if (!$function) {
+		$brick['request_function'] = ($folder ? $folder.'/' : '').$script;
+		return $brick;
+	}
+	require_once reset($files);
+
+	// get name of function to call
+	if ($type) $function[] = $type;
+	$function[] = str_replace('-', '_', str_replace('/', '_', $script));
+	$brick['request_function'] = implode('_', $function);
+
 	return $brick;
-}
-
-/**
- * create filename from script name
- *
- * @param string $script
- * @param string $path = $brick['path']
- * @return string $filename
- */
-function brick_request_script($script, $path) {
-	$file = substr(strtolower($script), 0, strpos($script.'_', '_')).'.inc.php';
-	if (!file_exists($path.'/'.$file)) {
-		$file = strtolower(str_replace('_', '-', $script)).'.inc.php';
-		if (!file_exists($path.'/'.$file)) {
-			return false;
-		}
-	}
-	require_once $path.'/'.$file;
-	return true;
 }
 
 /**
