@@ -504,6 +504,7 @@ function brick_textformat($string, $type, $fulltextformat) {
 		// Standard formatting, each piece will be treated seperately, for  
 		// backwards compatibility
 		if ($type === 'pieces') {
+			if (!$string) return '';
 			return markdown($string);
 		} elseif ($type === 'full') {
 			return $string;
