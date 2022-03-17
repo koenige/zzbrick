@@ -588,6 +588,20 @@ function brick_head_format_html($page, $setting, $tags) {
 	}
 	if ($tags['opengraph'] OR !empty($setting['opengraph'])) {
 		$tags['meta'] = array_merge($tags['meta'], brick_head_opengraph($tags['opengraph'], $page, $setting));
+		$meta_description = false;
+		foreach ($tags['meta'] as $index => $meta_tag) {
+			switch ($meta_tag['property']) {
+			case 'description':
+				$meta_description = true;
+				break 2;
+			case 'og:description':
+				$meta_description = $meta_tag['content'];
+				break;
+			}
+		}
+		if ($meta_description AND $meta_description !== true) {
+			$tags['meta'][] = ['property' => 'description', 'content' => $meta_description];
+		}
 	}
 	foreach ($tags['meta'] as $index) {
 		if (!is_array($index)) continue;
