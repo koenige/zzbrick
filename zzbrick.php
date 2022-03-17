@@ -626,17 +626,31 @@ function brick_head_opengraph($tags, $page, $setting) {
 	$tags['og:locale'] = $tags['og:locale'] ?? $setting['lang'];
 	$tags['og:description'] = $tags['og:description'] ?? $page['description'];
 
-	// default image: opengraph.png from theme folder
-	if (!empty($setting['active_theme']) AND empty($tags['og:image'])) {
-		$filename = sprintf('%s/%s/opengraph.png', $setting['themes_dir'], $setting['active_theme']);
-		if (file_exists($filename)) {
-			$size = getimagesize($filename);
-			$tags['og:image'] = $setting['host_base'].'/opengraph.png';
-			$tags['og:image:width'] = $size[0];
-			$tags['og:image:height'] = $size[1];
-			$tags['og:image:alt'] = $setting['project'].' '.$setting['brick_translate_text_function']('Logo');
+	if (empty($tags['og:image'])) {
+		$processed = false;
+		if (function_exists('mf_media_opengraph_image')) {
+			if (!empty($tags['image'])) {
+				$tags += mf_media_opengraph_image($tags['image']);
+				$processed = true;
+			} elseif (!empty($setting['opengraph']) AND !empty($page['media']['images'])) {
+				$tags += mf_media_opengraph_image(reset($page['media']['images']));
+				$processed = true;
+			}
+		}
+		if (!$processed AND !empty($setting['active_theme'])) {
+		// default image: opengraph.png from theme folder
+			$filename = sprintf('%s/%s/opengraph.png', $setting['themes_dir'], $setting['active_theme']);
+			if (file_exists($filename)) {
+				$size = getimagesize($filename);
+				$tags['og:image'] = $setting['host_base'].'/opengraph.png';
+				$tags['og:image:width'] = $size[0];
+				$tags['og:image:height'] = $size[1];
+				$tags['og:image:alt'] = $setting['project'].' '.$setting['brick_translate_text_function']('Logo');
+			}
 		}
 	}
+	unset($tags['image']);
+
 	// image is required
 	if (empty($tags['og:image'])) return [];
 	if (!empty($setting['opengraph_properties'])) {
