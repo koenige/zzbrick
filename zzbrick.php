@@ -619,7 +619,7 @@ function brick_head_format_html($page, $setting, $tags) {
  */
 function brick_head_opengraph($tags, $page, $setting) {
 	// defaults
-	$tags['og:title'] = $tags['og:title'] ?? $page['title'];
+	$tags['og:title'] = $tags['og:title'] ?? $setting['request_uri'] === '/' ? $setting['project'] : $page['title'];
 	$tags['og:type'] = $tags['og:type'] ?? 'website';
 	$tags['og:url'] = $tags['og:url'] ?? $setting['host_base'].$setting['request_uri'];
 	$tags['og:site_name'] = $tags['og:site_name'] ?? $setting['project'];
