@@ -429,6 +429,22 @@ function brick_request_file($script, $brick, $type = false) {
 }
 
 /**
+ * request data from get script, either from custom folder or module
+ * use from inside of request or make script
+ *
+ * @param string $script
+ * @param array $params (optional)
+ * @param array $settings (optional)
+ * @return array
+ */
+function brick_request_data($script, $params = [], $settings = []) {
+	global $zz_setting;
+	$brick = brick_request_file($script, ['setting' => $zz_setting], 'get');
+	$data = $brick['request_function']($params, $settings);
+	return $data;
+}
+
+/**
  * requests external data, first create URL, then run syndication script
  * from own library
  *
