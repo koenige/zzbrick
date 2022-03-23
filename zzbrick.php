@@ -590,6 +590,7 @@ function brick_head_format_html($page, $setting, $tags) {
 		$tags['meta'] = array_merge($tags['meta'], brick_head_opengraph($tags['opengraph'], $page, $setting));
 		$meta_description = false;
 		foreach ($tags['meta'] as $index => $meta_tag) {
+			if (empty($meta_tag['property'])) continue;
 			switch ($meta_tag['property']) {
 			case 'description':
 				$meta_description = true;
