@@ -619,6 +619,7 @@ function brick_request_link(&$media, $placeholder, $field_name) {
 	}
 	$mediakey = $area.'s';
 	$no = array_shift($placeholder);
+	if (!array_key_exists($mediakey, $media)) return '';
 	foreach ($media[$mediakey] as $medium_id => $medium) {
 		if ($medium[$field_name] != $no) continue;
 		unset($media[$mediakey][$medium_id]);
