@@ -5,10 +5,10 @@
  * Settings
  *
  * Part of »Zugzwang Project«
- * http://www.zugzwang.org/projects/zzbrick
+ * https://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2016, 2018-2021 Gustaf Mossakowski
+ * @copyright Copyright © 2016, 2018-2022 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -40,6 +40,16 @@ function brick_setting($brick) {
 		array_shift($brick['vars']);
 	} elseif (array_key_exists($brick_var, $brick['setting']) AND !is_array($brick['setting'][$brick_var])) {
 		$content = $brick['setting'][$brick_var];
+	} elseif (strstr($brick_var, '[')) {
+		// @todo improve this code, check needs to be in separate function
+		// @todo support three keys and counting
+		$keys = explode('[', $brick_var);
+		foreach ($keys as $index => $key) {
+			$keys[$index] = rtrim($key, ']');
+		}
+		if (count($keys) === 2)
+			if (isset($brick['setting'][$keys[0]][$keys[1]]))
+				$content = $brick['setting'][$keys[0]][$keys[1]];
 	} elseif (substr($brick_var, 0, 11) === 'zzform_int_') {
 		$key = substr($brick_var, 11);
 		if (array_key_exists($key, $zz_conf['int'])) {
