@@ -1002,17 +1002,30 @@ function brick_blocks_cleanup($brick) {
  * @return array merged $brick
  */
 function brick_merge_page_bricks($page, $content) {
+	static $status;
+	if (empty($status)) $status = false;
+
 	// get some content from the function and overwrite existing values
 	$overwrite_bricks = [
 		'title', 'dont_show_h1', 'language_link', 'error_type',
 		'last_update', 'style', 'project',
 		'created', 'headers', 'url_ending', 'no_output', 'template',
-		'content_type', 'status', 'redirect', 'send_as_json', 'url', 'h1',
+		'content_type', 'redirect', 'send_as_json', 'url', 'h1',
 		'description'
 	];
 	foreach ($overwrite_bricks as $part) {
 		if (!empty($content[$part]))
 			$page[$part] = $content[$part];	
+	}
+	
+	// status is not overwritten if new status is 404
+	if (!empty($content['status'])) {
+		// status is 200 per default, but if it was set once explicitly to 200
+		// keep it that way
+		if ($status !== 200) {
+			$page['status'] = $content['status'];
+			$status = $content['status'];
+		}
 	}
 
 	// get even more content from the function and merge with existing values
