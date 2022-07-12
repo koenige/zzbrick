@@ -545,9 +545,8 @@ function brick_csv_encode($data, $setting) {
 		$newline = true;
 	}
 	if ($setting['excel_compatible']) {
-		global $zz_conf;
 		// @todo check with mb_list_encodings() if available
-		$text = mb_convert_encoding($text, 'UTF-16LE', $zz_conf['character_set']);
+		$text = mb_convert_encoding($text, 'UTF-16LE', $setting['character_set']);
 	}
 	return $text;
 }

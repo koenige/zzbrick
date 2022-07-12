@@ -70,7 +70,7 @@ function brick_setting($brick) {
 		// other special cases
 		switch ($brick_var) {
 		case 'charset':
-			$content = $zz_conf['character_set'];
+			$content = $brick['setting']['character_set'];
 			break;
 		}
 	}
