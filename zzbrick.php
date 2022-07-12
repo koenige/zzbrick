@@ -111,7 +111,7 @@
  * Format a textblock
  * 
  * @param string $block = text block to format
- * @param array $parameter = parameters, via URL or via function
+ * @param mixed $parameter = parameters, via URL or via function, string or array
  * @param array $zz_setting settings, might be made available in a global array
  * @return $page array
 	must have:
@@ -189,9 +189,14 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 	$brick['position'] = 'none';
 	$brick['cut_next_paragraph'] = false;		// to get markdown formatted text inline
 	$brick['replace_db_text'][$brick['position']] = false;
+	$check = brick_check_parameters($parameter, $brick['setting']);
+	if (!$check) {
+		$brick['page']['status'] = 404;
+		return $brick;
+	}
 	$brick['parameter'] = $parameter;
 	// first call of brick_format(): parameters are from URL
-	if (!isset($brick['setting']['url_parameter'])) 
+	if (!isset($brick['setting']['url_parameter']))
 		$brick['setting']['url_parameter'] = $parameter;
 
 	// initialize text at given position
@@ -1060,4 +1065,32 @@ function brick_format_function_prefix($function, $settings) {
 		$function = $settings['brick_formatting_functions_prefix'][$function].'_'.$function;
 	}
 	return $function;
+}
+
+/**
+ * check if parameters from URL are normalised
+ * if not, throw a 404
+ *
+ * @param mixed $parameters
+ * @param array $settings = $brick['settings']
+ * @return bool false: error, throw 404
+ */
+function brick_check_parameters($parameters, $settings) {
+	$return = true;
+	if (!is_array($parameters))
+		$parameters = explode('/', $parameters);
+	foreach ($parameters as $index => $parameter) {
+		if (!is_int($index)) continue;
+		if (is_array($parameter)) continue;
+		if (!$parameter) continue;
+		if ($parameter === '*') continue;
+		if (strstr($parameter, '%')) {
+			// valid sequence?
+			if (strtolower(wrap_detect_encoding(urldecode($parameter))) === $settings['character_set']) continue;
+		} else {
+			if (wrap_filename($parameter, '-', ['.' => '.']) === $parameter.'') continue;
+		}
+		$return = false;
+	}
+	return $return;
 }
