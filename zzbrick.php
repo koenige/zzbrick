@@ -1088,7 +1088,7 @@ function brick_check_parameters($parameters, $settings) {
 			// valid sequence?
 			if (strtolower(wrap_detect_encoding(urldecode($parameter))) === $settings['character_set']) continue;
 		} else {
-			if (wrap_filename($parameter, '-', ['.' => '.']) === $parameter.'') continue;
+			if (wrap_filename($parameter, '-', ['.' => '.', '+' => '+']) === $parameter.'') continue;
 		}
 		$return = false;
 	}
