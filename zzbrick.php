@@ -78,7 +78,7 @@
  * 	- loop - will do a loop and repeat parts of the brick
  * 		%%% loop start "optional HTML if content" "optional HTML if no content" %%%
  * 		%%% loop end "optional HTML if content" %%%
- * 		»subloops«:
+ * 		Â»subloopsÂ«:
  * 		%%% loop subcategory %%%
  * 		%%% loop end "optional HTML if content" %%%
  *		only part of the items
@@ -98,11 +98,11 @@
  * 		following content is allowed or forbidden (e. g. will be shown or not)
  * 	- text - translates text string
  * 
- * Part of »Zugzwang Project«
+ * Part of Â»Zugzwang ProjectÂ«
  * https://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2009-2022 Gustaf Mossakowski
+ * @copyright Copyright Â© 2009-2022 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -811,7 +811,24 @@ function brick_local_settings($brick) {
 	// get settings out of parameters
 	$brick['local_settings'] = [];
 	$url_settings = array_reverse($brick['vars']);
+	$append = [];
 	foreach ($url_settings as $setting) {
+		// allow settings in quotation marks, but donâ€™t do anything if there is
+		// no =" finally
+		if ($append) {
+			$append[] = $setting;
+			if (!strstr($setting, '="')) continue;
+			$append = array_reverse($append);
+			$setting = implode('%20', $append);
+			// ok, we found something, so now we can remove the variables
+			for ($i = 0; $i < count($append) - 1; $i++) {
+				array_pop($brick['vars']);
+			}
+			$append = [];
+		} elseif (str_ends_with($setting, '"')) {
+			$append[] = $setting;
+			continue;
+		}
 		// '=' is not an allowed symbol for a folder identifier
 		if (!strstr($setting, '=')) continue;
 		parse_str($setting, $new_settings);
@@ -825,6 +842,8 @@ function brick_local_settings($brick) {
 			} else {
 				if (substr($new_setting, 0, 1) === '[' AND substr($new_setting, -1) === ']') {
 					$new_settings[$index] = explode(',', substr($new_setting, 1, -1));
+				} elseif (str_starts_with($new_setting, '"')) {
+					$new_settings[$index] = trim($new_setting, '"');
 				}
 			}
 		}
