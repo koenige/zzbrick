@@ -606,7 +606,7 @@ function brick_head_format_html($page, $setting, $tags) {
 			}
 		}
 		if ($meta_description AND $meta_description !== true) {
-			$tags['meta'][] = ['property' => 'description', 'content' => $meta_description];
+			$tags['meta'][] = ['name' => 'description', 'content' => $meta_description];
 		}
 	}
 	foreach ($tags['meta'] as $index) {
