@@ -192,7 +192,7 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 	$check = brick_check_parameters($parameter, $brick['setting']);
 	if (!$check) {
 		$brick['page']['status'] = 404;
-		return $brick;
+		return $brick['page'];
 	}
 	$brick['parameter'] = $parameter;
 	// first call of brick_format(): parameters are from URL
