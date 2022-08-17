@@ -745,7 +745,10 @@ function brick_file($type, $function) {
 		);
 		if (!file_exists($file)) continue;
 		require_once $file;
-		$zz_setting['active_module'] = $module;
+		if (function_exists('wrap_module_activate'))
+			wrap_module_activate($module);
+		else
+			$zz_setting['active_module'] = $module;
 		return sprintf('mod_%s_%s_%s', $module, $type, $function_name);
 	}
 	return '';
