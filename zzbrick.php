@@ -965,6 +965,9 @@ function brick_include($brick, $blocks = []) {
 	if (!isset($brick['setting']['brick_template_function']))
 		$brick['setting']['brick_template_function'] = 'wrap_template';
 
+	if (count($blocks) === 1)
+		return [$brick, $blocks];
+
 	$pos = 0;
 	foreach ($blocks as $index => $block) {
 		$pos++;
@@ -984,20 +987,28 @@ function brick_include($brick, $blocks = []) {
 			$new_blocks = explode('%%%', $tpl);
 			list($brick, $new_blocks) = brick_include($brick, $new_blocks);
 			// there now are two or three text blocks adjacent, glue them together
-			if (isset($blocks[$pos - 2])) {
-				$first_new_block = array_shift($new_blocks);
-				$blocks[$pos - 2] .= $first_new_block;
-			}
-			if (isset($blocks[$pos])) {
-				$last_new_block = array_pop($new_blocks);
-				if ($new_blocks) {
-					$blocks[$pos] = $last_new_block.$blocks[$pos];
-				} else {
-					$blocks[$pos - 2] .= $last_new_block.$blocks[$pos];
-					unset($blocks[$pos]);
+			if (count($new_blocks) > 1) {
+				if (isset($blocks[$pos - 2])) {
+					$first_new_block = array_shift($new_blocks);
+					$blocks[$pos - 2] .= $first_new_block;
 				}
+				if (isset($blocks[$pos])) {
+					$last_new_block = array_pop($new_blocks);
+					if ($new_blocks) {
+						$blocks[$pos] = $last_new_block.$blocks[$pos];
+					} else {
+						$blocks[$pos - 2] .= $last_new_block.$blocks[$pos];
+						unset($blocks[$pos]);
+					}
+				}
+				array_splice($blocks, $pos - 1, 1, $new_blocks);
+			} else {
+				$new_block = array_shift($new_blocks);
+				if (isset($blocks[$pos - 3]))
+					$blocks[$pos - 3] .= $new_block;
+				else
+					$blocks[$pos - 2] .= $new_block;
 			}
-			array_splice($blocks, $pos - 1, 1, $new_blocks);
 			$pos += count($new_blocks);
 		}
 	}
