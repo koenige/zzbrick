@@ -301,15 +301,15 @@ function brick_forms_file($brick) {
 		}
 		$module_path = $brick['setting']['modules_dir'].'/'.$module.$brick['module_path'];
 		$brick['form_script_path'] = $module_path.'/'.$script.'.php';
-		if (file_exists($brick['form_script_path']) AND function_exists('wrap_module_activate')) {
-			wrap_module_activate($module);
+		if (file_exists($brick['form_script_path']) AND function_exists('wrap_package_activate')) {
+			wrap_package_activate($module);
 			return $brick;
 		}
 		if ($module !== 'default') continue;
 		// default-module has some database_-prefixed tables
 		$brick['form_script_path'] = $module_path.'/database_'.$script.'.php';	
-		if (file_exists($brick['form_script_path']) AND function_exists('wrap_module_activate')) {
-			wrap_module_activate($module);
+		if (file_exists($brick['form_script_path']) AND function_exists('wrap_package_activate')) {
+			wrap_package_activate($module);
 			return $brick;
 		}
 	}

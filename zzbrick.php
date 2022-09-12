@@ -745,8 +745,8 @@ function brick_file($type, $function) {
 		);
 		if (!file_exists($file)) continue;
 		require_once $file;
-		if (function_exists('wrap_module_activate'))
-			wrap_module_activate($module);
+		if (function_exists('wrap_package_activate'))
+			wrap_package_activate($module);
 		else
 			$zz_setting['active_module'] = $module;
 		return sprintf('mod_%s_%s_%s', $module, $type, $function_name);

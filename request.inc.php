@@ -406,7 +406,7 @@ function brick_request_file($script, $brick, $type = false) {
 		$files = wrap_collect_files($filename, ($folder ? $folder : 'modules'));
 		if ($files) {
 			$module = key($files);
-			wrap_module_activate($module);
+			wrap_package_activate($module);
 			$function[] = 'mod';
 			$function[] = $module;
 			break;
