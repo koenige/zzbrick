@@ -57,17 +57,6 @@ function brick_request($brick) {
 	if (!empty($brick['local_settings']['brick_request_cms']))
 		$brick['setting']['brick_request_cms'] = true;
 	
-	if (file_exists($brick['path'].'/_common.inc.php')) {
-		// include modules _common.inc.php here if needed
-		require $brick['path'].'/_common.inc.php';
-	} elseif (!empty($brick['setting']['modules'])) {
-		foreach ($brick['setting']['modules'] as $module) {
-			if (file_exists($file = $brick['setting']['modules_dir'].'/'.$module.'/zzbrick_request/_common.inc.php')) {
-				require $file;
-			}
-		}
-	}
-
 	// get parameter for function
 	$filetype = '';
 	if (!empty($brick['setting']['brick_request_cms'])
@@ -405,6 +394,9 @@ function brick_request_file($script, $brick, $type = false) {
 		$filename = sprintf('%s/%s', $path, $filename);
 		$files = wrap_collect_files($filename, ($folder ? $folder : 'modules'));
 		if ($files) {
+			// more than one match? do not take first match, remove default module first
+			if (count($files) > 1 AND key($files) === 'default')
+				unset($files['default']);
 			$module = key($files);
 			wrap_package_activate($module);
 			$function[] = 'mod';
