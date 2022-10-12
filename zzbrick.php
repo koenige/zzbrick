@@ -868,7 +868,14 @@ function brick_local_settings($brick) {
 function brick_placeholder_script($brick) {
 	if (empty($brick['local_settings']['*'])) return $brick;
 	$function = brick_file('placeholder', $brick['local_settings']['*']);
-	if (function_exists($function)) $brick = $function($brick);
+	if (function_exists($function)) {
+		if (!empty($brick['parameter'])) {
+			$brick['placeholder'] = $brick['parameter'];
+			if ($pos = strpos($brick['placeholder'], '/'))
+				$brick['placeholder'] = substr($brick['placeholder'], 0, $pos);
+		}
+		$brick = $function($brick);
+	}
 	return $brick;
 }
 
