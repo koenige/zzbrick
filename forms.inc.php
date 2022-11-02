@@ -53,8 +53,6 @@ function brick_forms($brick) {
 	// allow default tables for inclusion, on demand only
 	if (!isset($brick['setting']['brick_default_tables']))
 		$brick['setting']['brick_default_tables'] = [];
-	if (!isset($brick['setting']['zzform_colours']))
-		$brick['setting']['zzform_colours'] = true;
 
 	// directory depending on subtype
 	if (empty($brick['subtype'])) $brick['subtype'] = 'forms';
