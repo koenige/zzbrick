@@ -8,7 +8,7 @@
  * http://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2020 Gustaf Mossakowski
+ * @copyright Copyright © 2020, 2022 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -66,7 +66,7 @@ function brick_block_definition($brick) {
 		$brick['page']['error']['level'] = E_USER_WARNING;
 		$brick['page']['error']['msg_text']
 			= 'Wrong type for block: %s is not possible';
-		$brick['page']['error']['msg_vars'] = $type;
+		$brick['page']['error']['msg_vars'] = [$type];
 		return $brick;
 	}
 	$block = array_shift($brick['vars']);

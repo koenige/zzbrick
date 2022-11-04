@@ -986,7 +986,7 @@ function brick_include($brick, $blocks = []) {
 				$brick['page']['error']['level'] = E_USER_ERROR;
 				$brick['page']['error']['msg_text']
 					= 'Template %s includes itself';
-				$brick['page']['error']['msg_vars'] = $block[1];
+				$brick['page']['error']['msg_vars'] = [$block[1]];
 				return [$brick, $blocks];
 			}
 			$includes[] = $block[1];
