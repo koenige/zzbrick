@@ -975,7 +975,7 @@ function brick_include($brick, $blocks = []) {
 	if (count($blocks) === 1)
 		return [$brick, $blocks];
 
-	$pos = 0;
+	$pos = -1;
 	foreach ($blocks as $index => $block) {
 		$pos++;
 		if ($index & 1) {
@@ -995,26 +995,39 @@ function brick_include($brick, $blocks = []) {
 			list($brick, $new_blocks) = brick_include($brick, $new_blocks);
 			// there now are two or three text blocks adjacent, glue them together
 			if (count($new_blocks) > 1) {
-				if (isset($blocks[$pos - 2])) {
+				if (isset($blocks[$pos - 1])) {
 					$first_new_block = array_shift($new_blocks);
-					$blocks[$pos - 2] .= $first_new_block;
+					$blocks[$pos - 1] .= $first_new_block;
 				}
-				if (isset($blocks[$pos])) {
+				if (isset($blocks[$pos + 1])) {
 					$last_new_block = array_pop($new_blocks);
 					if ($new_blocks) {
-						$blocks[$pos] = $last_new_block.$blocks[$pos];
+						$blocks[$pos + 1] = $last_new_block.$blocks[$pos + 1];
 					} else {
-						$blocks[$pos - 2] .= $last_new_block.$blocks[$pos];
-						unset($blocks[$pos]);
+						$blocks[$pos - 1] .= $last_new_block.$blocks[$pos + 1];
+						unset($blocks[$pos + 1]);
 					}
 				}
-				array_splice($blocks, $pos - 1, 1, $new_blocks);
+				array_splice($blocks, $pos, 1, $new_blocks);
 			} else {
 				$new_block = array_shift($new_blocks);
-				if (isset($blocks[$pos - 3]))
-					$blocks[$pos - 3] .= $new_block;
-				else
-					$blocks[$pos - 2] .= $new_block;
+				if (array_key_exists($pos - 1, $blocks) AND array_key_exists($pos + 1, $blocks)) {
+					// in the middle
+					$blocks[$pos - 1] .= $new_block.$blocks[$pos + 1];
+					unset($blocks[$pos]);
+					unset($blocks[$pos + 1]);
+				} elseif (array_key_exists($pos - 1, $blocks)) {
+					// at the beginning
+					$blocks[$pos - 1] .= $new_block;
+					unset($blocks[$pos]);
+				} elseif (array_key_exists($pos + 1, $blocks)) {
+					// at the end
+					$blocks[$pos + 1] = $new_block.$blocks[$pos + 1];
+					unset($blocks[$pos]);
+				} else {
+					// only block
+					$blocks[$pos] = $new_block;
+				}
 			}
 			$pos += count($new_blocks);
 		}
