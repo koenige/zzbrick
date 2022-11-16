@@ -320,6 +320,8 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 					if (!empty($params[$i-1])) {
 						foreach ($params[$i-1] as $key => $value) {
 							if (is_array($value)) continue;
+							$brick['loop_parameter']['main__'.$key] = $value;
+							// @deprecated: do not use main__ prefix
 							if (isset($brick['loop_parameter'][$key])) continue;
 							$brick['loop_parameter'][$key] = $value;
 						}
