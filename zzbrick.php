@@ -251,6 +251,13 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 						} elseif (!empty($brick['parameter'][$brick['vars'][0]])) {
 							// main record is not in a loop
 							$loop_parameter[$i] = $brick['parameter'][$brick['vars'][0]];
+						} elseif (strstr($brick['vars'][0], '/')) {
+							$loop_vars = explode('/', $brick['vars'][0]);
+							if (count($loop_vars) === 2 AND !empty($brick['parameter'][$loop_vars[0]][$loop_vars[1]])) {
+								$loop_parameter[$i] = $brick['parameter'][$loop_vars[0]][$loop_vars[1]];
+							} else {
+								$loop_parameter[$i] = [];
+							}
 						} else {
 							$loop_parameter[$i] = [];
 							if (!empty($brick['vars'][2])) {
