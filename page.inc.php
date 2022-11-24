@@ -32,7 +32,7 @@
  * @return array $brick
  */
 function brick_page($brick) {
-	if (empty($brick['vars'][0])) return false;
+	if (empty($brick['vars'][0])) return $brick;
 	global $zz_page;
 	
 	if (empty($brick['setting']['brick_page_shortcuts']))
