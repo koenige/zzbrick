@@ -673,7 +673,7 @@ function brick_request_link(&$media, $placeholder, $field_name) {
 				}
 			}
 		}
-		if ($medium['custom_title'] === '-') {
+		if (!empty($medium['custom_title']) AND $medium['custom_title'] === '-') {
 			$medium['custom_title'] = '';
 			$medium['title'] = '';
 		}
