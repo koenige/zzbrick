@@ -586,19 +586,19 @@ function brick_request_link(&$media, $placeholder, $field_name) {
 	switch ($area) {
 	case 'bild':
 	case 'image':
-		$area = 'image';
+		$mediakey = 'images';
 		$template = 'image'; // inline image
 		break;
 	case 'video':
-		$area = 'video';
+		$mediakey = 'videos';
 		$template = 'video'; // inline video
 		break;
 	case 'link':
-		$area = 'link';
+		$mediakey = 'links';
 		$template = 'link'; // just plain link
 		break;
 	case 'doc':
-		$area = 'link';
+		$mediakey = 'links';
 		$template = 'doc'; // link with anchor
 		break;
 	default:
@@ -608,14 +608,13 @@ function brick_request_link(&$media, $placeholder, $field_name) {
 		}
 		return '%%% '.$area.' '.implode(' ', $placeholder).' %%%';
 	}
-	$mediakey = $area.'s';
 	$no = array_shift($placeholder);
 	if (!array_key_exists($mediakey, $media)) return '';
 	foreach ($media[$mediakey] as $medium_id => $medium) {
 		if ($medium[$field_name] != $no) continue;
 		unset($media[$mediakey][$medium_id]);
 		// last parameter = size
-		if ($area === 'image') {
+		if ($mediakey === 'images') {
 			if (count($placeholder) === 3)
 				$medium['custom_title'] = array_pop($placeholder);
 			$size = array_pop($placeholder);
