@@ -674,6 +674,10 @@ function brick_request_link(&$media, $placeholder, $field_name) {
 				}
 			}
 		}
+		if ($medium['custom_title'] === '-') {
+			$medium['custom_title'] = '';
+			$medium['title'] = '';
+		}
 		return wrap_template($template, $medium);
 	}
 	return '';
