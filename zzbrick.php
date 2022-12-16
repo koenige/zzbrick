@@ -346,6 +346,11 @@ function brick_format($block, $parameter = false, $zz_setting = false) {
 		next($blocks);
 	}
 	
+	// closing section?
+	if (!empty($brick['section'])) {
+		$brick['section_close'] = true;
+		$brick = brick_section($brick);
+	}
 	$brick = brick_blocks_cleanup($brick);
 
 	foreach ($brick['page']['text'] as $index => $text) {
