@@ -68,7 +68,10 @@ function brick_request($brick) {
 			}
 		} else {
 			$path = pathinfo($brick['setting']['request_uri']);
-			if (!empty($path['extension'])) $filetype = $path['extension'];
+			if (!empty($path['extension'])) {
+				$filetype = $path['extension'];
+				if ($pos = strpos($filetype, '?')) $filetype = substr($filetype, 0, $pos);
+			}
 		}
 	}
 	$brick['vars'] = brick_request_params($brick['vars'], $brick['setting']['url_parameter']);
