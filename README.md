@@ -6,11 +6,11 @@ combination of html, text and placeholder blocks in content management systems.
 'brick' will format all text with markdown and replace the placeholder blocks
 with real content depending on which type they are.
 
-Part of [»Zugzwang Project«](http://www.zugzwang.org/)
+Part of [»Zugzwang Project«](https://www.zugzwang.org/)
 
 ## How zzbrick works
 
-`$page = brick_format($block, $parameters, $settings);`
+`$page = brick_format($block, $parameters);`
 
 brick_format() formats the text in $block and returns an array:
 

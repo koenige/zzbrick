@@ -102,7 +102,7 @@
  * https://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2009-2022 Gustaf Mossakowski
+ * @copyright Copyright © 2009-2023 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -112,7 +112,6 @@
  * 
  * @param string $block = text block to format
  * @param mixed $parameter = parameters, via URL or via function, string or array
- * @param array $zz_setting settings, might be made available in a global array
  * @return $page array
 	must have:
  		'text' => (string) textbody, html formatted
@@ -151,8 +150,8 @@
  		'media' => (array) page media
  			'position' => array
  */
-function brick_format($block, $parameter = false, $zz_setting = false) {
-	if (empty($zz_setting)) global $zz_setting;
+function brick_format($block, $parameter = false) {
+	global $zz_setting;
 	$brick['setting'] = &$zz_setting;
 	if (!$block) return ['text' => ''];
 
