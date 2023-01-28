@@ -32,7 +32,7 @@
  * @return array $brick
  */
 function brick_rights($brick) {
-	$rights_translated = bricksettings('brick_rights_translated');
+	$rights_translated = bricksetting('brick_rights_translated');
 	// default translations, cannot be changed
 	$rights_translated['on'] = '=';
 	$rights_translated['elseif'] = '=';
