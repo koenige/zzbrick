@@ -4,11 +4,11 @@
  * zzbrick
  * Access rights
  *
- * Part of »Zugzwang Project«
- * http://www.zugzwang.org/projects/zzbrick
+ * Part of Â»Zugzwang ProjectÂ«
+ * https://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2022 Gustaf Mossakowski
+ * @copyright Copyright Â© 2022-2023 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -28,15 +28,15 @@
  * @see wrap_access()
  */
 function brick_access($brick) {
+	$access_translated = bricksetting('brick_access_translated');
 	// default translations, cannot be changed
-	$brick['setting']['brick_access_translated']['on'] = '=';
-	$brick['setting']['brick_access_translated']['elseif'] = '=';
-	$brick['setting']['brick_access_translated']['else'] = ':';
-	$brick['setting']['brick_access_translated']['off'] = '-';
+	$access_translated['on'] = '=';
+	$access_translated['elseif'] = '=';
+	$access_translated['else'] = ':';
+	$access_translated['off'] = '-';
 
-	if (in_array($brick['vars'][0], array_keys($brick['setting']['brick_access_translated']))) {
-		$brick['vars'][0] = $brick['setting']['brick_access_translated'][$brick['vars'][0]];
-	}
+	if (in_array($brick['vars'][0], array_keys($access_translated)))
+		$brick['vars'][0] = $access_translated[$brick['vars'][0]];
 
 	if ($brick['vars'][0] == '-') {
 		$rights = '-';
@@ -55,8 +55,8 @@ function brick_access($brick) {
 		// is there an asterisk?
 		$details = '';
 		foreach ($brick['vars'] as $id => $var) {
-			if (substr($var, -1) === '*' AND !empty($brick['setting']['url_parameter'])) {
-				$details = str_replace('*', $brick['setting']['url_parameter'], $var);
+			if (substr($var, -1) === '*' AND !empty(bricksetting('brick_url_parameter'))) {
+				$details = str_replace('*', bricksetting('brick_url_parameter'), $var);
 				unset($brick['vars'][$id]);
 			}
 		}

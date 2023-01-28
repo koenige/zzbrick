@@ -8,7 +8,7 @@
  * https://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2009-2012, 2014-2022 Gustaf Mossakowski
+ * @copyright Copyright © 2009-2012, 2014-2023 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -24,61 +24,47 @@
  *		%%% request news * %%% -- URL-parameters take place of asterisk
  *		%%% request news 2004 %%%
  * @param array $brick	Array from zzbrick
- *	- brick_export_formats = html, xml, json
  * @return array $brick
  */
 function brick_request($brick) {
 	// shortcuts
 	if (empty($brick['subtype'])) 
 		$brick['subtype'] = '';
-	if (empty($brick['setting']['brick_request_shortcuts'])) 
-		$brick['setting']['brick_request_shortcuts'] = [];
-	if (empty($brick['setting']['brick_request_url_params'])) 
-		$brick['setting']['brick_request_url_params'] = [];
-	if (in_array($brick['subtype'], $brick['setting']['brick_request_shortcuts'])) {
+	if (in_array($brick['subtype'], bricksetting('brick_request_shortcuts'))) {
 		array_unshift($brick['vars'], $brick['subtype']);
 		// to transport additional variables which are needed
 		// so %%% image 23 %%% may be as small as possible
-		if (in_array($brick['subtype'], $brick['setting']['brick_request_url_params'])) {
+		if (in_array($brick['subtype'], bricksetting('brick_request_url_params'))) {
 			$brick['vars'][] = '*';
 		}
-	}
-	// supported export formats
-	if (empty($brick['setting']['brick_export_formats'])) {
-		$brick['setting']['brick_export_formats'] = [
-			'html', 'xml', 'json', 'jsonl', 'csv'
-		];
-	}
-	if (!is_array($brick['setting']['brick_export_formats'])) {
-		$brick['setting']['brick_export_formats'] = [$brick['setting']['brick_export_formats']];
 	}
 
 	$brick = brick_local_settings($brick);
 	if (!empty($brick['local_settings']['brick_request_cms']))
-		$brick['setting']['brick_request_cms'] = true;
+		bricksetting('brick_request_cms', true);
 	
 	// get parameter for function
 	$filetype = '';
-	if (!empty($brick['setting']['brick_request_cms'])) {
-		if (preg_match('/(.+)\.([a-z0-9]+)/i', $brick['setting']['url_parameter'], $matches)) {
+	if (bricksetting('brick_request_cms')) {
+		if (preg_match('/(.+)\.([a-z0-9]+)/i', bricksetting('brick_url_parameter'), $matches)) {
 			// use last part behind dot as file extension
-			if (count($matches) === 3 AND in_array($matches[2], $brick['setting']['brick_export_formats'])) {
-				$brick['setting']['url_parameter'] = $matches[1];
+			if (count($matches) === 3 AND in_array($matches[2], bricksetting('brick_export_formats'))) {
+				bricksetting('brick_url_parameter', $matches[1]);
 				$filetype = $matches[2];
 			}
 		} else {
-			$path = pathinfo($brick['setting']['request_uri']);
+			$path = pathinfo(bricksetting('request_uri'));
 			if (!empty($path['extension'])) {
 				$filetype = $path['extension'];
 				if ($pos = strpos($filetype, '?')) $filetype = substr($filetype, 0, $pos);
 			}
 		}
 	}
-	$brick['vars'] = brick_request_params($brick['vars'], $brick['setting']['url_parameter']);
+	$brick['vars'] = brick_request_params($brick['vars'], bricksetting('brick_url_parameter'));
 	$brick = brick_placeholder_script($brick);
 	$script = array_shift($brick['vars']);
 
-	if (!empty($brick['setting']['brick_request_cms'])) {
+	if (bricksetting('brick_request_cms')) {
 		// call function
 		$content = brick_request_cms($script, $brick, $filetype);
 	} else {
@@ -218,21 +204,16 @@ function brick_request_params($variables, $parameter) {
  *
  * @param string $script - script name ('func') for brick_request
  * @param array $brick - settings for brick-scripts, here:
- *	- brick_cms_input = db, xml, json (defaults to db)
+ *	- brick_cms_input = db, xml, json
  * @return mixed output of function (html: $page; other cases: direct output, headers
  */
 function brick_request_cms($script, $brick, $filetype = '') {
-	// brick_cms_input is variable to check where input comes from
-	if (empty($brick['setting']['brick_cms_input'])) 
-		$brick['setting']['brick_cms_input'] = '';
-
-	if (in_array($brick['subtype'], $brick['setting']['brick_export_formats'])) {
+	if (in_array($brick['subtype'], bricksetting('brick_export_formats')))
 		$output_format = $brick['subtype'];
-	} elseif ($filetype AND in_array($filetype, $brick['setting']['brick_export_formats'])) {
+	elseif ($filetype AND in_array($filetype, bricksetting('brick_export_formats')))
 		$output_format = $filetype;
-	} else {
+	else
 		$output_format = false;
-	}
 	
 	// get data for input, depending on settings
 	$brick = brick_request_file($script, $brick, 'get');
@@ -240,14 +221,14 @@ function brick_request_cms($script, $brick, $filetype = '') {
 		$data = $brick['request_function']($brick['vars'], $brick['local_settings'], $brick['data'] ?? []);
 	} else {
 		// function does not exist, probably no database data is needed
-		switch ($brick['setting']['brick_cms_input']) {
+		switch (bricksetting('brick_cms_input')) {
 		case 'xml':
 		case 'json':
-			$data = brick_request_external($script, $brick['setting'], $brick['vars']);
+			$data = brick_request_external($script, $brick['vars']);
 			break;
 		case 'jsonl':
 			// trigger JSON Lines download
-			$data = brick_request_external($script, $brick['setting'], $brick['vars']);
+			$data = brick_request_external($script, $brick['vars']);
 			$data = true;
 			break;
 		case 'db':
@@ -293,11 +274,6 @@ function brick_request_cms($script, $brick, $filetype = '') {
 		$filename = $script.'.'.$output_format;
 	}
 	// just use/change settings for this single request
-	$setting = $brick['setting'];
-	if (is_array($data) AND array_key_exists('_setting', $data)) {
-		$setting = array_merge($setting, $data['_setting']);
-		unset($data['_setting']);
-	}
 	if (is_array($data) AND array_key_exists('_query_strings', $data)) {
 		$brick['query_strings'] = $data['_query_strings'];
 		unset($data['_query_strings']);
@@ -326,11 +302,11 @@ function brick_request_cms($script, $brick, $filetype = '') {
 		$brick['headers']['filename'] = $filename;
 		return $brick;
 	case 'csv':
-		$brick['text'] = brick_csv_encode($data, $setting);
+		$brick['text'] = brick_csv_encode($data);
 		if (!$brick['text']) return false;
 		$brick['content_type'] = 'csv';
 		$brick['headers']['filename'] = $filename;
-		if (!empty($setting['excel_compatible'])) {
+		if (bricksetting('export_csv_excel_compatible')) {
 			$brick['headers']['character_set'] = 'utf-16le';
 		}
 		return $brick;
@@ -371,7 +347,7 @@ function brick_request_file($script, $brick, $type = false) {
 	}
 
 	// get path
-	$path = substr($brick['setting']['brick_module_dir'], 1);
+	$path = substr(bricksetting('brick_module_dir'), 1);
 	switch ($type) {
 		case 'get': $path .= 'request_get'; break;
 		case 'make': $path .= $type; break;
@@ -437,8 +413,7 @@ function brick_request_file($script, $brick, $type = false) {
  * @return array
  */
 function brick_request_data($script, $params = [], $settings = []) {
-	global $zz_setting;
-	$brick = brick_request_file($script, ['setting' => $zz_setting], 'get');
+	$brick = brick_request_file($script, [], 'get');
 	$data = $brick['request_function']($params, $settings);
 	return $data;
 }
@@ -448,21 +423,15 @@ function brick_request_data($script, $params = [], $settings = []) {
  * from own library
  *
  * @param string $script
- * @param array $setting
  * @param array $params (optional)
  */
-function brick_request_external($script, $setting, $params = []) {
-	$url = brick_request_url($script, $params, $setting);
+function brick_request_external($script, $params = []) {
+	$url = brick_request_url($script, $params);
 	if ($url === true) return true;
 	if (!$url) return [];
 
-	if (empty($setting['syndication_function']) AND !empty($setting['core'])) {
-		$setting['syndication_library'] = $setting['core'].'/syndication.inc.php';
-		$setting['syndication_function'] = 'wrap_syndication_get';
-	}
-
-	require_once $setting['syndication_library'];
-	$data = $setting['syndication_function']($url, $setting['brick_cms_input']);
+	if ($file = bricksetting('brick_syndication_file')) require_once $file;
+	$data = bricksetting('brick_syndication_function')($url, bricksetting('brick_cms_input'));
 	return $data;
 }
 
@@ -471,18 +440,18 @@ function brick_request_external($script, $setting, $params = []) {
  *
  * @param string $script
  * @param array $params (optional)
- * @param array $setting (optional)
  * @return array
  */
-function brick_request_url($script, $params = [], $setting = []) {
+function brick_request_url($script, $params = []) {
 	// get from URL
 	$params = implode('/', $params);
-	if (isset($setting['brick_json_source_url'][$script])) {
+	$json_source_url = bricksetting('brick_json_source_url');
+	if (isset($json_source_url[$script])) {
 		// set to: we don't need a JSON import
-		if (!$setting['brick_json_source_url'][$script]) return true;
-		$url = sprintf($setting['brick_json_source_url'][$script], $params);
-	} elseif (!empty($setting['brick_json_source_url_default'])) {
-		$url = sprintf($setting['brick_json_source_url_default'], $script, $params);
+		if (!$json_source_url[$script]) return true;
+		$url = sprintf($json_source_url[$script], $params);
+	} elseif ($url = bricksetting('brick_json_source_url_default')) {
+		$url = sprintf($url, $script, $params);
 	} else {
 		$test = parse_url($script);
 		if (empty($test['scheme'])) return false;
@@ -497,29 +466,17 @@ function brick_request_url($script, $params = [], $setting = []) {
  * Convert array into CSV format
  *
  * @param array $data
- * @param array $setting
  * @return string
  */
-function brick_csv_encode($data, $setting) {
-	if (!isset($setting['excel_compatible']))
-		$setting['excel_compatible'] = false;
-	if (!isset($setting['export_csv_enclosure']))
-		$setting['export_csv_enclosure'] = '"';
-	if (!isset($setting['export_csv_delimiter']))
-		if ($setting['excel_compatible'])
-			$setting['export_csv_delimiter'] = "\t";
-		else
-			$setting['export_csv_delimiter'] = ";";
-	if (!isset($setting['export_csv_show_empty_cells']))
-		$setting['export_csv_show_empty_cells'] = false;
-	if (!isset($setting['export_csv_heading']))
-		$setting['export_csv_heading'] = true;
-	$enc = $setting['export_csv_enclosure'];
-	$lim = $setting['export_csv_delimiter'];
+function brick_csv_encode($data) {
+	if (bricksetting('export_csv_excel_compatible'))
+		bricksetting('export_csv_delimiter', "\t");
+	$enc = bricksetting('export_csv_enclosure');
+	$lim = bricksetting('export_csv_delimiter');
 
 	$text = '';
 	$newline = true;
-	if ($setting['export_csv_heading']) {
+	if (bricksetting('export_csv_heading')) {
 		$head = reset($data);
 		foreach (array_keys($head) as $field) {
 			if ($text) $text .= $lim;
@@ -536,16 +493,16 @@ function brick_csv_encode($data, $setting) {
 			} elseif ($field AND is_array($field)) {
 				// @todo: allow arrays in arrays
 				$text .= $enc.str_replace($enc, $enc.$enc, implode(',', $field)).$enc;
-			} elseif (!$field AND $setting['export_csv_show_empty_cells']) {
+			} elseif (!$field AND bricksetting('export_csv_show_empty_cells')) {
 				$text .= $enc.$enc;
 			}
 		}
 		$text .= "\r\n";
 		$newline = true;
 	}
-	if ($setting['excel_compatible']) {
+	if (bricksetting('export_csv_excel_compatible')) {
 		// @todo check with mb_list_encodings() if available
-		$text = mb_convert_encoding($text, 'UTF-16LE', $setting['character_set']);
+		$text = mb_convert_encoding($text, 'UTF-16LE', bricksetting('character_set'));
 	}
 	return $text;
 }
@@ -588,7 +545,6 @@ function brick_request_links(&$text, &$media, $field_name) {
  * @return string
  */
 function brick_request_link(&$media, $placeholder, $field_name) {
-	global $zz_setting;
 	$area = array_shift($placeholder);
 	switch ($area) {
 	case 'bild':
@@ -617,6 +573,7 @@ function brick_request_link(&$media, $placeholder, $field_name) {
 	}
 	$no = array_shift($placeholder);
 	if (!array_key_exists($mediakey, $media)) return '';
+	$media_sizes = bricksetting('media_sizes');
 	foreach ($media[$mediakey] as $medium_id => $medium) {
 		if ($medium[$field_name] != $no) continue;
 		unset($media[$mediakey][$medium_id]);
@@ -625,14 +582,14 @@ function brick_request_link(&$media, $placeholder, $field_name) {
 			if (count($placeholder) === 3)
 				$medium['custom_title'] = array_pop($placeholder);
 			$size = array_pop($placeholder);
-			if ($size AND !in_array($size, array_keys($zz_setting['media_sizes']))) {
+			if ($size AND !in_array($size, array_keys($media_sizes))) {
 				// do not care about order of parameters position, size
 				$medium['position'] = $size;
 				$size = array_pop($placeholder);
 			}
-			if ($size AND in_array($size, array_keys($zz_setting['media_sizes']))) {
+			if ($size AND in_array($size, array_keys($media_sizes))) {
 				$medium['size'] = $size;
-				$medium['path'] = $zz_setting['media_sizes'][$size]['path'];
+				$medium['path'] = $media_sizes[$size]['path'];
 			} elseif (count($placeholder) > 1) {
 				$medium['size'] = 'invalid';
 			}
@@ -645,20 +602,20 @@ function brick_request_link(&$media, $placeholder, $field_name) {
 		}
 		// default path?
 		if (empty($medium['path'])) {
-			if (!empty($zz_setting['default_media_size'])) {
-				$medium['path'] = $zz_setting['media_sizes'][$zz_setting['default_media_size']]['path'];
-			} elseif (!empty($zz_setting['media_standard_image_size'])) {
-				$medium['path'] = $zz_setting['media_standard_image_size'];
+			if (bricksetting('default_media_size')) {
+				$medium['path'] = $media_sizes[bricksetting('default_media_size')]['path'];
+			} elseif (bricksetting('media_standard_image_size')) {
+				$medium['path'] = bricksetting('media_standard_image_size');
 			}
 		}
 		if (empty($medium['path_x2'])) {
-			if (!empty($zz_setting['media_standard_image_size_x2'])) {
-				foreach ($zz_setting['media_sizes'] as $size => $medium_size) {
-					if ($medium_size['path'].'' !== $zz_setting['media_standard_image_size_x2'].'') continue;
+			if (bricksetting('media_standard_image_size_x2')) {
+				foreach ($media_sizes as $size => $medium_size) {
+					if ($medium_size['path'].'' !== bricksetting('media_standard_image_size_x2').'') continue;
 					$medium['path_x2'] = $medium_size['path'];
 				}
 			} elseif (!empty($medium['path'])) {
-				foreach ($zz_setting['media_sizes'] as $medium_size) {
+				foreach ($media_sizes as $medium_size) {
 					if (is_numeric($medium['path']) AND $medium['path'] * 2 == $medium_size['path'])
 						$medium['path_x2'] = $medium_size['path'];
 				}
@@ -666,15 +623,15 @@ function brick_request_link(&$media, $placeholder, $field_name) {
 		}
 		if (!empty($medium['position']) AND $medium['position'] === 'hidden') continue;
 		if (empty($medium['size']) AND !empty($medium['path'])) {
-			foreach ($zz_setting['media_sizes'] as $size => $medium_size) {
+			foreach ($media_sizes as $size => $medium_size) {
 				if ($medium_size['path'].'' !== $medium['path'].'') continue;
 				$medium['size'] = $size;
 			}
 		}
 		if (!empty($medium['size'])) {
-			$medium['max_width'] = $zz_setting['media_sizes'][$medium['size']]['width'];
-			$medium['max_height'] = $zz_setting['media_sizes'][$medium['size']]['height'];
-			foreach ($zz_setting['media_sizes'] as $medium_size) {
+			$medium['max_width'] = $media_sizes[$medium['size']]['width'];
+			$medium['max_height'] = $media_sizes[$medium['size']]['height'];
+			foreach ($media_sizes as $medium_size) {
 				if ($medium_size['width'] > $medium['max_width']) {
 					$medium['bigger_size_available'] = true;
 				}

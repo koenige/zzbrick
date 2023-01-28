@@ -4,11 +4,11 @@
  * zzbrick
  * Access rights depending on user IPv4 address
  *
- * Part of »Zugzwang Project«
- * http://www.zugzwang.org/projects/zzbrick
+ * Part of Â»Zugzwang ProjectÂ«
+ * https://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2009, 2019 Gustaf Mossakowski
+ * @copyright Copyright Â© 2009, 2019, 2023 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -18,8 +18,7 @@
  * 
  * files: -
  * functions: -
- * settings: brick_ipv4_allowed_range (array, 'from', 'to' or 0 =>, 1 =>);
- *	 	brick_ipfilter_translated ('else' => ':')
+ * settings: brick_ipv4_allowed_range, brick_ipfilter_translated
  * examples: 
  * 		%%% ipfilter %%% -- access allowed for IPs in brick_ipv4_allowed_range
  * 		%%% ipfilter = %%% -- access allowed for IPs in brick_ipv4_allowed_range
@@ -33,18 +32,19 @@
  * @return array $brick
  */
 function brick_ipfilter($brick) {
+	$ipfilter_translated = bricksetting('brick_ipfilter_translated');
 	// default translations, cannot be changed
-	$brick['setting']['brick_ipfilter_translated']['on'] = '=';
-	$brick['setting']['brick_ipfilter_translated']['elseif'] = '=';
-	$brick['setting']['brick_ipfilter_translated']['else'] = ':';
-	$brick['setting']['brick_ipfilter_translated']['off'] = '-';
+	$ipfilter_translated['on'] = '=';
+	$ipfilter_translated['elseif'] = '=';
+	$ipfilter_translated['else'] = ':';
+	$ipfilter_translated['off'] = '-';
 	// get IP
 	$remote_ip = (!empty($_SERVER['REMOTE_ADDR']) ? ip2long($_SERVER['REMOTE_ADDR']) : '');
 
 	if (empty($brick['vars'])) {
 		$brick['vars'][0] = '=';
-	} elseif (in_array($brick['vars'][0], array_keys($brick['setting']['brick_ipfilter_translated']))) {
-		$brick['vars'][0] = $brick['setting']['brick_ipfilter_translated'][$brick['vars'][0]];
+	} elseif (in_array($brick['vars'][0], array_keys($ipfilter_translated))) {
+		$brick['vars'][0] = $ipfilter_translated[$brick['vars'][0]];
 	}
 	
 	if ($brick['vars'][0] == '-') {
@@ -62,8 +62,8 @@ function brick_ipfilter($brick) {
 	switch ($ipfilter) {
 	case '=': // test for ip in range
 		$ranges = $brick['vars'];
-		if (!$ranges AND !empty($brick['setting']['brick_ipv4_allowed_range']))
-			$ranges = $brick['setting']['brick_ipv4_allowed_range'];
+		if (!$ranges)
+			$ranges = bricksetting('brick_ipv4_allowed_range');
 		if (!$ranges) {
 			$brick['page']['error']['level'] = E_USER_ERROR;
 			$brick['page']['error']['msg_text'] = 'No IP range defined';

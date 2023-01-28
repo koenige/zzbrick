@@ -4,11 +4,11 @@
  * zzbrick
  * Page templates
  *
- * Part of »Zugzwang Project«
+ * Part of Â»Zugzwang ProjectÂ«
  * http://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2009-2016, 2019, 2022 Gustaf Mossakowski
+ * @copyright Copyright Â© 2009-2016, 2019, 2022-2023 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -35,11 +35,9 @@ function brick_page($brick) {
 	if (empty($brick['vars'][0])) return $brick;
 	global $zz_page;
 	
-	if (empty($brick['setting']['brick_page_shortcuts']))
-		$brick['setting']['brick_page_shortcuts'] = [];
 	if (empty($brick['subtype'])) 
 		$brick['subtype'] = '';
-	if (in_array($brick['subtype'], $brick['setting']['brick_page_shortcuts'])) {
+	if (in_array($brick['subtype'], bricksetting('brick_page_shortcuts'))) {
 		array_unshift($brick['vars'], $brick['subtype']);
 	}
 
@@ -56,16 +54,16 @@ function brick_page($brick) {
 	// first check own page-directory
 	$paths[] = $brick['path'];
 	$default_module_present = false;
-	foreach ($brick['setting']['modules'] as $module) {
+	foreach (bricksetting('modules') as $module) {
 		// also check modules in alphabetical order
 		if ($module === 'default') {
 			$default_module_present = true;
 			continue;
 		}
-		$paths[] = $brick['setting']['modules_dir'].'/'.$module.'/'.$brick['module_path'];
+		$paths[] = bricksetting('modules_dir').'/'.$module.'/'.$brick['module_path'];
 	}
 	if ($default_module_present)
-		$paths[] = $brick['setting']['modules_dir'].'/default/'.$brick['module_path'];
+		$paths[] = bricksetting('modules_dir').'/default/'.$brick['module_path'];
 	$filename = '/'.basename(strtolower($brick_var)).'.inc.php';
 	foreach ($paths as $path) {
 		if (!file_exists($script_filename = $path.$filename)) continue;
@@ -117,7 +115,7 @@ function brick_page($brick) {
 	}
 	if (!empty($brick['vars'][0]) AND $content) {
 		// formatting to be done, there is some HTML and a value
-		$brick['vars'][0] = brick_translate($brick['vars'][0], $brick['setting']);
+		$brick['vars'][0] = brick_translate($brick['vars'][0]);
 		$brick['page']['text'][$pos][] = 
 			sprintf($brick['vars'][0], $content);
 	} else {

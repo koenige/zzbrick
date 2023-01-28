@@ -8,7 +8,7 @@
  * https://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2009-2016, 2019, 2021-2022 Gustaf Mossakowski
+ * @copyright Copyright © 2009-2016, 2019, 2021-2023 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -18,7 +18,7 @@
  * 
  * files: -
  * functions: -
- * settings: -
+ * settings: brick_condition_translated
  * examples
  * 		%%% condition itemcontent %%%
  * 		%%% condition = itemcontent %%%
@@ -41,21 +41,20 @@ function brick_condition($brick) {
 		$if = $brick['vars'][1];
 	}
 	
+	$condition_translated = bricksetting('brick_condition_translated');
 	// default translations, cannot be changed
-	$brick['setting']['brick_condition_translated']['if'] = '=';
-	$brick['setting']['brick_condition_translated']['elseif'] = ':=';
-	$brick['setting']['brick_condition_translated']['else'] = ':';
-	$brick['setting']['brick_condition_translated']['endif'] = '-';
-	$brick['setting']['brick_condition_translated']['unless'] = '!';
+	$condition_translated['if'] = '=';
+	$condition_translated['elseif'] = ':=';
+	$condition_translated['else'] = ':';
+	$condition_translated['endif'] = '-';
+	$condition_translated['unless'] = '!';
 
-	if (in_array($brick['vars'][0], array_keys($brick['setting']['brick_condition_translated']))) {
-		$brick['vars'][0] = $brick['setting']['brick_condition_translated'][$brick['vars'][0]];
-	}
+	if (in_array($brick['vars'][0], array_keys($condition_translated)))
+		$brick['vars'][0] = $condition_translated[$brick['vars'][0]];
 
 	$condition = array_shift($brick['vars']);
-	if (!in_array($condition, $brick['setting']['brick_condition_translated'])) {
+	if (!in_array($condition, $condition_translated))
 		$condition = '=';
-	}
 
 	// check if item is empty or not
 	$content = false;
@@ -101,8 +100,8 @@ function brick_condition($brick) {
 			$brick['page']['error']['level'] = E_USER_NOTICE;
 			$brick['page']['error']['msg_text']
 				= 'There’s an error in one of the conditions in the template `%s`: too many variables are present.';
-			if (!empty($brick['setting']['current_template'])) {
-				$brick['page']['error']['msg_vars'] = [$brick['setting']['current_template']];
+			if (!empty(bricksetting('current_template'))) {
+				$brick['page']['error']['msg_vars'] = [bricksetting('current_template')];
 			}
 		}
 	} else {
@@ -138,8 +137,8 @@ function brick_condition($brick) {
 		$brick['page']['error']['level'] = E_USER_NOTICE;
 		$brick['page']['error']['msg_text']
 			= 'There’s an error in the nesting of conditions in the template `%s`: There are more endifs than ifs.';
-		if (!empty($brick['setting']['current_template'])) {
-			$brick['page']['error']['msg_vars'] = [$brick['setting']['current_template']];
+		if (!empty(bricksetting('current_template'))) {
+			$brick['page']['error']['msg_vars'] = [bricksetting('current_template')];
 		}
 	}
 

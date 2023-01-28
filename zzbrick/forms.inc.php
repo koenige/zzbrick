@@ -8,7 +8,7 @@
  * https://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2009-2022 Gustaf Mossakowski
+ * @copyright Copyright © 2009-2023 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -39,20 +39,6 @@
  */
 function brick_forms($brick) {
 	global $zz_conf;		// zzform configuration
-	global $zz_setting;		// common settings, just for ease of use global definition goes here
-
-	// get username for zzform, logging and errors
-	if (empty($brick['setting']['brick_username_in_session']))
-		$brick['setting']['brick_username_in_session'] = 'username';
-	// for webpages that have not always authentication, require it
-	// default: use core/auth.inc.php from zzwrap
-	if (!isset($brick['setting']['brick_authentication_file']))
-		$brick['setting']['brick_authentication_file'] = $brick['setting']['core'].'/auth.inc.php';
-	if (!isset($brick['setting']['brick_authentication_function']))
-		$brick['setting']['brick_authentication_function'] = 'wrap_auth';
-	// allow default tables for inclusion, on demand only
-	if (!isset($brick['setting']['brick_default_tables']))
-		$brick['setting']['brick_default_tables'] = [];
 
 	// directory depending on subtype
 	if (empty($brick['subtype'])) $brick['subtype'] = 'forms';
@@ -61,11 +47,11 @@ function brick_forms($brick) {
 	switch ($brick['subtype']) {
 	case 'forms': 
 		$brick['path'] .= '_forms';
-		$brick['module_path'] = $brick['setting']['brick_module_dir'].'forms';
+		$brick['module_path'] = bricksetting('brick_module_dir').'forms';
 		break;
 	default: 
 		$brick['path'] .= '_tables';
-		$brick['module_path'] = $brick['setting']['brick_module_dir'].'tables';
+		$brick['module_path'] = bricksetting('brick_module_dir').'tables';
 		break;
 	}
 	
@@ -116,12 +102,12 @@ function brick_forms($brick) {
 	
 	// start zzform scripts
 	if ($auth) {
-		if (!empty($brick['setting']['brick_authentication_file'])) {
-			require_once $brick['setting']['brick_authentication_file'];
-			$brick['setting']['brick_authentication_function']();
+		if ($authentication_file = bricksetting('brick_authentication_file')) {
+			require_once $authentication_file;
+			bricksetting('brick_authentication_function')();
 		}
-		if (!empty($_SESSION) AND empty($zz_conf['user']) AND array_key_exists($brick['setting']['brick_username_in_session'], $_SESSION))
-			$zz_conf['user'] = $_SESSION[$brick['setting']['brick_username_in_session']];
+		if (!empty($_SESSION) AND empty($zz_conf['user']) AND array_key_exists(bricksetting('brick_username_in_session'), $_SESSION))
+			$zz_conf['user'] = $_SESSION[bricksetting('brick_username_in_session')];
 	}
 	require_once $zz_conf['dir'].'/zzform.php';
 	// check if POST is too big, then set GET variables if possible here, so the
@@ -183,7 +169,7 @@ function brick_forms($brick) {
 	];
 	foreach ($uncacheable as $query) {
 		if (!empty($_GET[$query])) {
-			$zz_setting['cache'] = false;
+			bricksetting('cache', false);
 			break;
 		}
 	}
@@ -228,7 +214,6 @@ function brick_forms($brick) {
  *		array 'vars'
  *		string 'path', defaults to _inc/zzbrick_tables
  *		string 'module_path', defaults to /zzbrick_tables
- *		array 'setting' = $zz_setting
  * @global array $zz_conf
  * @return array $brick, with form_script_path set and vars modified
  */
@@ -240,12 +225,12 @@ function brick_forms_file($brick) {
 	} elseif (!empty($brick['tables_path']) AND $brick['path'] !== $brick['tables_path']
 		AND file_exists($brick['tables_path'].'/_common.inc.php')) {
 		$brick['common_script_path'] = $brick['tables_path'].'/_common.inc.php';
-	} elseif (!empty($brick['setting']['modules'])) {
+	} elseif (!empty(bricksetting('modules'))) {
 		$dir = substr($brick['path'], strrpos($brick['path'], '/'));
 		$brick['common_script_path'] = '';
-		foreach ($brick['setting']['modules'] as $module) {
+		foreach (bricksetting('modules') as $module) {
 			// just get first common script
-			if (!file_exists($file = $brick['setting']['modules_dir'].'/'.$module.$dir.'/_common.inc.php')) continue;
+			if (!file_exists($file = bricksetting('modules_dir').'/'.$module.$dir.'/_common.inc.php')) continue;
 			$brick['common_script_path'] = $file;
 			break;
 		}
@@ -290,14 +275,13 @@ function brick_forms_file($brick) {
 	}
 	if (file_exists($brick['form_script_path'])) return $brick;
 	
-	foreach ($brick['setting']['modules'] as $module) {
+	foreach (bricksetting('modules') as $module) {
 		if ($folder AND $folder !== $module) continue;
 		if ($module === 'default') {
-			if (empty($brick['setting']['brick_default_tables'])) continue;
-			if ($brick['setting']['brick_default_tables'] !== true AND
-				!in_array($script, $brick['setting']['brick_default_tables'])) continue;
+			if (!$default_tables = bricksetting('brick_default_tables')) continue;
+			if (is_array($default_tables) AND !in_array($script, $default_tables)) continue;
 		}
-		$module_path = $brick['setting']['modules_dir'].'/'.$module.$brick['module_path'];
+		$module_path = bricksetting('modules_dir').'/'.$module.$brick['module_path'];
 		$brick['form_script_path'] = $module_path.'/'.$script.'.php';
 		if (file_exists($brick['form_script_path']) AND function_exists('wrap_package_activate')) {
 			wrap_package_activate($module);
@@ -330,9 +314,8 @@ function brick_forms_include(&$brick) {
 	global $zz_conf;
 	global $zz_setting;
 
-	if ($brick['common_script_path']) {
+	if ($brick['common_script_path'])
 		require_once $brick['common_script_path'];
-	}
 	require $brick['form_script_path'];
 	if (empty($zz) AND !empty($zz_sub))
 		return $zz_sub;

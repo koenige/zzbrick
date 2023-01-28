@@ -27,16 +27,13 @@
  * @return array $brick
  */
 function brick_text($brick) {
-	if (!isset($brick['setting']['brick_formatting_functions']))
-		$brick['setting']['brick_formatting_functions'] = [];
-
 	// Translate text
 	if (!isset($brick['page']['text'][$brick['position']]))
 		$brick['page']['text'][$brick['position']] = [];
 	$function = end($brick['vars']);
-	if (in_array($function, $brick['setting']['brick_formatting_functions'])) {
+	if (in_array($function, bricksetting('brick_formatting_functions'))) {
 		array_pop($brick['vars']);	
-		$function = brick_format_function_prefix($function, $brick['setting']);
+		$function = brick_format_function_prefix($function);
 	} else {
 		$function = false;
 	}
@@ -56,7 +53,7 @@ function brick_text($brick) {
 		}
 	}
 	
-	$text = $brick['setting']['brick_translate_text_function']($text);
+	$text = bricksetting('brick_translate_text_function')($text);
 	if ($sprintf_params) {
 		if (!empty($brick['loop_parameter'])) {
 			$item = &$brick['loop_parameter'];

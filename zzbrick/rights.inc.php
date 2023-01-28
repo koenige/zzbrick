@@ -4,11 +4,11 @@
  * zzbrick
  * Access rights depending on group membership
  *
- * Part of »Zugzwang Project«
- * http://www.zugzwang.org/projects/zzbrick
+ * Part of Â»Zugzwang ProjectÂ«
+ * https://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2009, 2019 Gustaf Mossakowski
+ * @copyright Copyright Â© 2009, 2019, 2023 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -32,20 +32,20 @@
  * @return array $brick
  */
 function brick_rights($brick) {
+	$rights_translated = bricksettings('brick_rights_translated');
 	// default translations, cannot be changed
-	$brick['setting']['brick_rights_translated']['on'] = '=';
-	$brick['setting']['brick_rights_translated']['elseif'] = '=';
-	$brick['setting']['brick_rights_translated']['else'] = ':';
-	$brick['setting']['brick_rights_translated']['off'] = '-';
-	if (empty($brick['setting']['custom_rights_dir'])) {
-		$brick['setting']['custom_rights_dir'] = $brick['path'];
-	}
+	$rights_translated['on'] = '=';
+	$rights_translated['elseif'] = '=';
+	$rights_translated['else'] = ':';
+	$rights_translated['off'] = '-';
+	if (!bricksetting('custom_rights_dir'))
+		bricksetting('custom_rights_dir', $brick['path']);
 
 	// @todo: what is access_rights?
-	require_once $brick['setting']['custom_rights_dir'].'/access_rights.inc.php';
+	require_once bricksetting('custom_rights_dir').'/access_rights.inc.php';
 
-	if (in_array($brick['vars'][0], array_keys($brick['setting']['brick_rights_translated']))) {
-		$brick['vars'][0] = $brick['setting']['brick_rights_translated'][$brick['vars'][0]];
+	if (in_array($brick['vars'][0], array_keys($rights_translated))) {
+		$brick['vars'][0] = $rights_translated[$brick['vars'][0]];
 	}
 
 	if ($brick['vars'][0] == '-') {
@@ -65,8 +65,8 @@ function brick_rights($brick) {
 		// is there an asterisk?
 		$details = '';
 		foreach ($brick['vars'] as $id => $var) {
-			if (substr($var, -1) === '*' AND !empty($brick['setting']['url_parameter'])) {
-				$details = str_replace('*', $brick['setting']['url_parameter'], $var);
+			if (substr($var, -1) === '*' AND bricksetting('brick_url_parameter')) {
+				$details = str_replace('*', bricksetting('brick_url_parameter'), $var);
 				unset($brick['vars'][$id]);
 			}
 		}

@@ -26,37 +26,6 @@
  * $format['position'] => here goes the formatted output, if none is there, 
  * 	position is '_hide_'
  * 
- * Variabes in $setting:
- * 	- 'brick_custom_dir': directory for the customised brick scripts, zzwrap
- * 		sets this to a default in $zz_setting['custom'], prefix zzbrick_
- * 	- 'brick_default_position': if a matrix of the content is wanted, here you 
- * 		can define a default position
- * 	- 'brick_types_translated': here you can translate the first part of the
- * 		zzbrick definition e. g. %%% abfrage ... ... %%% might be translated to
- * 		request: $setting['brick_types_translated']['abfrage'] = 'request'
- * 		this may also be used to define a certain subtype
- * 	- 'brick_request_shortcuts'	shortcuts, that is you can write %%% image blubb 
- * 		%%% instead of %%% request image blubb %%%
- * 	- 'brick_username_in_session': Name of key from $_SESSION that will be used  
- * 		as username for zzform(), default is 'username'
- * 	- 'brick_authentication_file': file that will be included if
- * 		authentication is needed for accessing the zzform scripts. might be 
- * 		false, then no file will be included. zzwrap sets this automatically
- * 	- 'brick_authentication_function': function to be called if
- * 		authentication is needed
- * 	- 'brick_translate_text_function': Name of function to translate text; 
- * 		zzwrap sets this to wrap_text
- * 	- 'brick_fulltextformat': name of function to format the complete output of
- * 		brick_format instead of formatting each paragraph separately with 
- * 		markdown
- * 	- 'brick_ipfilter_translated': similar to brick_types_translated, here
- * 		you can translate '=', ':' and '-' to different text
- * 	- 'brick_ipv4_allowed_range': standard allowed range of IP adresses if
- * 		no address is set in ipfilter
- * 	- 'brick_rights_translated': similar to brick_types_translated, here
- * 		you can translate '=', ':' and '-' to different text
- * 	- 'lang': language code for HTML lang attribute of HEAD
- * 
  * Files where customisation will take place
  * 	- zzbrick_rights/access_rights.inc.php
  * 	- zzbrick_request/{request}.inc.php
@@ -151,25 +120,7 @@
  			'position' => array
  */
 function brick_format($block, $parameter = false) {
-	global $zz_setting;
-	$brick['setting'] = &$zz_setting;
 	if (!$block) return ['text' => ''];
-
-	// set defaults
-	if (empty($brick['setting']['brick_default_position'])) 
-		$brick['setting']['brick_default_position'] = 'none';
-	if (empty($brick['setting']['brick_types_translated']))
-		$brick['setting']['brick_types_translated'] = [];
-	if (empty($brick['setting']['brick_fulltextformat']))
-		$brick['setting']['brick_fulltextformat'] = '';
-	if (empty($brick['setting']['brick_custom_dir']))
-		$brick['setting']['brick_custom_dir'] = $zz_setting['custom'].'/zzbrick_';
-	if (empty($brick['setting']['brick_module_dir']))
-		$brick['setting']['brick_module_dir'] = '/zzbrick_';
-	// to translate error messages, you might use a translation function
-	// default: use wrap_text() from core/language.inc.php from zzwrap
-	if (!isset($brick['setting']['brick_translate_text_function']))
-		$brick['setting']['brick_translate_text_function'] = 'wrap_text';
 
 	// initialize page variables
 	$brick['page']['text'] = [];				// textbody
@@ -188,15 +139,15 @@ function brick_format($block, $parameter = false) {
 	$brick['position'] = 'none';
 	$brick['cut_next_paragraph'] = false;		// to get markdown formatted text inline
 	$brick['replace_db_text'][$brick['position']] = false;
-	$check = brick_check_parameters($parameter, $brick['setting']);
+	$check = brick_check_parameters($parameter);
 	if (!$check) {
 		$brick['page']['status'] = 404;
 		return $brick['page'];
 	}
 	$brick['parameter'] = $parameter;
 	// first call of brick_format(): parameters are from URL
-	if (!isset($brick['setting']['url_parameter']))
-		$brick['setting']['url_parameter'] = $parameter;
+	if (bricksetting('brick_url_parameter') === NULL)
+		bricksetting('brick_url_parameter', $parameter);
 
 	// initialize text at given position
 	$brick['page']['text'][$brick['position']] = [];
@@ -376,22 +327,22 @@ function brick_format($block, $parameter = false) {
 	}
 	unset($page['text']['_hidden_']);
 	
-	$fulltextformat = $brick['setting']['brick_fulltextformat'];
+	$fulltextformat = bricksetting('brick_fulltextformat');
 	
 	// check if it's html or different
 	if (!empty($page['content_type']) AND $page['content_type'] != 'html') {
 		// no formatting, if it's not HTML!
 		$fulltextformat = 'html';
-		$brick['setting']['brick_default_position'] = 'none';
+		bricksetting('brick_default_position', 'none');
 	}
 	
 	if (count($page['text']) === 1 AND !empty($page['text']['none'])) {
 	// if position is not wanted, remove unnecessary complexity in array
-		if ($brick['setting']['brick_default_position'] === 'none') {
+		if (bricksetting('brick_default_position') === 'none') {
 			$page['text'] = brick_textformat($page['text']['none'], 'full', 
 				$fulltextformat);
 		} else {
-			$page['text'][$brick['setting']['brick_default_position']] 
+			$page['text'][bricksetting('brick_default_position')] 
 				= brick_textformat($page['text']['none'], 'full', $fulltextformat);
 			unset ($page['text']['none']);
 		}
@@ -406,7 +357,7 @@ function brick_format($block, $parameter = false) {
 		}
 	}
 	// get stuff for page head in order
-	$page = brick_head_format($page, $brick['setting']);
+	$page = brick_head_format($page);
 	// get simple access to extra-Array
 	if (!empty($page['extra'])) foreach ($page['extra'] as $key => $value) {
 		if (!is_array($value)) $page['extra_'.$key] = $value;
@@ -545,11 +496,10 @@ function brick_textformat_html($string) {
  * Formats values in $page that should go into the HTML head section
  * 
  * @param array $page $page-Array from zzbrick()
- * @param array $setting $brick['setting']-Array from zzbrick()
  * @param bool $build build final HTML
  * @return array $page, modified
  */
-function brick_head_format($page, $setting, $build = false) {
+function brick_head_format($page, $build = false) {
 	static $tags;
 	$keys = ['head', 'link', 'meta', 'opengraph'];
 	foreach ($keys as $key) {
@@ -575,37 +525,36 @@ function brick_head_format($page, $setting, $build = false) {
 	}
 
 	if (!$build) return $page;
-	return brick_head_format_html($page, $setting, $tags);
+	return brick_head_format_html($page, $tags);
 }
 
 /**
  * build HTML output for HEAD
  *
  * @param array $page
- * @param array $setting
  * @param array $tags
  * @return array
  */
-function brick_head_format_html($page, $setting, $tags) {
+function brick_head_format_html($page, $tags) {
 	$head = [];
 	$i = 0;
 	
-	// @todo: insert $setting['page_base']; ? or do this in functions 
+	// @todo: insert bricksetting('page_base'); ? or do this in functions 
 	foreach ($tags['link'] AS $rel => $link) {
-		if (!in_array(ucfirst($rel), $setting['html_link_types'])) continue;
+		if (!in_array(ucfirst($rel), bricksetting('html_link_types'))) continue;
 		foreach ($link as $index) {
 			if (!is_array($index)) continue;
 			$head[$i] = '<link rel="'.$rel.'"';
 			foreach ($index as $attribute => $value) {
 				$head[$i] .= ' '.$attribute.'="'.$value.'"';
 			}
-			if (!empty($setting['xml_close_empty_tags'])) $head[$i] .= ' /';
+			if (!empty(bricksetting('xml_close_empty_tags'))) $head[$i] .= ' /';
 			$head[$i] .= '>';
 			$i++;
 		}
 	}
-	if ($tags['opengraph'] OR !empty($setting['opengraph'])) {
-		$tags['meta'] = array_merge($tags['meta'], brick_head_opengraph($tags['opengraph'], $page, $setting));
+	if ($tags['opengraph'] OR !empty(bricksetting('opengraph'))) {
+		$tags['meta'] = array_merge($tags['meta'], brick_head_opengraph($tags['opengraph'], $page));
 		$meta_description = false;
 		foreach ($tags['meta'] as $index => $meta_tag) {
 			if (empty($meta_tag['property'])) continue;
@@ -627,7 +576,7 @@ function brick_head_format_html($page, $setting, $tags) {
 		$head[$i] = '<meta';
 		foreach ($index as $attribute => $value)
 			$head[$i] .= ' '.$attribute.'="'.$value.'"';
-		if (!empty($setting['xml_close_empty_tags'])) $head[$i] .= ' /';
+		if (!empty(bricksetting('xml_close_empty_tags'))) $head[$i] .= ' /';
 		$head[$i] .= '>';
 		$i++;
 	}
@@ -648,17 +597,16 @@ function brick_head_format_html($page, $setting, $tags) {
  *
  * @param array $tags
  * @param array $page
- * @param array $setting
  * @return array
  */
-function brick_head_opengraph($tags, $page, $setting) {
+function brick_head_opengraph($tags, $page) {
 	// defaults
 	if ($page['status'] !== 200) return [];
-	$tags['og:title'] = $tags['og:title'] ?? ($setting['request_uri'] === '/' ? $setting['project'] : $page['title']);
+	$tags['og:title'] = $tags['og:title'] ?? (bricksetting('request_uri') === '/' ? bricksetting('project') : $page['title']);
 	$tags['og:type'] = $tags['og:type'] ?? 'website';
-	$tags['og:url'] = $tags['og:url'] ?? $setting['host_base'].$setting['request_uri'];
-	$tags['og:site_name'] = $tags['og:site_name'] ?? $setting['project'];
-	$tags['og:locale'] = $tags['og:locale'] ?? $setting['lang'];
+	$tags['og:url'] = $tags['og:url'] ?? bricksetting('host_base').bricksetting('request_uri');
+	$tags['og:site_name'] = $tags['og:site_name'] ?? bricksetting('project');
+	$tags['og:locale'] = $tags['og:locale'] ?? bricksetting('lang');
 	$tags['og:description'] = $tags['og:description'] ?? $page['description'];
 
 	if (empty($tags['og:image'])) {
@@ -667,20 +615,20 @@ function brick_head_opengraph($tags, $page, $setting) {
 			if (!empty($tags['image'])) {
 				$tags += mf_media_opengraph_image($tags['image']);
 				$processed = true;
-			} elseif (!empty($setting['opengraph']) AND !empty($page['media']['images'])) {
+			} elseif (bricksetting('opengraph') AND !empty($page['media']['images'])) {
 				$tags += mf_media_opengraph_image(reset($page['media']['images']));
 				$processed = true;
 			}
 		}
-		if (!$processed AND !empty($setting['active_theme'])) {
+		if (!$processed AND bricksetting('active_theme')) {
 		// default image: opengraph.png from theme folder
-			$filename = sprintf('%s/%s/opengraph.png', $setting['themes_dir'], $setting['active_theme']);
+			$filename = sprintf('%s/%s/opengraph.png', bricksetting('themes_dir'), bricksetting('active_theme'));
 			if (file_exists($filename)) {
 				$size = getimagesize($filename);
-				$tags['og:image'] = $setting['host_base'].'/opengraph.png';
+				$tags['og:image'] = bricksetting('host_base').'/opengraph.png';
 				$tags['og:image:width'] = $size[0];
 				$tags['og:image:height'] = $size[1];
-				$tags['og:image:alt'] = $setting['project'].' '.$setting['brick_translate_text_function']('Logo');
+				$tags['og:image:alt'] = bricksetting('project').' '.bricksetting('brick_translate_text_function')('Logo');
 			}
 		}
 	}
@@ -688,8 +636,8 @@ function brick_head_opengraph($tags, $page, $setting) {
 
 	// image is required
 	if (empty($tags['og:image'])) return [];
-	if (!empty($setting['opengraph_properties'])) {
-		$global = explode(' ', $setting['opengraph_properties']);
+	if (bricksetting('opengraph_properties')) {
+		$global = explode(' ', bricksetting('opengraph_properties'));
 		foreach ($global as $property) {
 			list($property, $content) = explode('=', $property);
 			if (!$content) continue;
@@ -714,19 +662,16 @@ function brick_head_opengraph($tags, $page, $setting) {
 
 /** 
  * check for translations in form of %{'Hello'}%
- * to translate text, you might use a translation function
- * default: use wrap_text() from core/language.inc.php from zzwrap
  * 
  * @param string $string
- * @param array $settings = $brick['setting']
  * @return string translated string
  */
-function brick_translate($string, $settings) {
+function brick_translate($string) {
 	if (!strstr($string, "%{'")) return $string;
 	$string = preg_replace_callback(
 		"~%{'(.+?)'}%~",
-		function ($string) use ($settings) {
-			return $settings['brick_translate_text_function']($string[1]);
+		function ($string) {
+			return bricksetting('brick_translate_text_function')($string[1]);
 		},
 		$string
 	);
@@ -742,26 +687,25 @@ function brick_translate($string, $settings) {
  * @return string name of function
  */
 function brick_file($type, $function) {
-	global $zz_setting;
 	$function_name = str_replace('-', '_', $function);
 	$file = sprintf(
-		'%s%s/%s.inc.php', $zz_setting['brick_custom_dir'], $type, $function
+		'%s%s/%s.inc.php', bricksetting('brick_custom_dir'), $type, $function
 	);
 	if (file_exists($file)) {
 		require_once $file;
 		return sprintf('cms_%s_%s', $type, $function_name);
 	}
-	foreach ($zz_setting['modules'] as $module) {
+	foreach (bricksetting('modules') as $module) {
 		$file = sprintf(
-			'%s/%s%s%s/%s.inc.php', $zz_setting['modules_dir'], $module
-			, $zz_setting['brick_module_dir'], $type, $function
+			'%s/%s%s%s/%s.inc.php', bricksetting('modules_dir'), $module
+			, bricksetting('brick_module_dir'), $type, $function
 		);
 		if (!file_exists($file)) continue;
 		require_once $file;
 		if (function_exists('wrap_package_activate'))
 			wrap_package_activate($module);
 		else
-			$zz_setting['active_module'] = $module;
+			bricksetting('active_module', $module);
 		return sprintf('mod_%s_%s_%s', $module, $type, $function_name);
 	}
 	return '';
@@ -771,15 +715,12 @@ function brick_file($type, $function) {
  * send response to an xmlHTTPrequest
  *
  * @param string $xmlHttpRequest
- * @param string $block
  * @param string $parameter
  * @return array $page
  */
-function brick_xhr($xmlHttpRequest, $parameter, $zz_setting = []) {
-	if (empty($zz_setting)) global $zz_setting;
-
+function brick_xhr($xmlHttpRequest, $parameter) {
 	$function = $xmlHttpRequest['httpRequest'];
-	$file = $zz_setting['custom'].'/zzbrick_xhr/'.$function.'.inc.php';
+	$file = bricksetting('custom').'/zzbrick_xhr/'.$function.'.inc.php';
 	if (file_exists($file)) {
 		require_once $file;
 		$function = 'cms_xhr_'.str_replace('-', '_', $function);
@@ -790,11 +731,11 @@ function brick_xhr($xmlHttpRequest, $parameter, $zz_setting = []) {
 			$function = $chosen_module[1];
 			$chosen_module = $chosen_module[0];
 		}
-		foreach ($zz_setting['modules'] as $module) {
+		foreach (bricksetting('modules') as $module) {
 			if ($chosen_module AND $module !== $chosen_module) continue;
-			if (file_exists($file = $zz_setting['modules_dir'].'/'.$module.'/zzbrick_xhr/'.$function.'.inc.php')) {
+			if (file_exists($file = bricksetting('modules_dir').'/'.$module.'/zzbrick_xhr/'.$function.'.inc.php')) {
 				require_once $file;
-				$zz_setting['active_module'] = $module;
+				bricksetting('active_module', $module);
 				$function = 'mod_'.$module.'_xhr_'.$function;
 				break;
 			}
@@ -903,9 +844,10 @@ function brick_format_placeholderblock($brick) {
 	$brick['cut_next_paragraph'] = false;
 
 	// check whether $blocktype needs to be translated
-	if (array_key_exists($brick['type'], $brick['setting']['brick_types_translated'])) {
+	$brick_types_translated = bricksetting('brick_types_translated');
+	if (array_key_exists($brick['type'], $brick_types_translated)) {
 		$brick['subtype'] = $brick['type'];
-		$brick['type'] = $brick['setting']['brick_types_translated'][$brick['type']];
+		$brick['type'] = $brick_types_translated[$brick['type']];
 	} else {
 		$brick['subtype'] = '';
 	}
@@ -920,8 +862,8 @@ function brick_format_placeholderblock($brick) {
 
 	// include file
 	$bricktype_file = __DIR__.'/'.$brick['type'].'.inc.php';
-	$brick['path'] = $brick['setting']['brick_custom_dir'].$brick['type'];
-	$brick['module_path'] = $brick['setting']['brick_module_dir'].$brick['type'];
+	$brick['path'] = bricksetting('brick_custom_dir').$brick['type'];
+	$brick['module_path'] = bricksetting('brick_module_dir').$brick['type'];
 	$function_name = 'brick_'.$brick['type'];
 	if (!function_exists($function_name) AND file_exists($bricktype_file)) {
 		require_once $bricktype_file;
@@ -954,7 +896,7 @@ function brick_format_textblock($brick, $block, $index) {
 		AND substr($block, 0, 2) != "\n\n")
 		$block = substr($block, 1);
 	if ($block) {
-		$text_to_add = brick_textformat($block, 'pieces', $brick['setting']['brick_fulltextformat']);
+		$text_to_add = brick_textformat($block, 'pieces', bricksetting('brick_fulltextformat'));
 		// check if there's some </p>text<p>, remove it for inline results of function
 		if ($brick['cut_next_paragraph'] && substr(trim($text_to_add), 0, 3) === '<p>') {
 			$text_to_add = ' '.substr(trim($text_to_add), 3);
@@ -982,9 +924,6 @@ function brick_include($brick, $blocks = []) {
 	// @see brick_format_placeholderblock()
 	if (empty($blocks)) return $brick;
 
-	if (!isset($brick['setting']['brick_template_function']))
-		$brick['setting']['brick_template_function'] = 'wrap_template';
-
 	if (count($blocks) === 1)
 		return [$brick, $blocks];
 
@@ -1003,7 +942,7 @@ function brick_include($brick, $blocks = []) {
 				return [$brick, $blocks];
 			}
 			$includes[] = $block[1];
-			$tpl = $brick['setting']['brick_template_function']($block[1], [], 'error');
+			$tpl = bricksetting('brick_template_function')($block[1], [], 'error');
 			$new_blocks = explode('%%%', $tpl);
 			list($brick, $new_blocks) = brick_include($brick, $new_blocks);
 			// there now are two or three text blocks adjacent, glue them together
@@ -1123,13 +1062,12 @@ function brick_merge_page_bricks($page, $content) {
  * add function prefix for brick_formatting_functions
  *
  * @param string $function
- * @param array $settings
  * @return string
  */
-function brick_format_function_prefix($function, $settings) {
-	if (!empty($settings['brick_formatting_functions_prefix'][$function])) {
-		$function = $settings['brick_formatting_functions_prefix'][$function].'_'.$function;
-	}
+function brick_format_function_prefix($function) {
+	$formatting_functions_prefix = bricksetting('brick_formatting_functions_prefix');
+	if ($formatting_functions_prefix AND array_key_exists($function, $formatting_functions_prefix))
+		$function = $formatting_functions_prefix[$function].'_'.$function;
 	return $function;
 }
 
@@ -1138,10 +1076,9 @@ function brick_format_function_prefix($function, $settings) {
  * if not, throw a 404
  *
  * @param mixed $parameters
- * @param array $settings = $brick['settings']
  * @return bool false: error, throw 404
  */
-function brick_check_parameters($parameters, $settings) {
+function brick_check_parameters($parameters) {
 	$return = true;
 	if (!is_array($parameters))
 		$parameters = explode('/', $parameters);
@@ -1152,7 +1089,7 @@ function brick_check_parameters($parameters, $settings) {
 		if ($parameter === '*') continue;
 		if (strstr($parameter, '%')) {
 			// valid sequence?
-			if (strtolower(wrap_detect_encoding(urldecode($parameter))) === $settings['character_set']) continue;
+			if (strtolower(wrap_detect_encoding(urldecode($parameter))) === bricksetting('character_set')) continue;
 		} else {
 			if (wrap_filename($parameter, '-', [
 				'.' => '.', '+' => '+', '_' => '_', '(' => '(', ')' => ')'
@@ -1161,4 +1098,19 @@ function brick_check_parameters($parameters, $settings) {
 		$return = false;
 	}
 	return $return;
+}
+
+/**
+ * read or write settings
+ *
+ * @param string $key
+ * @param mixed $value (if set, assign value, if not read value)
+ * @return mixed
+ */
+function bricksetting($key, $value = NULL) {
+	global $zz_setting;
+	// write?
+	if (isset($value)) $zz_setting[$key] = $value;
+	// read
+	return wrap_get_setting($key);
 }

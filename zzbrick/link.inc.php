@@ -4,11 +4,11 @@
  * zzbrick
  * Links (will not link to self if link url = current url)
  *
- * Part of »Zugzwang Project«
- * http://www.zugzwang.org/projects/zzbrick
+ * Part of Â»Zugzwang ProjectÂ«
+ * https://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2011, 2014, 2019 Gustaf Mossakowski
+ * @copyright Copyright Â© 2011, 2014, 2019, 2023 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -19,7 +19,7 @@
  * files: -
  * functions: -
  * settings:
- *		'nolink_template', default '<strong>%s</strong>', in case URL = current
+ *		'brick_nolink_template', in case URL = current
  * examples: 
  * 		%%% link /some/internal/link "Link text" %%% 
  * 		%%% link /some/internal/link "Link text" "title='title text'" %%% 
@@ -28,15 +28,13 @@
  */
 function brick_link($brick) {
 	if (count($brick['vars']) < 2) return $brick;
-	if (!isset($brick['setting']['nolink_template']))
-		$brick['setting']['nolink_template'] = '<strong>%s</strong>';
 	if (!isset($brick['page']['text'][$brick['position']]))
 		$brick['page']['text'][$brick['position']] = [];
 
 	$text = '';
-	$link = $brick['setting']['base'].$brick['vars'][0];
+	$link = bricksetting('base').$brick['vars'][0];
 	if ($_SERVER['REQUEST_URI'] === $link) {
-		$text = sprintf($brick['setting']['nolink_template'], $brick['vars'][1]);
+		$text = sprintf(bricksetting('brick_nolink_template'), $brick['vars'][1]);
 	} elseif (count($brick['vars']) === 2) {
 		$template = '<a href="%s">%s</a>';
 		$text = sprintf($template, $link, $brick['vars'][1]);

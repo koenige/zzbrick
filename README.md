@@ -76,35 +76,8 @@ Inside a text, placeholders for the real content are used:
 
 ## Settings
 
-- `brick_custom_dir`: directory for the customised brick scripts, zzwrap
-sets this to a default in $zz_setting['custom'], prefix zzbrick_
-- `brick_default_position`: if a matrix of the content is wanted, here you 
-can define a default position
-- `brick_types_translated`: here you can translate the first part of the
-zzbrick definition e. g. `%%% abfrage ... ... %%%` might be translated to
-request: `$setting['brick_types_translated']['abfrage'] = 'request'`
-this may also be used to define a certain subtype
-- `brick_request_shortcuts`: shortcuts, that is you can write `%%% image blubb 
-%%%` instead of `%%% request image blubb %%%`
-- `brick_username_in_session`: Name of key from $_SESSION that will be used  
-as username for zzform(), default is 'username'
-- `brick_authentication_file`: file to include if
-authentication is needed for accessing the zzform scripts. might be 
-false, then no file will be included. zzwrap sets this automatically
-- `brick_authentication_function`: function to call if
-authentication is needed
-- `brick_translate_text_function`: Name of function to translate text; 
-zzwrap sets this to wrap_text
-- `brick_fulltextformat`: name of function to format the complete output of
-brick_format instead of formatting each paragraph separately with 
-markdown
-- `brick_ipfilter_translated`: similar to brick_types_translated, here
-you can translate '=', ':' and '-' to different text
-- `brick_ipv4_allowed_range`: standard allowed range of IP adresses if
-no address is set in ipfilter
-- `brick_rights_translated`: similar to brick_types_translated, here
-you can translate '=', ':' and '-' to different text
 - `lang`: language code for HTML lang attribute of HEAD
+- more settings can be found in file `configuration/settings.cfg`
 
 ## Default file structure
 
