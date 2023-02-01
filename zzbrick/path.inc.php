@@ -4,11 +4,11 @@
  * zzbrick
  * path
  *
- * Part of ÈZugzwang ProjectÇ
+ * Part of Â»Zugzwang ProjectÂ«
  * http://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2023 Gustaf Mossakowski
+ * @copyright Copyright Â© 2023 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
