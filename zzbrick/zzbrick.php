@@ -1091,8 +1091,8 @@ function brick_check_parameters($parameters) {
 			// valid sequence?
 			if (strtolower(wrap_detect_encoding(urldecode($parameter))) === bricksetting('character_set')) continue;
 		} else {
-			if (wrap_filename($parameter, '-', [
-				'.' => '.', '+' => '+', '_' => '_', '(' => '(', ')' => ')'
+			if (wrap_filename($parameter, '', [
+				'.' => '.', '+' => '+', '_' => '_', '(' => '(', ')' => ')', '-' => '-'
 			]) === $parameter.'') continue;
 		}
 		$return = false;
