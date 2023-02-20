@@ -821,13 +821,14 @@ function brick_local_settings($brick) {
  */
 function brick_placeholder_script($brick) {
 	if (empty($brick['local_settings']['*'])) return $brick;
-	$function = brick_file('placeholder', $brick['local_settings']['*']);
-	if (function_exists($function)) {
-		if (!empty($brick['parameter'])) {
-			$brick['placeholder'] = $brick['parameter'];
-			if ($pos = strpos($brick['placeholder'], '/'))
-				$brick['placeholder'] = substr($brick['placeholder'], 0, $pos);
-		}
+	$placeholders = explode(',', $brick['local_settings']['*']);
+	$brick['placeholders'] = !empty($brick['parameter']) ? explode('/', $brick['parameter']) : [];
+	foreach ($placeholders as $index => $placeholder) {
+		$placeholder = trim($placeholder);
+		$function = brick_file('placeholder', $placeholder);
+		if (!function_exists($function)) continue;
+		if (array_key_exists($index, $brick['placeholders']))
+			$brick['placeholder'] = $brick['placeholders'][$index];
 		$brick = $function($brick);
 	}
 	return $brick;
