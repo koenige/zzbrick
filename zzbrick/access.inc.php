@@ -55,10 +55,18 @@ function brick_access($brick) {
 		// is there an asterisk?
 		$details = '';
 		foreach ($brick['vars'] as $id => $var) {
-			if (substr($var, -1) === '*' AND !empty(bricksetting('brick_url_parameter'))) {
-				$details = str_replace('*', bricksetting('brick_url_parameter'), $var);
-				unset($brick['vars'][$id]);
-			}
+			if (!str_ends_with($var, ':*')) continue;
+			$parts = explode(':', $var);
+			$replace = false;
+			// first check if in 'parameter' key (via placeholder!) = better, already evaluated
+			// then check if in URL path
+			if (array_key_exists($parts[0], $brick['parameter']))
+				$replace = $brick['parameter'][$parts[0]];
+			elseif (!empty(bricksetting('brick_url_parameter')))
+				$replace = bricksetting('brick_url_parameter');
+			if (!$replace) continue;
+			$details = str_replace('*', $replace, $var);
+			unset($brick['vars'][$id]);
 		}
 		$access = wrap_access($brick['vars'][0], $details); // just support first parameter
 		if ($access) {
