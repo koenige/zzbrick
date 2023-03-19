@@ -541,7 +541,7 @@ function brick_head_format_html($page, $tags) {
 	
 	// @todo: insert bricksetting('page_base'); ? or do this in functions 
 	foreach ($tags['link'] AS $rel => $link) {
-		if (!in_array(ucfirst($rel), bricksetting('html_link_types'))) continue;
+		if (!in_array(ucfirst($rel), bricksetting('brick_html_link_types'))) continue;
 		foreach ($link as $index) {
 			if (!is_array($index)) continue;
 			$head[$i] = '<link rel="'.$rel.'"';
