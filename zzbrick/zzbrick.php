@@ -1109,9 +1109,5 @@ function brick_check_parameters($parameters) {
  * @return mixed
  */
 function bricksetting($key, $value = NULL) {
-	global $zz_setting;
-	// write?
-	if (isset($value)) $zz_setting[$key] = $value;
-	// read
-	return wrap_get_setting($key);
+	return wrap_setting($key, $value);
 }
