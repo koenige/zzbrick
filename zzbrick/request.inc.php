@@ -601,15 +601,17 @@ function brick_request_link(&$media, $placeholder, $field_name) {
 			$medium['custom_title'] = array_pop($placeholder);
 		}
 		// default path?
+		$media_standard_image_size_used = false;
 		if (empty($medium['path'])) {
 			if (bricksetting('default_media_size')) {
 				$medium['path'] = $media_sizes[bricksetting('default_media_size')]['path'];
 			} elseif (bricksetting('media_standard_image_size')) {
+				$media_standard_image_size_used = true;
 				$medium['path'] = bricksetting('media_standard_image_size');
 			}
 		}
 		if (empty($medium['path_x2'])) {
-			if (bricksetting('media_standard_image_size_x2')) {
+			if ($media_standard_image_size_used AND bricksetting('media_standard_image_size_x2')) {
 				foreach ($media_sizes as $size => $medium_size) {
 					if ($medium_size['path'].'' !== bricksetting('media_standard_image_size_x2').'') continue;
 					$medium['path_x2'] = $medium_size['path'];
