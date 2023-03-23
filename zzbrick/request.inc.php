@@ -549,20 +549,29 @@ function brick_request_link(&$media, $placeholder, $field_name) {
 	switch ($area) {
 	case 'bild':
 	case 'image':
-		$mediakey = 'images';
+		$mediakeys = ['images'];
 		$template = 'image'; // inline image
+		$sizes = false;
 		break;
 	case 'video':
-		$mediakey = 'videos';
+		$mediakeys = ['videos'];
 		$template = 'video'; // inline video
+		$sizes = false;
 		break;
 	case 'link':
-		$mediakey = 'links';
+		$mediakeys = ['links'];
 		$template = 'link'; // just plain link
+		$sizes = false;
 		break;
 	case 'doc':
-		$mediakey = 'links';
+		$mediakeys = ['links'];
 		$template = 'doc'; // link with anchor
+		$sizes = false;
+		break;
+	case 'download':
+		$mediakeys = ['images', 'links'];
+		$template = 'download'; // download links
+		$sizes = true;
 		break;
 	default:
 		// not supported, return unchanged
@@ -572,78 +581,94 @@ function brick_request_link(&$media, $placeholder, $field_name) {
 		return '%%% '.$area.' '.implode(' ', $placeholder).' %%%';
 	}
 	$no = array_shift($placeholder);
-	if (!array_key_exists($mediakey, $media)) return '';
 	$media_sizes = bricksetting('media_sizes');
-	foreach ($media[$mediakey] as $medium_id => $medium) {
-		if ($medium[$field_name] != $no) continue;
-		unset($media[$mediakey][$medium_id]);
-		// last parameter = size
-		if ($mediakey === 'images') {
-			if (count($placeholder) === 3)
-				$medium['custom_title'] = array_pop($placeholder);
-			$size = array_pop($placeholder);
-			if ($size AND !in_array($size, array_keys($media_sizes))) {
-				// do not care about order of parameters position, size
-				$medium['position'] = $size;
+	foreach ($mediakeys as $mediakey) {
+		foreach ($media[$mediakey] as $medium_id => $medium) {
+			if ($medium[$field_name] != $no) continue;
+			unset($media[$mediakey][$medium_id]);
+			// last parameter = size
+			if ($mediakey === 'images') {
+				if (count($placeholder) === 3)
+					$medium['custom_title'] = array_pop($placeholder);
 				$size = array_pop($placeholder);
-			}
-			if ($size AND in_array($size, array_keys($media_sizes))) {
-				$medium['size'] = $size;
-				$medium['path'] = $media_sizes[$size]['path'];
-			} elseif (count($placeholder) > 1) {
-				$medium['size'] = 'invalid';
-			}
-			// first parameter if there's still one = position
-			if (count($placeholder) AND empty($medium['position'])) {
-				$medium['position'] = $placeholder[0];
-			}
-		} else {
-			$medium['custom_title'] = array_pop($placeholder);
-		}
-		// default path?
-		$media_standard_image_size_used = false;
-		if (empty($medium['path'])) {
-			if (bricksetting('default_media_size')) {
-				$medium['path'] = $media_sizes[bricksetting('default_media_size')]['path'];
-			} elseif (bricksetting('media_standard_image_size')) {
-				$media_standard_image_size_used = true;
-				$medium['path'] = bricksetting('media_standard_image_size');
-			}
-		}
-		if (empty($medium['path_x2'])) {
-			if ($media_standard_image_size_used AND bricksetting('media_standard_image_size_x2')) {
-				foreach ($media_sizes as $size => $medium_size) {
-					if ($medium_size['path'].'' !== bricksetting('media_standard_image_size_x2').'') continue;
-					$medium['path_x2'] = $medium_size['path'];
+				if ($size AND !in_array($size, array_keys($media_sizes))) {
+					// do not care about order of parameters position, size
+					$medium['position'] = $size;
+					$size = array_pop($placeholder);
 				}
-			} elseif (!empty($medium['path'])) {
-				foreach ($media_sizes as $medium_size) {
-					if (is_numeric($medium['path']) AND $medium['path'] * 2 == $medium_size['path'])
+				if ($size AND in_array($size, array_keys($media_sizes))) {
+					$medium['size'] = $size;
+					$medium['path'] = $media_sizes[$size]['path'];
+				} elseif (count($placeholder) > 1) {
+					$medium['size'] = 'invalid';
+				}
+				// first parameter if there's still one = position
+				if (count($placeholder) AND empty($medium['position'])) {
+					$medium['position'] = $placeholder[0];
+				}
+			} else {
+				$medium['custom_title'] = array_pop($placeholder);
+			}
+			// default path?
+			$media_standard_image_size_used = false;
+			if (empty($medium['path'])) {
+				if (bricksetting('default_media_size')) {
+					$medium['path'] = $media_sizes[bricksetting('default_media_size')]['path'];
+				} elseif (bricksetting('media_standard_image_size')) {
+					$media_standard_image_size_used = true;
+					$medium['path'] = bricksetting('media_standard_image_size');
+				}
+			}
+			if (empty($medium['path_x2'])) {
+				if ($media_standard_image_size_used AND bricksetting('media_standard_image_size_x2')) {
+					foreach ($media_sizes as $size => $medium_size) {
+						if ($medium_size['path'].'' !== bricksetting('media_standard_image_size_x2').'') continue;
 						$medium['path_x2'] = $medium_size['path'];
+					}
+				} elseif (!empty($medium['path'])) {
+					foreach ($media_sizes as $medium_size) {
+						if (is_numeric($medium['path']) AND $medium['path'] * 2 == $medium_size['path'])
+							$medium['path_x2'] = $medium_size['path'];
+					}
 				}
 			}
-		}
-		if (!empty($medium['position']) AND $medium['position'] === 'hidden') continue;
-		if (empty($medium['size']) AND !empty($medium['path'])) {
-			foreach ($media_sizes as $size => $medium_size) {
-				if ($medium_size['path'].'' !== $medium['path'].'') continue;
-				$medium['size'] = $size;
-			}
-		}
-		if (!empty($medium['size'])) {
-			$medium['max_width'] = $media_sizes[$medium['size']]['width'];
-			$medium['max_height'] = $media_sizes[$medium['size']]['height'];
-			foreach ($media_sizes as $medium_size) {
-				if ($medium_size['width'] > $medium['max_width']) {
-					$medium['bigger_size_available'] = true;
+			if (!empty($medium['position']) AND $medium['position'] === 'hidden') continue;
+			if (empty($medium['size']) AND !empty($medium['path'])) {
+				foreach ($media_sizes as $size => $medium_size) {
+					if ($medium_size['path'].'' !== $medium['path'].'') continue;
+					$medium['size'] = $size;
 				}
 			}
+			if (!empty($medium['size'])) {
+				$medium['max_width'] = $media_sizes[$medium['size']]['width'];
+				$medium['max_height'] = $media_sizes[$medium['size']]['height'];
+				foreach ($media_sizes as $medium_size) {
+					if ($medium_size['width'] > $medium['max_width']) {
+						$medium['bigger_size_available'] = true;
+					}
+				}
+			}
+			if (!empty($medium['custom_title']) AND $medium['custom_title'] === '-') {
+				$medium['custom_title'] = '';
+				$medium['title'] = '';
+			}
+			if ($sizes) {
+				array_multisort($media_sizes, SORT_DESC, SORT_REGULAR, array_column($media_sizes, 'width'));
+				foreach ($media_sizes as $size) {
+					if ($size['action'] === 'crop') continue; // no cropped images
+					$file = sprintf('%s/%s.%s.%s', wrap_setting('media_folder'), $medium['filename'], $size['path'], $medium['thumb_extension']);
+					if (!file_exists($file)) continue;
+					$image = getimagesize($file);
+					$medium['files'][] = array_merge($medium, [
+						'path' => $size['path'],
+						'width' => $image[0],
+						'height' => $image[1],
+						'filesize' => filesize($file)
+					]);
+				}
+			}
+			return wrap_template($template, $medium);
 		}
-		if (!empty($medium['custom_title']) AND $medium['custom_title'] === '-') {
-			$medium['custom_title'] = '';
-			$medium['title'] = '';
-		}
-		return wrap_template($template, $medium);
 	}
 	return '';
 }
