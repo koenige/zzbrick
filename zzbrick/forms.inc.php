@@ -214,12 +214,9 @@ function brick_forms($brick) {
  *		array 'vars'
  *		string 'path', defaults to _inc/zzbrick_tables
  *		string 'module_path', defaults to /zzbrick_tables
- * @global array $zz_conf
  * @return array $brick, with form_script_path set and vars modified
  */
 function brick_forms_file($brick) {
-	global $zz_conf;
-
 	if (file_exists($brick['path'].'/_common.inc.php')) {
 		$brick['common_script_path'] =  $brick['path'].'/_common.inc.php';
 	} elseif (!empty($brick['tables_path']) AND $brick['path'] !== $brick['tables_path']
