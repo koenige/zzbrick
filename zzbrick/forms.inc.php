@@ -20,9 +20,8 @@
  * 		it is recommended to put the raw table definitions in zzbrick_tables
  * 		and the more sophisticated table scripts in zzbrick_forms
  * functions: -
- * settings: brick_username_in_session, brick_authentication_file, 
- *		brick_authentication_function, brick_translate_text_function, 
- *		$zz_conf['dir']
+ * settings: brick_authentication_file, brick_authentication_function,
+ *		brick_translate_text_function, $zz_conf['dir']
  * examples:
  *		%%% tables * %%% -- URL parameters take place of asterisk
  *		%%% tables *[2] %%% -- only 2nd URL parameter take place of asterisk
@@ -106,8 +105,6 @@ function brick_forms($brick) {
 			require_once $authentication_file;
 			bricksetting('brick_authentication_function')();
 		}
-		if (!empty($_SESSION) AND empty($zz_conf['user']) AND array_key_exists(bricksetting('brick_username_in_session'), $_SESSION))
-			$zz_conf['user'] = $_SESSION[bricksetting('brick_username_in_session')];
 	}
 	require_once $zz_conf['dir'].'/zzform.php';
 	// check if POST is too big, then set GET variables if possible here, so the
