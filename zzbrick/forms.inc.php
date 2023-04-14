@@ -21,7 +21,7 @@
  * 		and the more sophisticated table scripts in zzbrick_forms
  * functions: -
  * settings: brick_authentication_file, brick_authentication_function,
- *		brick_translate_text_function, $zz_conf['dir']
+ *		brick_translate_text_function
  * examples:
  *		%%% tables * %%% -- URL parameters take place of asterisk
  *		%%% tables *[2] %%% -- only 2nd URL parameter take place of asterisk
@@ -106,7 +106,7 @@ function brick_forms($brick) {
 			bricksetting('brick_authentication_function')();
 		}
 	}
-	require_once $zz_conf['dir'].'/zzform.php';
+	wrap_include_files('zzform.php', 'zzform');
 	// check if POST is too big, then set GET variables if possible here, so the
 	// table script can react to them
 	zzform_post_too_big();
