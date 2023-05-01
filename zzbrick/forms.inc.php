@@ -100,7 +100,8 @@ function brick_forms($brick) {
 	// check if POST is too big, then set GET variables if possible here, so the
 	// table script can react to them
 	zzform_post_too_big();
-	$zz = zzform_include(implode('/', $brick['vars']), [], $brick['subtype']);
+	$script = array_shift($brick['vars']);
+	$zz = zzform_include($script, [], $brick['subtype'], $brick);
 	if (!$zz)
 		$brick['page']['status'] = 404;
 	if (!empty($brick['page']['status']) AND $brick['page']['status'] !== 200)
