@@ -4,11 +4,11 @@
  * zzbrick
  * Include forms via zzform scripts
  *
- * Part of »Zugzwang Project«
+ * Part of Â»Zugzwang ProjectÂ«
  * https://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2009-2023 Gustaf Mossakowski
+ * @copyright Copyright Â© 2009-2023 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -85,6 +85,9 @@ function brick_forms($brick) {
 	if (!$auth) {
 		array_pop($brick['vars']);
 		$brick['public_access'] = true;
+	} elseif ($authentication_file = bricksetting('brick_authentication_file')) {
+		require_once $authentication_file;
+		bricksetting('brick_authentication_function')();
 	}
 	
 	$brick = brick_local_settings($brick);
@@ -92,43 +95,22 @@ function brick_forms($brick) {
 		$brick['public_access'] = $brick['local_settings']['public'];
 	$brick = brick_placeholder_script($brick);
 	
-	// script path must be first variable
-	$brick = brick_forms_file($brick);
-	if (!$brick['form_script_path']) {
-		$brick['page']['status'] = 404;
-		return $brick;
-	}
-	
 	// start zzform scripts
-	if ($auth) {
-		if ($authentication_file = bricksetting('brick_authentication_file')) {
-			require_once $authentication_file;
-			bricksetting('brick_authentication_function')();
-		}
-	}
 	wrap_include_files('zzform.php', 'zzform');
 	// check if POST is too big, then set GET variables if possible here, so the
 	// table script can react to them
 	zzform_post_too_big();
-	$zz = brick_forms_include($brick);
+	$zz = zzform_include(implode('/', $brick['vars']), [], $brick['subtype']);
+	if (!$zz)
+		$brick['page']['status'] = 404;
 	if (!empty($brick['page']['status']) AND $brick['page']['status'] !== 200)
 		return $brick;
 
-	if (!$zz) {
-		// no definitions for zzform, this will not work
-		$brick['page']['error']['level'] = E_USER_ERROR;
-		$brick['page']['error']['msg_text'] = 'No table definition for zzform found ($zz).';
-		$brick['page']['error']['msg_vars'] = [$brick['form_script_path']];
-		$brick['page']['status'] = 503;
-		return $brick;
-	}
-	if (!empty($brick['local_settings'])) {
+	if (!empty($brick['local_settings']))
 		$zz += $brick['local_settings'];
-	}
 
-	if (!empty($_POST) AND !empty($_POST['httpRequest']) AND substr($_POST['httpRequest'], 0, 6) === 'zzform') {
+	if (!empty($_POST) AND !empty($_POST['httpRequest']) AND substr($_POST['httpRequest'], 0, 6) === 'zzform')
 		$brick['page'] = brick_xhr($_POST, $zz);
-	}
 
 	// set allowed params
 	$brick['page']['query_strings'] = [
@@ -193,131 +175,6 @@ function brick_forms($brick) {
 		AND (!empty($ops['breadcrumb'])))
 		$brick['page']['breadcrumbs'][] = $ops['breadcrumb'];
 	return $brick;
-}
-
-/**
- * get table definition filename
-*
- * possible notations, table script name must be first parameter always
- * %%% tables table %%%
- * %%% tables module/table %%%
- * %%% tables table parameters %%%
- * %%% tables module/table parameters %%%
- *
- * @deprecated because table script name is second parameter
- * %%% tables subfolder table %%%
- *
- * @param array $brick
- *		array 'vars'
- *		string 'path', defaults to _inc/zzbrick_tables
- *		string 'module_path', defaults to /zzbrick_tables
- * @return array $brick, with form_script_path set and vars modified
- */
-function brick_forms_file($brick) {
-	if (file_exists($brick['path'].'/_common.inc.php')) {
-		$brick['common_script_path'] =  $brick['path'].'/_common.inc.php';
-	} elseif (!empty($brick['tables_path']) AND $brick['path'] !== $brick['tables_path']
-		AND file_exists($brick['tables_path'].'/_common.inc.php')) {
-		$brick['common_script_path'] = $brick['tables_path'].'/_common.inc.php';
-	} elseif (!empty(bricksetting('modules'))) {
-		$dir = substr($brick['path'], strrpos($brick['path'], '/'));
-		$brick['common_script_path'] = '';
-		foreach (bricksetting('modules') as $module) {
-			// just get first common script
-			if (!file_exists($file = bricksetting('modules_dir').'/'.$module.$dir.'/_common.inc.php')) continue;
-			$brick['common_script_path'] = $file;
-			break;
-		}
-	} else {
-		$brick['common_script_path'] = '';
-	}
-
-	// @deprecated
-	// %%% tables subfolder table %%%
-	if (count($brick['vars']) === 2) {
-		$brick['form_script_path'] = $brick['path'].'/'.implode('/', $brick['vars']).'.php';
-		if (file_exists($brick['form_script_path'])) {
-			$brick['page']['error']['level'] = E_USER_DEPRECATED;
-			$brick['page']['error']['msg_text'] = 'Using two variables `tables %s` is deprecated';
-			$brick['page']['error']['msg_vars'] = $brick['vars'];
-			$found = false;
-			foreach ($brick['vars'] as $var) {
-				if (substr($var, 0, 1) === '.') $found = true;
-			}
-			if (!$found) {
-				$brick['vars'] = [];
-				return $brick;
-			}
-		}
-	}
-
-	$folder = '';
-	$script = array_shift($brick['vars']);
-
-	if (strstr($script, '/') AND substr($script, 0, 3) !== '../') {
-		// allow for zzform_multi() with paths, e. g. ../zzbrick_forms/ + script name
-		$script = explode('/', $script);
-		$folder = array_shift($script);
-		$script = implode('/', $script);
-	}
-	
-	$brick['form_script_path'] = $brick['path'].'/'.($folder ? $folder.'/' : '').$script.'.php';
-	// allow to use script without recursion
-	$backtrace = debug_backtrace();
-	foreach ($backtrace as $step) {
-		if (!empty($step['file']) AND $step['file'] === $brick['form_script_path']) $brick['form_script_path'] = false;
-	}
-	if (file_exists($brick['form_script_path'])) return $brick;
-	
-	foreach (bricksetting('modules') as $module) {
-		if ($folder AND $folder !== $module) continue;
-		if ($module === 'default') {
-			if (!$default_tables = bricksetting('brick_default_tables')) continue;
-			if (is_array($default_tables) AND !in_array($script, $default_tables)) continue;
-		}
-		$module_path = bricksetting('modules_dir').'/'.$module.$brick['module_path'];
-		$brick['form_script_path'] = $module_path.'/'.$script.'.php';
-		if (file_exists($brick['form_script_path']) AND function_exists('wrap_package_activate')) {
-			wrap_package_activate($module);
-			return $brick;
-		}
-		if ($module !== 'default') continue;
-		// default-module has some database_-prefixed tables
-		$brick['form_script_path'] = $module_path.'/database_'.$script.'.php';	
-		if (file_exists($brick['form_script_path']) AND function_exists('wrap_package_activate')) {
-			wrap_package_activate($module);
-			return $brick;
-		}
-	}
-	$brick['form_script_path'] = '';
-	return $brick;
-}
-
-/**
- * include a table definition file
- * with just $zz_conf, $zz_setting and $brick available for reading, $zz for
- * writing
- *
- * $brick is referenced because in common_script and form_script, $brick
- * might be changed
- *
- * @param array $brick
- * @return array $zz (or false, if no definitions available)
- */
-function brick_forms_include(&$brick) {
-	global $zz_conf;
-	global $zz_setting;
-
-	if ($brick['common_script_path'])
-		require_once $brick['common_script_path'];
-	require $brick['form_script_path'];
-	if (empty($zz) AND !empty($zz_sub))
-		return $zz_sub;
-	if (!empty($zz))
-		return $zz;
-
-	// no definitions for zzform, this will not work
-	return false;
 }
 
 /**
