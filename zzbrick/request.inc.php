@@ -16,7 +16,7 @@
 /**
  * requests function which returns database content in a $page-Array
  * 
- * files: zzbrick_request/_common.inc.php, zzbrick_request/{request}.inc.php
+ * files: zzbrick_request/{request}.inc.php
  * functions: cms_{$request}()
  * settings: brick_request_shortcuts
  * example: 

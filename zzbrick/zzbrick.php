@@ -16,8 +16,7 @@
  * 	- zzbrick_request/news.inc.php will be included with a corresponding 
  * 	function cms_news(); which will be called, other functions which are being
  * 	accessed through cms_news() must be in the same file, in files starting with
- * 	zzbrick_request/news_ or in the zzbrick_request/_common.inc.php which will 
- * 	always be included
+ * 	zzbrick_request/news_
  * '2004' and further variables, separated by spaces, are variables which are
  * being passed to the function. variables must not include ", since this sign
  * is used to allow the use of whitespace in single variables, e. g. "2004 fall"
@@ -29,9 +28,8 @@
  * Files where customisation will take place
  * 	- zzbrick_rights/access_rights.inc.php
  * 	- zzbrick_request/{request}.inc.php
- * 	- zzbrick_request/_common.inc.php
- * 	- zzbrick_forms/{tables}.inc.php
- * 	- zzbrick_tables/{tables}.inc.php
+ * 	- zzbrick_forms/{tables}.php
+ * 	- zzbrick_tables/{tables}.php
  * 
  * Functions that contain customisations
  * 	- wrap_access_rights() - returns true if access is granted or false if no
