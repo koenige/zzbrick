@@ -130,6 +130,7 @@ function brick_format($block, $parameter = false) {
 	$brick['page']['language_link'] = false;	// language links to other language(s)
 	$brick['page']['status'] = 200;				// everything ok
 	$brick['page']['url'] = '';					// own URL for JS redirects
+	$brick['page']['content_type'] = NULL;
 
 	// further variables
 	$brick['access_forbidden'] = false;			// access is allowed
@@ -327,8 +328,14 @@ function brick_format($block, $parameter = false) {
 	
 	$fulltextformat = bricksetting('brick_fulltextformat');
 	
-	// check if it's html or different
-	if (!empty($page['content_type']) AND $page['content_type'] != 'html') {
+	// check if it's JSON, HTML or different
+	if (bricksetting('send_as_json')) {
+		if (!in_array($page['content_type'], ['json', 'geojson'])) {
+			$page['content_type_original'] = $page['content_type'] ?? 'html';
+			$page['content_type'] = 'json';
+		}
+	}
+	if ($page['content_type'] != 'html') {
 		// no formatting, if it's not HTML!
 		$fulltextformat = 'html';
 		bricksetting('brick_default_position', 'none');
@@ -438,6 +445,8 @@ function brick_get_variables($block) {
  * 
  * Example: request news "John Doe" => 'request', 'news', 'John Doe'
  * @param string $block original string
+ * @param string $type 'pieces' or 'full'
+ * @param string $fulltextformat
  * @return array variables
  */
 function brick_textformat($string, $type, $fulltextformat) {
@@ -462,9 +471,8 @@ function brick_textformat($string, $type, $fulltextformat) {
 			foreach ($forms[0] as $index => $form) {
 				$text = str_replace($hash.sprintf("%04d", $index), $form, $text);
 			}
-			if ($fulltextformat === 'markdown') {
+			if ($fulltextformat === 'markdown')
 				$text = substr($text, 6, -7);
-			}
 			return $text;
 		}
 	} else {
