@@ -82,7 +82,9 @@ function brick_request($brick) {
 			return $brick;
 		}
 		// call function
+		$job = wrap_job_check($brick['subtype']);
 		$content = $brick['request_function']($brick['vars'], $brick['local_settings'], $brick['data'] ?? []);
+		wrap_job_finish($job, $brick['subtype'], $content);
 	}
 
 	if (empty($content)) {
