@@ -1025,7 +1025,7 @@ function brick_merge_page_bricks($page, $content) {
 	// get some content from the function and overwrite existing values
 	$overwrite_bricks = [
 		'title', 'dont_show_h1', 'language_link', 'error_type',
-		'last_update', 'style', 'project',
+		'last_update', 'style', 'project', 'dont_show_title_as_breadcrumb',
 		'created', 'headers', 'url_ending', 'no_output', 'template',
 		'content_type', 'redirect', 'send_as_json', 'url', 'h1',
 		'description'

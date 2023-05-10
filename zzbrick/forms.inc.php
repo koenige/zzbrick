@@ -172,7 +172,7 @@ function brick_forms($brick) {
 				.$breadcrumb['linktext'].(!empty($breadcrumb['url']) ? '</a>' : '');
 		}
 	}
-	if (empty($zz_conf['dont_show_title_as_breadcrumb'])
+	if (empty($brick['page']['dont_show_title_as_breadcrumb'])
 		AND (!empty($ops['breadcrumb'])))
 		$brick['page']['breadcrumbs'][] = $ops['breadcrumb'];
 	return $brick;
