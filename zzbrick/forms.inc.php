@@ -174,7 +174,7 @@ function brick_forms($brick) {
 	}
 	if (empty($brick['page']['dont_show_title_as_breadcrumb'])
 		AND (!empty($ops['breadcrumb'])))
-		$brick['page']['breadcrumbs'][] = $ops['breadcrumb'];
+		$brick['page']['breadcrumbs'][]['title'] = $ops['breadcrumb'];
 	return $brick;
 }
 
