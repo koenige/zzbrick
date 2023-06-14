@@ -61,6 +61,7 @@ function brick_block_output($brick) {
 }
 
 function brick_block_definition($brick) {
+	static $position_old = '';
 	$type = array_shift($brick['vars']);
 	if (!in_array($type, ['default', 'definition'])) {
 		$brick['page']['error']['level'] = E_USER_WARNING;
@@ -72,9 +73,10 @@ function brick_block_definition($brick) {
 	$block = array_shift($brick['vars']);
 
 	if ($block === 'end') {
-		$brick['position'] = $brick['position_old'];
+		$brick['position'] = $position_old;
+		$position_old = false;
 	} else {
-		$brick['position_old'] = $brick['position'];
+		$position_old = $brick['position'];
 		if ($type === 'default' AND in_array($block, $brick['blocks']))
 			$brick['position'] = '_hidden_';
 		else
