@@ -409,6 +409,7 @@ function brick_loop_range(&$vars, $params) {
  */
 function brick_get_variables($block) {
 	$block = trim($block); // allow whitespace around '%%%'
+	$block = str_replace('  ', ' ', $block); // allow lax definition
 	$variables = explode("\n", $block); // separated by newline
 	if (count($variables) === 1) {
 		$variables = explode(" ", $block); // or by space
