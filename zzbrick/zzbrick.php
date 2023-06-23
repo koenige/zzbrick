@@ -635,7 +635,7 @@ function brick_head_opengraph($tags, $page) {
 				$tags['og:image'] = bricksetting('host_base').'/opengraph.png';
 				$tags['og:image:width'] = $size[0];
 				$tags['og:image:height'] = $size[1];
-				$tags['og:image:alt'] = bricksetting('project').' '.bricksetting('brick_translate_text_function')('Logo');
+				$tags['og:image:alt'] = bricksetting('project').' '.wrap_text('Logo');
 			}
 		}
 	}
@@ -678,7 +678,7 @@ function brick_translate($string) {
 	$string = preg_replace_callback(
 		"~%{'(.+?)'}%~",
 		function ($string) {
-			return bricksetting('brick_translate_text_function')($string[1]);
+			return wrap_text($string[1]);
 		},
 		$string
 	);

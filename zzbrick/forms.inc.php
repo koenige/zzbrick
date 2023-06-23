@@ -21,7 +21,6 @@
  * 		and the more sophisticated table scripts in zzbrick_forms
  * functions: -
  * settings: brick_authentication_file, brick_authentication_function,
- *		brick_translate_text_function
  * examples:
  *		%%% tables * %%% -- URL parameters take place of asterisk
  *		%%% tables *[2] %%% -- only 2nd URL parameter take place of asterisk

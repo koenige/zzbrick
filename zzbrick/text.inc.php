@@ -53,7 +53,6 @@ function brick_text($brick) {
 		}
 	}
 	
-	$text = bricksetting('brick_translate_text_function')($text);
 	if ($sprintf_params) {
 		if (!empty($brick['loop_parameter'])) {
 			$item = &$brick['loop_parameter'];
@@ -65,7 +64,9 @@ function brick_text($brick) {
 			if (!isset($item[$key])) continue;
 			$params[] = $item[$key];
 		}
-		$text = vsprintf($text, $params);
+		$text = wrap_text($text, ['values' => $params]);
+	} else {
+		$text = wrap_text($text);
 	}
 	if ($function) $text = $function($text);
 	$brick['page']['text'][$brick['position']][] = $text;
