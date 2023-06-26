@@ -136,7 +136,6 @@ function brick_forms($brick) {
 		return $brick;
 	}
 
-	$zz_conf['show_output'] = false;
 	$ops = zzform($zz);
 	$ops = brick_forms_request($brick, $ops, $zz);
 	$brick['page'] = brick_merge_page_bricks($brick['page'], $ops['page']);
