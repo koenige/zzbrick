@@ -25,8 +25,8 @@
  * @return array $brick
  */
 function brick_templateitem($brick) {
-	if (count($brick['vars']) !== 1) return '';
-	if (empty($brick['parameter'][$brick['vars'][0]])) return '';
+	if (count($brick['vars']) !== 1) return $brick;
+	if (empty($brick['parameter'][$brick['vars'][0]])) return $brick;
 
 	$template = $brick['parameter'][$brick['vars'][0]];
 	unset($brick['parameter'][$brick['vars'][0]]);
