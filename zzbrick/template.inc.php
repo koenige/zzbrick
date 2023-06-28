@@ -18,7 +18,7 @@
  * 
  * files: -
  * functions: -
- * settings: brick_template_function
+ * settings: -
  * examples: 
  * 		%%% template name-of-template %%% 
  * @param array $brick
@@ -27,8 +27,7 @@
 function brick_template($brick) {
 	if (count($brick['vars']) !== 1) return '';
 
-	$brick['page']['text'][$brick['position']][]
-		= bricksetting('brick_template_function')($brick['vars'][0]);
+	$brick['page']['text'][$brick['position']][] = wrap_template($brick['vars'][0]);
 	unset($brick['vars']);
 
 	return $brick;

@@ -950,7 +950,7 @@ function brick_include($brick, $blocks = []) {
 				return [$brick, $blocks];
 			}
 			$includes[] = $block[1];
-			$tpl = bricksetting('brick_template_function')($block[1], [], 'error');
+			$tpl = wrap_template($block[1], [], 'error');
 			$new_blocks = explode('%%%', $tpl);
 			list($brick, $new_blocks) = brick_include($brick, $new_blocks);
 			// there now are two or three text blocks adjacent, glue them together
