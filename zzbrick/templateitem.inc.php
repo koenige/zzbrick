@@ -30,11 +30,14 @@ function brick_templateitem($brick) {
 
 	$template = $brick['parameter'][$brick['vars'][0]];
 	unset($brick['parameter'][$brick['vars'][0]]);
-	if (strstr($template, '%%%'))
+	if (strstr($template, '%%%')) {
+		// to recognize string as a text template: line break needs to exist
+		if (!strstr($template, "\n")) $template .= "\n";
 		$brick['page']['text'][$brick['position']][]
 			= wrap_template($template, $brick['parameter']);
-	else
+	} else {
 		$brick['page']['text'][$brick['position']][] = $template;
+	}
 	unset($brick['vars']);
 	
 	return $brick;
