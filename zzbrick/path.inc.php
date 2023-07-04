@@ -5,7 +5,7 @@
  * path
  *
  * Part of »Zugzwang Project«
- * http://www.zugzwang.org/projects/zzbrick
+ * https://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
  * @copyright Copyright © 2023 Gustaf Mossakowski
@@ -22,6 +22,7 @@
  * examples:
  *		%%% path area %%%
  *		%%% path area value %%%
+ *		%%% path area value check_rights=0 "html=<a href="%s">" %%%
  * @param array $brick	Array from zzbrick
  * @return array $brick
  */
@@ -43,12 +44,13 @@ function brick_path($brick) {
 			$text = wrap_path($brick['vars'][0], $parameter);
 			break;
 		case 3:
-			if ($brick['vars'][3] === 'check_rights=0')
-				$text = wrap_path($brick['vars'][0], $parameter, false);
-			elseif ($brick['vars'][3] === 'check_rights=1')
-				$text = wrap_path($brick['vars'][0], $parameter, true);
+			parse_str($brick['vars'][2], $path_params);
+			if (array_key_exists('check_rights', $path_params))
+				$text = wrap_path($brick['vars'][0], $parameter, $path_params['check_rights'] ? true : false);
 			else
 				$text = wrap_path($brick['vars'][0], $parameter);
+			if (array_key_exists('html', $path_params) AND $text)
+				$text = sprintf(trim($path_params['html'], '"'), $text);
 			break;
 	}
 	$brick['page']['text'][$brick['position']][] = $text;
