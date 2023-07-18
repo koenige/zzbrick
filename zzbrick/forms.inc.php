@@ -134,6 +134,11 @@ function brick_forms($brick) {
 		$brick['page']['query_strings'][] = 'unrestricted';
 		$brick['page']['query_strings'][] = 'zz_id_value';
 		return $brick;
+	} else {
+		// some big search engine from the US looking for content
+		// JS library does not allow to put these into POST data
+		$brick['page']['query_strings_redirect'][] = 'rec';
+		$brick['page']['query_strings_redirect'][] = 'field_no';
 	}
 
 	$ops = zzform($zz);
