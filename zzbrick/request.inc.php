@@ -455,8 +455,7 @@ function brick_request_url($script, $params = []) {
 	} elseif ($url = bricksetting('brick_json_source_url_default')) {
 		$url = sprintf($url, $script, $params);
 	} else {
-		$test = parse_url($script);
-		if (empty($test['scheme'])) return false;
+		if (!parse_url($script, PHP_URL_SCHEME)) return false;
 		$url = $script;
 	}
 	// rare occurence, but we might not have a URL
