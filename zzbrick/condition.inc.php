@@ -35,7 +35,7 @@ function brick_condition($brick) {
 	if (!$i) $i = 0;
 
 	$if = false;
-	$if_keywords = ['page', 'setting', 'cookie', 'path'];
+	$if_keywords = ['page', 'setting', 'cookie', 'path', 'lib'];
 
 	if (count($brick['vars']) === 3 AND in_array($brick['vars'][1], $if_keywords)) {
 		$if = $brick['vars'][1];
@@ -60,7 +60,10 @@ function brick_condition($brick) {
 	$content = false;
 	if ($if) {
 		array_shift($brick['vars']);
-		$item[$brick['vars'][0]] = brick_condition_if($if, $brick['vars'][0], $brick['parameter']);
+		if ($if === 'lib')
+			$item[$brick['vars'][0]] = is_dir(sprintf('%s/%s', wrap_setting('lib'), $brick['vars'][0]));
+		else
+			$item[$brick['vars'][0]] = brick_condition_if($if, $brick['vars'][0], $brick['parameter']);
 	} elseif (!empty($brick['loop_parameter'])) {
 		$item = &$brick['loop_parameter'];
 	} else {
