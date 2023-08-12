@@ -36,6 +36,12 @@ function brick_path($brick) {
 		else
 			$parameter = '';
 
+	if (count($brick['vars']) > 2 AND $brick['vars'][1] === 'setting') {
+		$parameter = wrap_setting($brick['vars'][2]);
+		unset($brick['vars'][1]);
+		$brick['vars'] = array_values($brick['vars']);
+	}
+
 	switch (count($brick['vars'])) {
 		case 1:
 			$text = wrap_path($brick['vars'][0]);
