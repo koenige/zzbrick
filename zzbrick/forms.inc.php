@@ -199,14 +199,14 @@ function brick_forms_request($brick, $ops, $zz) {
 	$brick['module_path'] = substr($brick['module_path'], 0, strrpos($brick['module_path'], '_'));
 	$brick['module_path'] .= '_request';
 
-	// init list of scripts, always add module request scripts	
-	if (empty($zz['request'])) $zz['request'] = [];
-	array_unshift($zz['request'], 'zzformmap');
+	// init list of scripts, always add module request scripts
+	if (empty($ops['page']['request'])) $ops['page']['request'] = [];
+	array_unshift($ops['page']['request'], 'zzformmap');
 
 	// request data from all scripts
 	require_once __DIR__.'/request.inc.php';
 	$pages = [];
-	foreach ($zz['request'] as $function) {
+	foreach ($ops['page']['request'] as $function) {
 		$brick = brick_request_file($function, $brick);
 		if (empty($brick['request_function'])) continue;
 		if (!function_exists($brick['request_function'])) continue;
