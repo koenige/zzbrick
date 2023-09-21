@@ -507,7 +507,7 @@ function brick_textformat_html($string) {
  * @return array $page, modified
  */
 function brick_head_format($page, $build = false) {
-	static $tags;
+	static $tags = [];
 	$keys = ['head', 'link', 'meta', 'opengraph'];
 	foreach ($keys as $key) {
 		if (empty($tags[$key])) $tags[$key] = [];
@@ -925,8 +925,7 @@ function brick_format_textblock($brick, $block, $index) {
  * @return array
  */
 function brick_include($brick, $blocks = []) {
-	static $includes;
-	if (empty($includes)) $includes = [];
+	static $includes = [];
 
 	// not replaced include because of error? has no blocks
 	// @see brick_format_placeholderblock()
@@ -1020,8 +1019,7 @@ function brick_blocks_cleanup($brick) {
  * @return array merged $brick
  */
 function brick_merge_page_bricks($page, $content) {
-	static $status;
-	if (empty($status)) $status = false;
+	static $status = false;
 
 	// get some content from the function and overwrite existing values
 	$overwrite_bricks = [

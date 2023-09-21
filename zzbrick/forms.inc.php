@@ -184,6 +184,7 @@ function brick_forms($brick) {
 /**
  * include request functions depending on form
  *
+ * @param array $brick
  * @param array $ops
  * @param array $zz
  * @return array

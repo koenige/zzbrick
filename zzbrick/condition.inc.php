@@ -31,15 +31,13 @@
  * @return array $brick
  */
 function brick_condition($brick) {
-	static $i;
-	if (!$i) $i = 0;
+	static $i = 0;
 
 	$if = false;
 	$if_keywords = ['page', 'setting', 'cookie', 'path', 'lib'];
 
-	if (count($brick['vars']) === 3 AND in_array($brick['vars'][1], $if_keywords)) {
+	if (count($brick['vars']) === 3 AND in_array($brick['vars'][1], $if_keywords))
 		$if = $brick['vars'][1];
-	}
 	
 	$condition_translated = bricksetting('brick_condition_translated');
 	// default translations, cannot be changed
@@ -130,7 +128,7 @@ function brick_condition($brick) {
 		$i++; // increase level
 		$brick['condition_content_shown'][$i] = false;
 	}
-	if (isset($brick['condition_show'][$i-1]) AND !$brick['condition_show'][$i-1]) {
+	if (isset($brick['condition_show'][$i - 1]) AND !$brick['condition_show'][$i - 1]) {
 		$show = false;
 	} else {
 		$show = true;
