@@ -27,38 +27,37 @@
  * @return array $brick
  */
 function brick_path($brick) {
-	$text = '';
-	if (count($brick['vars']) > 1)
-		if (is_array($brick['loop_parameter']) AND array_key_exists($brick['vars'][1], $brick['loop_parameter']))
-			$parameter = $brick['loop_parameter'][$brick['vars'][1]];
-		elseif (is_array($brick['parameter']) AND array_key_exists($brick['vars'][1], $brick['parameter']))
-			$parameter = $brick['parameter'][$brick['vars'][1]];
-		else
-			$parameter = '';
-
-	if (count($brick['vars']) > 2 AND $brick['vars'][1] === 'setting') {
-		$parameter = wrap_setting($brick['vars'][2]);
-		unset($brick['vars'][1]);
-		$brick['vars'] = array_values($brick['vars']);
+	if (!$brick['vars']) {
+		$brick['page']['text'][$brick['position']][] = '';
+		return $brick;
 	}
 
-	switch (count($brick['vars'])) {
-		case 1:
-			$text = wrap_path($brick['vars'][0]);
-			break;
-		case 2:
-			$text = wrap_path($brick['vars'][0], $parameter);
-			break;
-		case 3:
-			parse_str($brick['vars'][2], $path_params);
-			if (array_key_exists('check_rights', $path_params))
-				$text = wrap_path($brick['vars'][0], $parameter, $path_params['check_rights'] ? true : false);
-			else
-				$text = wrap_path($brick['vars'][0], $parameter);
-			if (array_key_exists('html', $path_params) AND $text)
-				$text = sprintf(trim($path_params['html'], '"'), $text);
-			break;
+	// first var is area
+	$area = array_shift($brick['vars']);
+
+	// check for parameters
+	$path_params = [];
+	while (strstr(end($brick['vars']), '=')) {
+		parse_str(array_pop($brick['vars']), $my_params);
+		$path_params += $my_params;
 	}
+
+	// get values
+	$values = [];
+	if (count($brick['vars']) === 2 AND $brick['vars'][0] === 'setting') {
+		$values[] = wrap_setting($brick['vars'][1]);
+	} else {
+		foreach ($brick['vars'] as $var)
+			if (is_array($brick['loop_parameter']) AND array_key_exists($var, $brick['loop_parameter']))
+				$values[] = $brick['loop_parameter'][$var];
+			elseif (is_array($brick['parameter']) AND array_key_exists($var, $brick['parameter']))
+				$values[] = $brick['parameter'][$var];
+	}
+
+	$text = wrap_path($area, $values, $path_params['check_rights'] ?? false);
+	if (array_key_exists('html', $path_params) AND $text)
+		$text = sprintf(trim($path_params['html'], '"'), $text);
+
 	$brick['page']['text'][$brick['position']][] = $text;
 	return $brick;
 }
