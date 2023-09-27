@@ -60,9 +60,17 @@ function brick_text($brick) {
 			$item = &$brick['parameter'];
 		}
 		$params = [];
+		$is_setting = false;
 		foreach ($sprintf_params as $key) {
-			if (!isset($item[$key])) continue;
-			$params[] = $item[$key];
+			if ($key === 'setting') {
+				$is_setting = true;
+			} elseif ($is_setting) {
+				$params[] = wrap_setting($key);
+				$is_setting = false;
+			} else {
+				if (!isset($item[$key])) continue;
+				$params[] = $item[$key];
+			}
 		}
 		$text = wrap_text($text, ['values' => $params]);
 	} else {
