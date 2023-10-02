@@ -106,8 +106,10 @@ function brick_forms($brick) {
 	if (!empty($brick['page']['status']) AND $brick['page']['status'] !== 200)
 		return $brick;
 
-	if (!empty($brick['local_settings']))
-		$zz += $brick['local_settings'];
+	foreach ($brick['local_settings'] as $key => $value) {
+		$zz[$key] = $value;
+		$zz['init_ignore_log'][] = $key;
+	}
 
 	if (!empty($_POST) AND !empty($_POST['httpRequest']) AND substr($_POST['httpRequest'], 0, 6) === 'zzform')
 		$brick['page'] = brick_xhr($_POST, $zz);
