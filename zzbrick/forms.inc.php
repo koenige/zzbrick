@@ -95,6 +95,7 @@ function brick_forms($brick) {
 	$brick = brick_placeholder_script($brick);
 	
 	// start zzform scripts
+	wrap_include_files('zzform/definition');
 	wrap_include_files('zzform.php', 'zzform');
 	// check if POST is too big, then set GET variables if possible here, so the
 	// table script can react to them
