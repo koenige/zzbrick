@@ -276,6 +276,7 @@ function brick_format($block, $parameter = false) {
 					if (!empty($params[$i-1])) {
 						foreach ($params[$i-1] as $key => $value) {
 							if (is_array($value)) continue;
+							if (!is_array($brick['loop_parameter'])) continue; // @todo
 							$brick['loop_parameter']['main__'.$key] = $value;
 							// @deprecated: do not use main__ prefix
 							if (isset($brick['loop_parameter'][$key])) continue;
@@ -285,7 +286,7 @@ function brick_format($block, $parameter = false) {
 					$brick['loop_all'] = $loop_all[$i];
 					$brick['loop_counter'] = $loop_counter[$i];
 				} else {
-					$brick['loop_parameter'] = false;
+					$brick['loop_parameter'] = [];
 				}
 				$brick = brick_format_placeholderblock($brick);
 			}
@@ -379,7 +380,7 @@ function brick_format($block, $parameter = false) {
  *
  * @param array $vars
  * @param array $params loop parameter
- * @return $params
+ * @return array
  */
 function brick_loop_range(&$vars, $params) {
 	if (!$params) return [];
@@ -388,15 +389,14 @@ function brick_loop_range(&$vars, $params) {
 	if (strstr('-', $vars[1]) > 1) return $params;
 	$range = explode('-', $vars[1]);
 	unset($vars[1]);
-	if (count($range) === 1) {
+	if (count($range) === 1)
 		$params = array_slice($params, $range[0] - 1, 1);
-	} elseif (!$range[0]) {
+	elseif (!$range[0])
 		$params = array_slice($params, 0, $range[1] - 1);
-	} elseif (!$range[1]) {
+	elseif (!$range[1])
 		$params = array_slice($params, $range[0] - 1);
-	} else {
+	else
 		$params = array_slice($params, $range[0] - 1, $range[1] - $range[0] - 1);
-	}
 	return $params;
 }
 
