@@ -214,7 +214,7 @@ function brick_forms_request($brick, $ops, $zz) {
 		$brick = brick_request_file($function, $brick);
 		if (empty($brick['request_function'])) continue;
 		if (!function_exists($brick['request_function'])) continue;
-		$pages[] = $brick['request_function']($brick['vars'], $settings);
+		$pages[] = $brick['request_function']($brick['vars'], $settings, $ops);
 	}
 	$text = [];
 	foreach ($pages as $page) {
