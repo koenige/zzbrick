@@ -72,11 +72,15 @@ function brick_text($brick) {
 				$params[] = $item[$key];
 			}
 		}
+		if ($function)
+			foreach ($params as $index => $param)
+				$params[$index] = $function($param);
 		$text = wrap_text($text, ['values' => $params]);
 	} else {
 		$text = wrap_text($text);
+		if ($function) $text = $function($text);
 	}
-	if ($function) $text = $function($text);
+	
 	$brick['page']['text'][$brick['position']][] = $text;
 	unset($brick['vars']);
 
