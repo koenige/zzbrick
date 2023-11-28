@@ -584,6 +584,7 @@ function brick_request_link(&$media, $placeholder, $field_name) {
 	$no = array_shift($placeholder);
 	$media_sizes = bricksetting('media_sizes');
 	foreach ($mediakeys as $mediakey) {
+		if (empty($media[$mediakey])) continue;
 		foreach ($media[$mediakey] as $medium_id => $medium) {
 			if ($medium[$field_name] != $no) continue;
 			unset($media[$mediakey][$medium_id]);
