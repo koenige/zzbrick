@@ -1012,6 +1012,53 @@ function brick_blocks_cleanup($brick) {
 }
 
 /**
+ * check blocks if they match
+ *
+ * @param string $block block part between %%% markings
+ * @param string $match block check if matches
+ * @return bool
+ */
+function brick_blocks_match($block, $match) {
+	$block_brick = brick_block_split($block);
+	$match_brick = brick_block_split($match);
+	if ($block_brick === $match_brick) return true;
+
+	// check vars	
+	foreach ($match_brick['vars'] as $index => $value) {
+		if (empty($block_brick['vars'][$index])) return false;
+		if ($block_brick['vars'][$index] !== $value) return false;
+	}
+
+	// check local settings
+	if (!$block_brick['local_settings']) return true; // no settings = match
+	if (!$match_brick['local_settings']) return true; // no settings = match
+	if ($block_brick['local_settings'] === $match_brick['local_settings']) return true;
+
+	
+	foreach ($block_brick['local_settings'] as $key => $values) {
+		if (!array_key_exists($key, $match_brick['local_settings'])) return false;
+		if (!is_array($match_brick['local_settings'][$key]))
+			$match_brick['local_settings'][$key] = [$match_brick['local_settings'][$key]];
+		foreach ($match_brick['local_settings'][$key] as $value)
+			if (!in_array($value, $values)) return false;
+	}
+	return true;
+}
+
+/**
+ * split block in brick vars and local_settings
+ *
+ * @param string $block
+ * @param array $brick (optional)
+ * @return array
+ */
+function brick_block_split($block, $brick = []) {
+	$brick['vars'] = brick_get_variables($block);
+	$brick = brick_local_settings($brick);
+	return $brick;
+}
+
+/**
  * merge existing $brick['page'] array with one returned from function
  *
  * @param array $page = $brick['page'] or similar
