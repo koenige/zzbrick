@@ -279,7 +279,7 @@ function brick_format($block, $parameter = false) {
 							if (!is_array($brick['loop_parameter'])) continue; // @todo
 							$brick['loop_parameter']['main__'.$key] = $value;
 							// @deprecated: do not use main__ prefix
-							if (isset($brick['loop_parameter'][$key])) continue;
+							if (array_key_exists($key, $brick['loop_parameter'])) continue;
 							$brick['loop_parameter'][$key] = $value;
 						}
 					}
