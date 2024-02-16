@@ -69,7 +69,7 @@
  * https://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2009-2023 Gustaf Mossakowski
+ * @copyright Copyright © 2009-2024 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -727,6 +727,9 @@ function brick_file($type, $function) {
  */
 function brick_xhr($xmlHttpRequest, $parameter) {
 	$function = $xmlHttpRequest['httpRequest'];
+	if (!preg_match('/^[a-z0-9_-]+$/', $function))
+		return brick_xhr_error($function, 400, 'invalid characters');
+
 	$file = bricksetting('custom').'/zzbrick_xhr/'.$function.'.inc.php';
 	if (file_exists($file)) {
 		require_once $file;
@@ -748,18 +751,33 @@ function brick_xhr($xmlHttpRequest, $parameter) {
 			}
 		}
 	}
-	if (!function_exists($function)) {
-		$page['status'] = 503;
-	} else {
-		$return = $function($xmlHttpRequest, $parameter);
-		if (!empty($return['_query_strings'])) {
-			$page['query_strings'] = $return['_query_strings'];
-			unset($return['_query_strings']);
-		}
-		$page['text'] = json_encode($return);
-		$page['status'] = 200;
-		$page['content_type'] = 'json';
+	if (!function_exists($function))
+		return brick_xhr_error($function, 503, 'function not found');
+
+	$return = $function($xmlHttpRequest, $parameter);
+	if (!empty($return['_query_strings'])) {
+		$page['query_strings'] = $return['_query_strings'];
+		unset($return['_query_strings']);
 	}
+	$page['text'] = json_encode($return);
+	$page['status'] = 200;
+	$page['content_type'] = 'json';
+	return $page;
+}
+
+/**
+ * error message if XHR function is not found
+ *
+ * @param string $function
+ * @param int $http_status
+ * @param string $reason
+ * @return array
+ */
+function brick_xhr_error($function, $http_status, $reason) {
+	$page['status'] = $http_status;
+	$page['error']['level'] = E_USER_NOTICE;
+	$page['error']['msg_text'] = '"%s" is not a valid XHR function (%s)';
+	$page['error']['msg_vars'] = [$function, $reason];
 	return $page;
 }
 
