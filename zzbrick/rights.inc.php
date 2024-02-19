@@ -8,7 +8,7 @@
  * https://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2009, 2019, 2023 Gustaf Mossakowski
+ * @copyright Copyright © 2009, 2019, 2023-2024 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -38,15 +38,9 @@ function brick_rights($brick) {
 	$rights_translated['elseif'] = '=';
 	$rights_translated['else'] = ':';
 	$rights_translated['off'] = '-';
-	if (!bricksetting('custom_rights_dir'))
-		bricksetting('custom_rights_dir', $brick['path']);
 
-	// @todo: what is access_rights?
-	require_once bricksetting('custom_rights_dir').'/access_rights.inc.php';
-
-	if (in_array($brick['vars'][0], array_keys($rights_translated))) {
+	if (in_array($brick['vars'][0], array_keys($rights_translated)))
 		$brick['vars'][0] = $rights_translated[$brick['vars'][0]];
-	}
 
 	if ($brick['vars'][0] == '-') {
 		$rights = '-';
