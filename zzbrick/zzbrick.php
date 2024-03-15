@@ -171,7 +171,7 @@ function brick_format($block, $parameter = false) {
 		$block = $blocks[$index];
 		if ($index & 1) {	// even index values: textblock
 							// uneven index values: %%%-blocks
-			$brick['vars'] = brick_get_variables($block);
+			$brick = array_merge($brick, brick_get_variables($block));
 			$brick['type'] = array_shift($brick['vars']);
 			$brick['type'] = trim($brick['type']);
 			if ($brick['type'] === 'loop') {
@@ -411,6 +411,7 @@ function brick_get_variables($block) {
 	$block = trim($block); // allow whitespace around '%%%'
 	$block = str_replace('  ', ' ', $block); // allow lax definition
 	$variables = explode("\n", $block); // separated by newline
+	$in_quotes = false;
 	if (count($variables) === 1) {
 		$variables = explode(" ", $block); // or by space
 		// put variables with spaces, but enclosed in "" back together
@@ -422,10 +423,12 @@ function brick_get_variables($block) {
 				// beginning and ending with "
 				$var = substr($var, 1, -1);
 				$variables[$index] = $var;
+				$in_quotes = true;
 			} elseif (!isset($paste) AND substr($var, 0, 1) === '"') {
 				// beginning with "
 				$paste = substr($var, 1);
 				unset($variables[$index]);
+				$in_quotes = true;
 			} elseif (isset($paste) AND substr($var, -1) === '"') {
 				// ending with "
 				$variables[$index] = $paste.' '.substr($variables[$index], 0, -1);
@@ -438,7 +441,7 @@ function brick_get_variables($block) {
 	}
 	// get keys without gaps
 	$variables = array_values($variables);
-	return $variables;
+	return ['vars' => $variables, 'in_quotes' => $in_quotes];
 }
 
 /**
@@ -1071,7 +1074,7 @@ function brick_blocks_match($block, $match) {
  * @return array
  */
 function brick_block_split($block, $brick = []) {
-	$brick['vars'] = brick_get_variables($block);
+	$brick = array_merge($brick, brick_get_variables($block));
 	$brick = brick_local_settings($brick);
 	return $brick;
 }
