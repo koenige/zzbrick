@@ -781,6 +781,7 @@ function brick_xhr_error($function, $http_status, $reason) {
 	$page['error']['level'] = E_USER_NOTICE;
 	$page['error']['msg_text'] = '"%s" is not a valid XHR function (%s)';
 	$page['error']['msg_vars'] = [$function, $reason];
+	$page['content_type'] = 'json';
 	return $page;
 }
 

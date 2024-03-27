@@ -8,7 +8,7 @@
  * https://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2009-2023 Gustaf Mossakowski
+ * @copyright Copyright © 2009-2024 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -124,7 +124,7 @@ function brick_forms($brick) {
 	];
 
 	if (!empty($_POST) AND !empty($_POST['httpRequest']) AND substr($_POST['httpRequest'], 0, 6) === 'zzform') {
-		$text = $brick['page']['text'];
+		$text = $brick['page']['text'] ?? '';
 		unset($brick['page']['text']);
 		$brick['page']['text'][$brick['position']] = [$text];
 		$brick['position'] = '_hidden_'; // hide rest of text
