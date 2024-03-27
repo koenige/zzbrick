@@ -730,8 +730,14 @@ function brick_file($type, $function) {
  */
 function brick_xhr($xmlHttpRequest, $parameter) {
 	$function = $xmlHttpRequest['httpRequest'];
+
+	// some checks
 	if (!preg_match('/^[a-z0-9_-]+$/', $function))
-		return brick_xhr_error($function, 400, 'invalid characters');
+		return brick_xhr_error(400, 'invalid characters', $xmlHttpRequest);
+	if (isset($xmlHttpRequest['limit']) AND !is_numeric($xmlHttpRequest['limit']))
+		return brick_xhr_error(400, 'malformed request', $xmlHttpRequest);
+	if (isset($xmlHttpRequest['text']) AND is_array($xmlHttpRequest['text']))
+		return brick_xhr_error(400, 'malformed request', $xmlHttpRequest);
 
 	$file = bricksetting('custom').'/zzbrick_xhr/'.$function.'.inc.php';
 	if (file_exists($file)) {
@@ -755,7 +761,7 @@ function brick_xhr($xmlHttpRequest, $parameter) {
 		}
 	}
 	if (!function_exists($function))
-		return brick_xhr_error($function, 503, 'function not found');
+		return brick_xhr_error(503, 'function not found', $xmlHttpRequest);
 
 	$return = $function($xmlHttpRequest, $parameter);
 	if (!empty($return['_query_strings'])) {
@@ -769,18 +775,28 @@ function brick_xhr($xmlHttpRequest, $parameter) {
 }
 
 /**
- * error message if XHR function is not found
+ * error message for XHR
  *
- * @param string $function
  * @param int $http_status
  * @param string $reason
+ * @param array $data
  * @return array
  */
-function brick_xhr_error($function, $http_status, $reason) {
+function brick_xhr_error($http_status, $reason, $data) {
 	$page['status'] = $http_status;
 	$page['error']['level'] = E_USER_NOTICE;
-	$page['error']['msg_text'] = '"%s" is not a valid XHR function (%s)';
-	$page['error']['msg_vars'] = [$function, $reason];
+	$page['error']['msg_text'] = 'XHR request abandoned. ';
+	switch ($reason) {
+	case 'function not found':
+	case 'invalid characters':
+		$page['error']['msg_text'] .= '"%s" is not a valid XHR function (%s)';
+		$page['error']['msg_vars'] = [$data['httpRequest'], $reason];
+		break;
+	case 'malformed request':
+		$page['error']['msg_text'] .= 'Malformed values: (%s)';
+		$page['error']['msg_vars'] = [json_encode($data)];
+		break;
+	}
 	$page['content_type'] = 'json';
 	return $page;
 }
