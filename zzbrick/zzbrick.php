@@ -841,6 +841,7 @@ function brick_local_settings($brick) {
 		}
 		// '=' is not an allowed symbol for a folder identifier
 		if (!strstr($setting, '=')) continue;
+		if (strlen($setting) < 3) continue; // we need a=b at least
 		parse_str($setting, $new_settings);
 		foreach ($new_settings as $index => $new_setting) {
 			if (is_array($new_setting)) {
