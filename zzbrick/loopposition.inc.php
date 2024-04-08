@@ -8,7 +8,7 @@
  * http://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2010-2011, 2013, 2016-2017, 2019 Gustaf Mossakowski
+ * @copyright Copyright © 2010-2011, 2013, 2016-2017, 2019, 2024 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -36,8 +36,11 @@ function brick_loopposition($brick) {
 	if (empty($brick['loop_counter'])) return $brick;
 	if (count($brick['vars']) < 1) return $brick;
 	$positions = explode('|', $brick['vars'][0]);
+	$function = NULL;
 	if (count($positions) !== 1 OR $positions[0] !== 'counter') {
 		// normally, two variables are required
+		if (count($brick['vars']) === 3 and function_exists(end($brick['vars'])))
+			$function = array_pop($brick['vars']);
 		if (count($brick['vars']) !== 2) return $brick;
 	} else {
 		// counter just requires itself as variable
@@ -79,7 +82,7 @@ function brick_loopposition($brick) {
 	if (empty($brick['page']['text'][$brick['position']]))
 		$brick['page']['text'][$brick['position']] = [];
 	if ($display === true) {
-		$brick['page']['text'][$brick['position']][] = $brick['vars'][1];
+		$brick['page']['text'][$brick['position']][] = $function ? $function($brick['vars'][1]) : $brick['vars'][1];
 	} else {
 		$brick['page']['text'][$brick['position']][] = $display;
 	}
