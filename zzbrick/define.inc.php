@@ -32,7 +32,7 @@ function brick_define($brick) {
 	switch ($brick['vars'][0]) {
 		case 'end':
 			$brick['parameter'][$brick['definition_key']]
-				= implode('', $brick['page']['text']['_definition_']);
+				= trim(implode('', $brick['page']['text']['_definition_']));
 			unset($brick['definition_key']);
 			unset($brick['page']['text']['_definition_']);
 			$brick['position'] = $brick['position_old'];
