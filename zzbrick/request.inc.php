@@ -8,7 +8,7 @@
  * https://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2009-2012, 2014-2023 Gustaf Mossakowski
+ * @copyright Copyright © 2009-2012, 2014-2024 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -29,7 +29,7 @@
 function brick_request($brick) {
 	// shortcuts
 	if (empty($brick['subtype'])) 
-		$brick['subtype'] = '';
+		$brick['subtype'] = NULL;
 	if (in_array($brick['subtype'], bricksetting('brick_request_shortcuts'))) {
 		array_unshift($brick['vars'], $brick['subtype']);
 		// to transport additional variables which are needed
@@ -314,14 +314,14 @@ function brick_request_cms($script, $brick, $filetype = '') {
 		return $brick;
 	case 'html':
 	default:
-		$brick = brick_request_file($script, $brick, 'htmlout');
+		$brick = brick_request_file($script, $brick, $brick['subtype'] ?? 'htmlout');
 		if (!function_exists($brick['request_function'])) {
 			$content['error']['level'] = E_USER_ERROR;
 			$content['error']['msg_text'] = 'The function "%s" is not supported by the CMS.';
 			$content['error']['msg_vars'] = [$brick['request_function']];
 			return $content;
 		}
-		return $brick['request_function']($data, $brick['vars'], $brick['local_settings']);
+		return $brick['request_function']($data, $brick['vars'], $brick['local_settings'], $brick['data'] ?? []);
 	}
 }
 
