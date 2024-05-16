@@ -229,6 +229,7 @@ function brick_condition($brick) {
  */
 function brick_condition_if($if, $vars, $parameter) {
 	if ($if === 'cookie') return brick_condition_if_cookie($vars);
+	if (!is_array($parameter)) $parameter = [$parameter];
 	$parameter['brick_condition_if'] = true;
 	$req = brick_format('%%% '.$if.' '.$vars.' %%%', $parameter);
 	return $req['text'];
