@@ -54,7 +54,8 @@ function brick_path($brick) {
 				$values[] = $brick['parameter'][$var];
 	}
 
-	$text = wrap_path($area, $values, $path_params['check_rights'] ?? true);
+	$testing = (!$values and !empty($brick['parameter']['brick_condition_if'])) ? true : false;
+	$text = wrap_path($area, $values, $path_params['check_rights'] ?? true, $testing);
 	if (array_key_exists('html', $path_params) AND $text)
 		$text = sprintf(trim($path_params['html'], '"'), $text);
 

@@ -8,7 +8,7 @@
  * https://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2009-2016, 2019, 2021-2023 Gustaf Mossakowski
+ * @copyright Copyright © 2009-2016, 2019, 2021-2024 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -229,6 +229,7 @@ function brick_condition($brick) {
  */
 function brick_condition_if($if, $vars, $parameter) {
 	if ($if === 'cookie') return brick_condition_if_cookie($vars);
+	$parameter['brick_condition_if'] = true;
 	$req = brick_format('%%% '.$if.' '.$vars.' %%%', $parameter);
 	return $req['text'];
 }
