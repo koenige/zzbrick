@@ -1143,7 +1143,7 @@ function brick_merge_page_bricks($page, $content) {
 	// extra: for all individual needs, not standardized
 	$merge_bricks = [
 		'authors', 'media', 'head', 'extra', 'meta', 'link', 'error',
-		'query_strings', 'breadcrumbs', 'opengraph'
+		'query_strings', 'breadcrumbs', 'opengraph', 'data'
 	];
 	foreach ($merge_bricks as $part) {
 		if (!empty($content[$part]) AND is_array($content[$part])) {
