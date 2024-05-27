@@ -239,7 +239,7 @@ function brick_forms_request($brick, $ops, $zz) {
 	if (!empty($ops['page']['h1'])) {
 		$ops['output'] = preg_replace('/<h1>(.+?)<\/h1>/'
 			, sprintf('<h1>%s</h1>', $ops['page']['h1'])
-			, $ops['output']
+			, $ops['output'], 1
 		);
 	}
 	return $ops;
