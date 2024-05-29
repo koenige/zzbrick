@@ -8,7 +8,7 @@
  * https://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2009-2010, 2019-2023 Gustaf Mossakowski
+ * @copyright Copyright © 2009-2010, 2019-2024 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -52,12 +52,12 @@ function brick_item($brick) {
 	}
 	if (!empty($brick['vars'][0]) AND ($content OR $content === 0 OR $content === '0')) {
 		// first variable might be formatting function
-		if ($brick_formatting_functions = bricksetting('brick_formatting_functions')
+		if ($brick_formatting_functions = wrap_setting('brick_formatting_functions')
 			AND in_array($brick['vars'][0], $brick_formatting_functions)) {
 			$format_function = array_shift($brick['vars']);
 			$format_function = brick_format_function_prefix($format_function);
 			if (function_exists($format_function)) {
-				if (strstr($content, '%%%') AND !bricksetting('brick_no_format_inside')) {
+				if (strstr($content, '%%%') AND !wrap_setting('brick_no_format_inside')) {
 					$content = brick_format($content);
 					$content = $content['text'];
 				}

@@ -1200,15 +1200,3 @@ function brick_check_parameters($parameters) {
 	}
 	return $return;
 }
-
-/**
- * read or write settings
- *
- * @param string $key
- * @param mixed $value (if set, assign value, if not read value)
- * @return mixed
- * @deprecated
- */
-function bricksetting($key, $value = NULL) {
-	return wrap_setting($key, $value);
-}

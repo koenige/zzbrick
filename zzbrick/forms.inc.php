@@ -45,11 +45,11 @@ function brick_forms($brick) {
 	switch ($brick['subtype']) {
 	case 'forms': 
 		$brick['path'] .= '_forms';
-		$brick['module_path'] = bricksetting('brick_module_dir').'forms';
+		$brick['module_path'] = wrap_setting('brick_module_dir').'forms';
 		break;
 	default: 
 		$brick['path'] .= '_tables';
-		$brick['module_path'] = bricksetting('brick_module_dir').'tables';
+		$brick['module_path'] = wrap_setting('brick_module_dir').'tables';
 		break;
 	}
 	
@@ -84,9 +84,9 @@ function brick_forms($brick) {
 	if (!$auth) {
 		array_pop($brick['vars']);
 		$brick['public_access'] = true;
-	} elseif ($authentication_file = bricksetting('brick_authentication_file')) {
+	} elseif ($authentication_file = wrap_setting('brick_authentication_file')) {
 		require_once $authentication_file;
-		bricksetting('brick_authentication_function')();
+		wrap_setting('brick_authentication_function')();
 	}
 	
 	$brick = brick_local_settings($brick);
@@ -155,7 +155,7 @@ function brick_forms($brick) {
 	];
 	foreach ($uncacheable as $query) {
 		if (!empty($_GET[$query])) {
-			bricksetting('cache', false);
+			wrap_setting('cache', false);
 			break;
 		}
 	}

@@ -32,7 +32,7 @@
  * @return array $brick
  */
 function brick_rights($brick) {
-	$rights_translated = bricksetting('brick_rights_translated');
+	$rights_translated = wrap_setting('brick_rights_translated');
 	// default translations, cannot be changed
 	$rights_translated['on'] = '=';
 	$rights_translated['elseif'] = '=';
@@ -59,8 +59,8 @@ function brick_rights($brick) {
 		// is there an asterisk?
 		$details = '';
 		foreach ($brick['vars'] as $id => $var) {
-			if (substr($var, -1) === '*' AND bricksetting('brick_url_parameter')) {
-				$details = str_replace('*', bricksetting('brick_url_parameter'), $var);
+			if (substr($var, -1) === '*' AND wrap_setting('brick_url_parameter')) {
+				$details = str_replace('*', wrap_setting('brick_url_parameter'), $var);
 				unset($brick['vars'][$id]);
 			}
 		}

@@ -8,7 +8,7 @@
  * https://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2009, 2019, 2023 Gustaf Mossakowski
+ * @copyright Copyright © 2009, 2019, 2023-2024 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -32,7 +32,7 @@
  * @return array $brick
  */
 function brick_ipfilter($brick) {
-	$ipfilter_translated = bricksetting('brick_ipfilter_translated');
+	$ipfilter_translated = wrap_setting('brick_ipfilter_translated');
 	// default translations, cannot be changed
 	$ipfilter_translated['on'] = '=';
 	$ipfilter_translated['elseif'] = '=';
@@ -63,7 +63,7 @@ function brick_ipfilter($brick) {
 	case '=': // test for ip in range
 		$ranges = $brick['vars'];
 		if (!$ranges)
-			$ranges = bricksetting('brick_ipv4_allowed_range');
+			$ranges = wrap_setting('brick_ipv4_allowed_range');
 		if (!$ranges) {
 			$brick['page']['error']['level'] = E_USER_ERROR;
 			$brick['page']['error']['msg_text'] = 'No IP range defined';

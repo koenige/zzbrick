@@ -39,7 +39,7 @@ function brick_condition($brick) {
 	if (count($brick['vars']) === 3 AND in_array($brick['vars'][1], $if_keywords))
 		$if = $brick['vars'][1];
 	
-	$condition_translated = bricksetting('brick_condition_translated');
+	$condition_translated = wrap_setting('brick_condition_translated');
 	// default translations, cannot be changed
 	$condition_translated['if'] = '=';
 	$condition_translated['elseif'] = ':=';
@@ -101,8 +101,8 @@ function brick_condition($brick) {
 			$brick['page']['error']['level'] = E_USER_NOTICE;
 			$brick['page']['error']['msg_text']
 				= 'There’s an error in one of the conditions in the template `%s`: too many variables are present.';
-			if (!empty(bricksetting('current_template'))) {
-				$brick['page']['error']['msg_vars'] = [bricksetting('current_template')];
+			if (!empty(wrap_setting('current_template'))) {
+				$brick['page']['error']['msg_vars'] = [wrap_setting('current_template')];
 			}
 		}
 	} else {
@@ -138,8 +138,8 @@ function brick_condition($brick) {
 		$brick['page']['error']['level'] = E_USER_NOTICE;
 		$brick['page']['error']['msg_text']
 			= 'There’s an error in the nesting of conditions in the template `%s`: There are more endifs than ifs.';
-		if (!empty(bricksetting('current_template'))) {
-			$brick['page']['error']['msg_vars'] = [bricksetting('current_template')];
+		if (!empty(wrap_setting('current_template'))) {
+			$brick['page']['error']['msg_vars'] = [wrap_setting('current_template')];
 		}
 	}
 

@@ -8,7 +8,7 @@
  * http://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2009-2016, 2019, 2022-2023 Gustaf Mossakowski
+ * @copyright Copyright © 2009-2016, 2019, 2022-2024 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -37,7 +37,7 @@ function brick_page($brick) {
 	
 	if (empty($brick['subtype'])) 
 		$brick['subtype'] = '';
-	if (in_array($brick['subtype'], bricksetting('brick_page_shortcuts'))) {
+	if (in_array($brick['subtype'], wrap_setting('brick_page_shortcuts'))) {
 		array_unshift($brick['vars'], $brick['subtype']);
 	}
 
@@ -54,16 +54,16 @@ function brick_page($brick) {
 	// first check own page-directory
 	$paths[] = $brick['path'];
 	$default_module_present = false;
-	foreach (bricksetting('modules') as $module) {
+	foreach (wrap_setting('modules') as $module) {
 		// also check modules in alphabetical order
 		if ($module === 'default') {
 			$default_module_present = true;
 			continue;
 		}
-		$paths[] = bricksetting('modules_dir').'/'.$module.'/'.$brick['module_path'];
+		$paths[] = wrap_setting('modules_dir').'/'.$module.'/'.$brick['module_path'];
 	}
 	if ($default_module_present)
-		$paths[] = bricksetting('modules_dir').'/default/'.$brick['module_path'];
+		$paths[] = wrap_setting('modules_dir').'/default/'.$brick['module_path'];
 	$filename = '/'.basename(strtolower($brick_var)).'.inc.php';
 	foreach ($paths as $path) {
 		if (!file_exists($script_filename = $path.$filename)) continue;

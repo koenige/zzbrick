@@ -8,7 +8,7 @@
  * https://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2022-2023 Gustaf Mossakowski
+ * @copyright Copyright © 2022-2024 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -28,7 +28,7 @@
  * @see wrap_access()
  */
 function brick_access($brick) {
-	$access_translated = bricksetting('brick_access_translated');
+	$access_translated = wrap_setting('brick_access_translated');
 	// default translations, cannot be changed
 	$access_translated['on'] = '=';
 	$access_translated['elseif'] = '=';
@@ -62,8 +62,8 @@ function brick_access($brick) {
 			// then check if in URL path
 			if (array_key_exists($parts[0], $brick['parameter']))
 				$replace = $brick['parameter'][$parts[0]];
-			elseif (!empty(bricksetting('brick_url_parameter')))
-				$replace = bricksetting('brick_url_parameter');
+			elseif (!empty(wrap_setting('brick_url_parameter')))
+				$replace = wrap_setting('brick_url_parameter');
 			if (!$replace) continue;
 			$details = str_replace('*', $replace, $var);
 			unset($brick['vars'][$id]);

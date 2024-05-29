@@ -8,7 +8,7 @@
  * https://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2009, 2019, 2023 Gustaf Mossakowski
+ * @copyright Copyright © 2009, 2019, 2023-2024 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -34,7 +34,7 @@ function brick_language($brick) {
 		if ($brick['vars'][0] === '-') {
 			// stop negotiating languages
 			$access = true;
-		} elseif ($brick['vars'][0] === bricksetting('lang')) {
+		} elseif ($brick['vars'][0] === wrap_setting('lang')) {
 			// language block is in correct language
 			$access = true;
 		} else {

@@ -32,7 +32,7 @@ function brick_text($brick) {
 	if (!isset($brick['page']['text'][$brick['position']]))
 		$brick['page']['text'][$brick['position']] = [];
 	$function = end($brick['vars']);
-	if (in_array($function, bricksetting('brick_formatting_functions'))) {
+	if (in_array($function, wrap_setting('brick_formatting_functions'))) {
 		array_pop($brick['vars']);	
 		$function = brick_format_function_prefix($function);
 	} else {

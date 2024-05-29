@@ -52,13 +52,13 @@ function brick_setting($brick) {
 	} elseif (is_array($zz_conf) AND substr($brick_var, 0, 7) === 'zzform_'
 		AND array_key_exists(substr($brick_var, 7) , $zz_conf) AND !is_array($zz_conf[substr($brick_var, 7)])) {
 		$content = $zz_conf[substr($brick_var, 7)];
-	} elseif ($s = bricksetting($brick_var)) {
+	} elseif ($s = wrap_setting($brick_var)) {
 		$content = $s;
 	} else {
 		// other special cases
 		switch ($brick_var) {
 		case 'charset':
-			$content = bricksetting('character_set');
+			$content = wrap_setting('character_set');
 			break;
 		}
 	}

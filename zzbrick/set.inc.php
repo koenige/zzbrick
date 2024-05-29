@@ -8,7 +8,7 @@
  * https://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2020, 2023 Gustaf Mossakowski
+ * @copyright Copyright © 2020, 2023-2024 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -30,7 +30,7 @@ function brick_set($brick) {
 	$overwrite_setting = ['brick_fulltextformat'];
 	foreach ($brick['local_settings'] as $key => $value) {
 		if (in_array($key, $overwrite_page)) $brick['page'][$key] = $value;
-		if (in_array($key, $overwrite_setting)) bricksetting($key, $value);
+		if (in_array($key, $overwrite_setting)) wrap_setting($key, $value);
 	}
 	return $brick;
 }

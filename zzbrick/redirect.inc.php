@@ -8,7 +8,7 @@
  * https://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2009-2013, 2016, 2019, 2023 Gustaf Mossakowski
+ * @copyright Copyright © 2009-2013, 2016, 2019, 2023-2024 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -25,7 +25,7 @@
  *		%%% redirect 307 /path/to/local.html %%%
  * @param array $brick	Array from zzbrick, in $brick['vars'][0] or [1] we need
  *      the new URL, [0] might contain redirection code
- *		bricksetting('host_base') will be used if set, must be something
+ *		wrap_setting('host_base') will be used if set, must be something
  *		like http://www.example.org
  * @return array $brick['page']['error'] if false; this function exits if URL is correct
  */
@@ -44,16 +44,16 @@ function brick_redirect($brick) {
 		if (substr($brick['vars'][0], 0, 1) == '/') {
 			// Location needs an absolute URI
 			// HTTP_HOST must be canonical, best to do this via the webserver
-			if (!bricksetting('host_base')) {
+			if (!wrap_setting('host_base')) {
 				$host = $_SERVER['HTTP_HOST'];
 				// hostname may only contain ASCII letters, - and .
 				if (!preg_match('/^[a-zA-Z0-9-\.]+$/', $host)) $host = '';
 				if (!$host) $host = $_SERVER['SERVER_NAME'];
 				$base = (!empty($_SERVER['HTTPS']) ? 'https' : 'http').'://'.$host;
 			} else {
-				$base = bricksetting('host_base');
+				$base = wrap_setting('host_base');
 			}
-			$base .= bricksetting('base');
+			$base .= wrap_setting('base');
 			$brick['vars'][0] = $base.$brick['vars'][0];
 		}
 		if (function_exists('wrap_redirect')) {

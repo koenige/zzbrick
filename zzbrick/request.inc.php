@@ -30,41 +30,41 @@ function brick_request($brick) {
 	// shortcuts
 	if (empty($brick['subtype'])) 
 		$brick['subtype'] = NULL;
-	if (in_array($brick['subtype'], bricksetting('brick_request_shortcuts'))) {
+	if (in_array($brick['subtype'], wrap_setting('brick_request_shortcuts'))) {
 		array_unshift($brick['vars'], $brick['subtype']);
 		// to transport additional variables which are needed
 		// so %%% image 23 %%% may be as small as possible
-		if (in_array($brick['subtype'], bricksetting('brick_request_url_params'))) {
+		if (in_array($brick['subtype'], wrap_setting('brick_request_url_params'))) {
 			$brick['vars'][] = '*';
 		}
 	}
 
 	$brick = brick_local_settings($brick);
 	if (!empty($brick['local_settings']['brick_request_cms']))
-		bricksetting('brick_request_cms', true);
+		wrap_setting('brick_request_cms', true);
 	
 	// get parameter for function
 	$filetype = '';
-	if (bricksetting('brick_request_cms')) {
-		if (preg_match('/(.+)\.([a-z0-9]+)/i', bricksetting('brick_url_parameter'), $matches)) {
+	if (wrap_setting('brick_request_cms')) {
+		if (preg_match('/(.+)\.([a-z0-9]+)/i', wrap_setting('brick_url_parameter'), $matches)) {
 			// use last part behind dot as file extension
-			if (count($matches) === 3 AND in_array($matches[2], bricksetting('brick_export_formats'))) {
-				bricksetting('brick_url_parameter', $matches[1]);
+			if (count($matches) === 3 AND in_array($matches[2], wrap_setting('brick_export_formats'))) {
+				wrap_setting('brick_url_parameter', $matches[1]);
 				$filetype = $matches[2];
 			}
 		} else {
-			$path = pathinfo(bricksetting('request_uri'));
+			$path = pathinfo(wrap_setting('request_uri'));
 			if (!empty($path['extension'])) {
 				$filetype = $path['extension'];
 				if ($pos = strpos($filetype, '?')) $filetype = substr($filetype, 0, $pos);
 			}
 		}
 	}
-	$brick['vars'] = brick_request_params($brick['vars'], bricksetting('brick_url_parameter'));
+	$brick['vars'] = brick_request_params($brick['vars'], wrap_setting('brick_url_parameter'));
 	$brick = brick_placeholder_script($brick);
 	$script = array_shift($brick['vars']);
 
-	if (bricksetting('brick_request_cms')) {
+	if (wrap_setting('brick_request_cms')) {
 		// call function
 		$content = brick_request_cms($script, $brick, $filetype);
 	} else {
@@ -210,9 +210,9 @@ function brick_request_params($variables, $parameter) {
  * @return mixed output of function (html: $page; other cases: direct output, headers
  */
 function brick_request_cms($script, $brick, $filetype = '') {
-	if (in_array($brick['subtype'], bricksetting('brick_export_formats')))
+	if (in_array($brick['subtype'], wrap_setting('brick_export_formats')))
 		$output_format = $brick['subtype'];
-	elseif ($filetype AND in_array($filetype, bricksetting('brick_export_formats')))
+	elseif ($filetype AND in_array($filetype, wrap_setting('brick_export_formats')))
 		$output_format = $filetype;
 	else
 		$output_format = false;
@@ -223,7 +223,7 @@ function brick_request_cms($script, $brick, $filetype = '') {
 		$data = $brick['request_function']($brick['vars'], $brick['local_settings'], $brick['data'] ?? []);
 	} else {
 		// function does not exist, probably no database data is needed
-		switch (bricksetting('brick_cms_input')) {
+		switch (wrap_setting('brick_cms_input')) {
 		case 'xml':
 		case 'json':
 			$data = brick_request_external($script, $brick['vars']);
@@ -308,7 +308,7 @@ function brick_request_cms($script, $brick, $filetype = '') {
 		if (!$brick['text']) return false;
 		$brick['content_type'] = 'csv';
 		$brick['headers']['filename'] = $filename;
-		if (bricksetting('export_csv_excel_compatible')) {
+		if (wrap_setting('export_csv_excel_compatible')) {
 			$brick['headers']['character_set'] = 'utf-16le';
 		}
 		return $brick;
@@ -349,7 +349,7 @@ function brick_request_file($script, $brick, $type = false) {
 	}
 
 	// get path
-	$path = substr(bricksetting('brick_module_dir'), 1);
+	$path = substr(wrap_setting('brick_module_dir'), 1);
 	switch ($type) {
 		case 'get': $path .= 'request_get'; break;
 		case 'make': $path .= $type; break;
@@ -432,8 +432,8 @@ function brick_request_external($script, $params = []) {
 	if ($url === true) return true;
 	if (!$url) return [];
 
-	if ($file = bricksetting('brick_syndication_file')) require_once $file;
-	$data = bricksetting('brick_syndication_function')($url, bricksetting('brick_cms_input'));
+	if ($file = wrap_setting('brick_syndication_file')) require_once $file;
+	$data = wrap_setting('brick_syndication_function')($url, wrap_setting('brick_cms_input'));
 	return $data;
 }
 
@@ -447,12 +447,12 @@ function brick_request_external($script, $params = []) {
 function brick_request_url($script, $params = []) {
 	// get from URL
 	$params = implode('/', $params);
-	$json_source_url = bricksetting('brick_json_source_url');
+	$json_source_url = wrap_setting('brick_json_source_url');
 	if (isset($json_source_url[$script])) {
 		// set to: we don't need a JSON import
 		if (!$json_source_url[$script]) return true;
 		$url = sprintf($json_source_url[$script], $params);
-	} elseif ($url = bricksetting('brick_json_source_url_default')) {
+	} elseif ($url = wrap_setting('brick_json_source_url_default')) {
 		$url = sprintf($url, $script, $params);
 	} else {
 		if (!parse_url($script, PHP_URL_SCHEME)) return false;
@@ -470,14 +470,14 @@ function brick_request_url($script, $params = []) {
  * @return string
  */
 function brick_csv_encode($data) {
-	if (bricksetting('export_csv_excel_compatible'))
-		bricksetting('export_csv_delimiter', "\t");
-	$enc = bricksetting('export_csv_enclosure');
-	$lim = bricksetting('export_csv_delimiter');
+	if (wrap_setting('export_csv_excel_compatible'))
+		wrap_setting('export_csv_delimiter', "\t");
+	$enc = wrap_setting('export_csv_enclosure');
+	$lim = wrap_setting('export_csv_delimiter');
 
 	$text = '';
 	$newline = true;
-	if (bricksetting('export_csv_heading')) {
+	if (wrap_setting('export_csv_heading')) {
 		$head = reset($data);
 		foreach (array_keys($head) as $field) {
 			if ($text) $text .= $lim;
@@ -494,16 +494,16 @@ function brick_csv_encode($data) {
 			} elseif ($field AND is_array($field)) {
 				// @todo: allow arrays in arrays
 				$text .= $enc.str_replace($enc, $enc.$enc, implode(',', $field)).$enc;
-			} elseif (!$field AND bricksetting('export_csv_show_empty_cells')) {
+			} elseif (!$field AND wrap_setting('export_csv_show_empty_cells')) {
 				$text .= $enc.$enc;
 			}
 		}
 		$text .= "\r\n";
 		$newline = true;
 	}
-	if (bricksetting('export_csv_excel_compatible')) {
+	if (wrap_setting('export_csv_excel_compatible')) {
 		// @todo check with mb_list_encodings() if available
-		$text = mb_convert_encoding($text, 'UTF-16LE', bricksetting('character_set'));
+		$text = mb_convert_encoding($text, 'UTF-16LE', wrap_setting('character_set'));
 	}
 	return $text;
 }
@@ -582,7 +582,7 @@ function brick_request_link(&$media, $placeholder, $field_name) {
 		return '%%% '.$area.' '.implode(' ', $placeholder).' %%%';
 	}
 	$no = array_shift($placeholder);
-	$media_sizes = bricksetting('media_sizes');
+	$media_sizes = wrap_setting('media_sizes');
 	foreach ($mediakeys as $mediakey) {
 		if (empty($media[$mediakey])) continue;
 		foreach ($media[$mediakey] as $medium_id => $medium) {
@@ -614,17 +614,17 @@ function brick_request_link(&$media, $placeholder, $field_name) {
 			// default path?
 			$media_standard_image_size_used = false;
 			if (empty($medium['path'])) {
-				if (bricksetting('default_media_size')) {
-					$medium['path'] = $media_sizes[bricksetting('default_media_size')]['path'];
-				} elseif (bricksetting('media_standard_image_size')) {
+				if (wrap_setting('default_media_size')) {
+					$medium['path'] = $media_sizes[wrap_setting('default_media_size')]['path'];
+				} elseif (wrap_setting('media_standard_image_size')) {
 					$media_standard_image_size_used = true;
-					$medium['path'] = bricksetting('media_standard_image_size');
+					$medium['path'] = wrap_setting('media_standard_image_size');
 				}
 			}
 			if (empty($medium['path_x2'])) {
-				if ($media_standard_image_size_used AND bricksetting('media_standard_image_size_x2')) {
+				if ($media_standard_image_size_used AND wrap_setting('media_standard_image_size_x2')) {
 					foreach ($media_sizes as $size => $medium_size) {
-						if ($medium_size['path'].'' !== bricksetting('media_standard_image_size_x2').'') continue;
+						if ($medium_size['path'].'' !== wrap_setting('media_standard_image_size_x2').'') continue;
 						$medium['path_x2'] = $medium_size['path'];
 					}
 				} elseif (!empty($medium['path'])) {
