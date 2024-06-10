@@ -612,7 +612,7 @@ function brick_head_format_html($page, $tags) {
 function brick_head_opengraph($tags, $page) {
 	// defaults
 	if ($page['status'] !== 200) return [];
-	$tags['og:title'] = $tags['og:title'] ?? (wrap_setting('request_uri') === '/' ? wrap_setting('project') : $page['title']);
+	$tags['og:title'] = $tags['og:title'] ?? (wrap_setting('request_uri') === '/' ? wrap_setting('project') : strip_tags($page['title']));
 	$tags['og:type'] = $tags['og:type'] ?? 'website';
 	$tags['og:url'] = $tags['og:url'] ?? wrap_setting('host_base').wrap_setting('request_uri');
 	$tags['og:site_name'] = $tags['og:site_name'] ?? wrap_setting('project');
