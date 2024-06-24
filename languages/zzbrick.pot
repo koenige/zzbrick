@@ -20,6 +20,146 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
+#: configuration/settings.cfg
+msgid "similar to brick_types_translated, here you can translate '=', ':' and '-' to different text"
+msgstr ""
+
+#: configuration/settings.cfg
+msgid "file to include if authentication is needed for accessing the zzform scripts. might be false, then no file will be included."
+msgstr ""
+
+#: configuration/settings.cfg
+msgid "function to call if authentication is needed"
+msgstr ""
+
+#: configuration/settings.cfg
+msgid "source of input for request function (db, xml, json, false)"
+msgstr ""
+
+#: configuration/settings.cfg
+msgid "directory prefix for the customised brick scripts"
+msgstr ""
+
+#: configuration/settings.cfg
+msgid "if a matrix of the content is wanted, here you can define a default position"
+msgstr ""
+
+#: configuration/settings.cfg
+msgid "supported export formats"
+msgstr ""
+
+#: configuration/settings.cfg
+msgid "functions allowed in templates to format values"
+msgstr ""
+
+#: configuration/settings.cfg
+msgid "prefixes for formatting functions, per function, allows to use a shorthand version"
+msgstr ""
+
+#: configuration/settings.cfg
+msgid "name of function to format the complete output of brick_format instead of formatting each paragraph separately with markdown"
+msgstr ""
+
+#: configuration/settings.cfg
+msgid "allowed HTML rel attribute values"
+msgstr ""
+
+#: configuration/settings.cfg
+msgid "default allowed range of IP addresses when no address is specified in ipfilter ('from', 'to' or 0 =>, 1 =>)"
+msgstr ""
+
+#: configuration/settings.cfg
+msgid "list of URLs, indexed by source, for retrieving JSON data from an external server"
+msgstr ""
+
+#: configuration/settings.cfg
+msgid "default URL for retrieving JSON data from an external server"
+msgstr ""
+
+#: configuration/settings.cfg
+msgid "directory prefix for brick scripts in modules"
+msgstr ""
+
+#: configuration/settings.cfg
+msgid "if active, do not format bricks inside bricks"
+msgstr ""
+
+#: configuration/settings.cfg
+msgid "HTML template for links in case URL is current URL"
+msgstr ""
+
+#: configuration/settings.cfg
+msgid "shortcuts for page functions"
+msgstr ""
+
+#: configuration/settings.cfg
+msgid "shortcuts for request functions, that is you can write `%%% image blubb %%%` instead of `%%% request image blubb %%%`"
+msgstr ""
+
+#: configuration/settings.cfg
+msgid "? @todo"
+msgstr ""
+
+#: configuration/settings.cfg
+msgid "function to syndicate content from another server"
+msgstr ""
+
+#: configuration/settings.cfg
+msgid "file to include that defines `brick_syndication_function`"
+msgstr ""
+
+#: configuration/settings.cfg
+msgid "here you can translate the first part of the zzbrick definition e. g. `%%% abfrage ... ... %%%` might be translated to request: `$setting['brick_types_translated']['abfrage'] = 'request'` this may also be used to define a certain subtype"
+msgstr ""
+
+#: configuration/settings.cfg
+msgid "internal URL parameters"
+msgstr ""
+
+#: configuration/settings.cfg
+msgid "string to separate contents of each field in CSV export"
+msgstr ""
+
+#: configuration/settings.cfg
+msgid "string to enclose values in CSV export"
+msgstr ""
+
+#: configuration/settings.cfg
+msgid "create an Excel compatible export (different encoding)"
+msgstr ""
+
+#: configuration/settings.cfg
+msgid "add field names in CSV export"
+msgstr ""
+
+#: configuration/settings.cfg
+msgid "list of characters to replace in CSV export"
+msgstr ""
+
+#: configuration/settings.cfg
+msgid "show empty cells in CSV export"
+msgstr ""
+
+#: configuration/settings.cfg
+msgid "initial installation date of zzbrick module (for updates)"
+msgstr ""
+
+#: configuration/settings.cfg
+msgid "add OpenGraph tags to webpage"
+msgstr ""
+
+#: configuration/settings.cfg
+msgid "global OpenGraph properties applied to all pages showing OpenGraph tags"
+msgstr ""
+
+#: configuration/settings.cfg
+msgid "size in px of image for OpenGraph (Facebook, Twitter)"
+msgstr ""
+
+#: configuration/settings.cfg
+msgid "XML mode? for closing tags"
+msgstr ""
+
 #: zzbrick/zzbrick.php:641
 msgid "Logo"
 msgstr ""
