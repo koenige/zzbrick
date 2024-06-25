@@ -52,6 +52,8 @@ function brick_path($brick) {
 				$values[] = $brick['loop_parameter'][$var];
 			elseif (is_array($brick['parameter']) AND array_key_exists($var, $brick['parameter']))
 				$values[] = $brick['parameter'][$var];
+			else
+				$values[] = $var;
 	}
 
 	$testing = (!$values and !empty($brick['parameter']['brick_condition_if'])) ? true : false;
