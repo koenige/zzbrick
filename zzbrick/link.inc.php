@@ -37,9 +37,8 @@ function brick_link($brick) {
 	$vars = $brick['vars'];
 	switch ($brick['vars'][0]) {
 	case 'start':
-		$brick['link_open'] = $link = $vars[1];
 		array_shift($vars);
-		array_shift($vars);
+		$brick['link_open'] = $link = array_shift($vars);
 		break;
 	case 'end':
 		$link = $brick['link_open'];
@@ -47,7 +46,7 @@ function brick_link($brick) {
 		array_shift($vars);
 		break;
 	default:
-		$link = $vars[0];
+		$link = array_shift($vars);
 		break;
 	}
 	
