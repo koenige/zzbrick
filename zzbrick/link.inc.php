@@ -23,25 +23,57 @@
  * examples: 
  * 		%%% link /some/internal/link "Link text" %%% 
  * 		%%% link /some/internal/link "Link text" "title='title text'" %%% 
+ * 		%%% link start /some/internal/link %%%
+ * 		%%% link start /some/internal/link "title='title text'" %%%
+ * 		%%% link end %%% 
  * @param array $brick
  * @return array $brick
  */
 function brick_link($brick) {
-	if (count($brick['vars']) < 2) return $brick;
+	if (count($brick['vars']) < 1) return $brick;
 	if (!isset($brick['page']['text'][$brick['position']]))
 		$brick['page']['text'][$brick['position']] = [];
 
-	$text = '';
-	$link = wrap_setting('base').$brick['vars'][0];
-	if ($_SERVER['REQUEST_URI'] === $link) {
-		$text = sprintf(wrap_setting('brick_nolink_template'), $brick['vars'][1]);
-	} elseif (count($brick['vars']) === 2) {
-		$template = '<a href="%s">%s</a>';
-		$text = sprintf($template, $link, $brick['vars'][1]);
-	} elseif (count($brick['vars']) === 3) {
-		$template = '<a href="%s" %s>%s</a>';
-		$text = sprintf($template, $link, $brick['vars'][2], $brick['vars'][1]);
+	$vars = $brick['vars'];
+	switch ($brick['vars'][0]) {
+	case 'start':
+		$brick['link_open'] = $link = $vars[1];
+		array_shift($vars);
+		array_shift($vars);
+		break;
+	case 'end':
+		$link = $brick['link_open'];
+		$brick['link_open'] = false;
+		array_shift($vars);
+		break;
+	default:
+		$link = $vars[0];
+		break;
 	}
+	
+	$text = '';
+	$link = wrap_setting('base').$link;
+	if (wrap_setting('request_uri') === $link) {
+		$template = wrap_setting('brick_nolink_template');
+	} else {
+		array_unshift($vars, $link);
+		if (count($brick['vars']) === 3)
+			$template = '<a href="%s" %s>%s</a>';
+		else
+			$template = '<a href="%s">%s</a>';
+	}
+
+	switch ($brick['vars'][0]) {
+	case 'end':
+		$text = substr($template, strrpos($template, '%s') + 2);
+		break;
+	case 'start':
+		$template = substr($template, 0, strrpos($template, '%s'));
+	default:
+		$text = vsprintf($template, $vars);
+		break;
+	}
+	
 	$brick['page']['text'][$brick['position']][] = $text;
 	return $brick;
 }
