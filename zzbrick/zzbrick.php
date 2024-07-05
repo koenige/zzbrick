@@ -970,11 +970,11 @@ function brick_format_textblock($brick, $block, $index) {
  *
  * @param array $brick
  * @param array $blocks
+ * @param array $includes (optional)
  * @return array
  */
-function brick_include($brick, $blocks = []) {
-	static $includes = [];
-
+function brick_include($brick, $blocks = [], $includes = []) {
+	$includes_template = [];
 	// not replaced include because of error? has no blocks
 	// @see brick_format_placeholderblock()
 	if (empty($blocks)) return $brick;
@@ -985,59 +985,58 @@ function brick_include($brick, $blocks = []) {
 	$pos = -1;
 	foreach ($blocks as $index => $block) {
 		$pos++;
-		if ($index & 1) {
-			$block = explode(' ', trim($block));
-			if ($block[0] !== 'include') continue;
-			$block[1] = trim($block[1]);
-			if (in_array($block[1], $includes)) {
-				$brick['page']['error']['level'] = E_USER_ERROR;
-				$brick['page']['error']['msg_text']
-					= 'Template %s includes itself';
-				$brick['page']['error']['msg_vars'] = [$block[1]];
-				return [$brick, $blocks];
-			}
-			$includes[] = $block[1];
-			$tpl = wrap_template($block[1], [], 'error');
-			$new_blocks = explode('%%%', $tpl);
-			list($brick, $new_blocks) = brick_include($brick, $new_blocks);
-			// there now are two or three text blocks adjacent, glue them together
-			if (count($new_blocks) > 1) {
-				if (isset($blocks[$pos - 1])) {
-					$first_new_block = array_shift($new_blocks);
-					$blocks[$pos - 1] .= $first_new_block;
-				}
-				if (isset($blocks[$pos + 1])) {
-					$last_new_block = array_pop($new_blocks);
-					if ($new_blocks) {
-						$blocks[$pos + 1] = $last_new_block.$blocks[$pos + 1];
-					} else {
-						$blocks[$pos - 1] .= $last_new_block.$blocks[$pos + 1];
-						unset($blocks[$pos + 1]);
-					}
-				}
-				array_splice($blocks, $pos, 1, $new_blocks);
-			} else {
-				$new_block = array_shift($new_blocks);
-				if (array_key_exists($pos - 1, $blocks) AND array_key_exists($pos + 1, $blocks)) {
-					// in the middle
-					$blocks[$pos - 1] .= $new_block.$blocks[$pos + 1];
-					unset($blocks[$pos]);
-					unset($blocks[$pos + 1]);
-				} elseif (array_key_exists($pos - 1, $blocks)) {
-					// at the beginning
-					$blocks[$pos - 1] .= $new_block;
-					unset($blocks[$pos]);
-				} elseif (array_key_exists($pos + 1, $blocks)) {
-					// at the end
-					$blocks[$pos + 1] = $new_block.$blocks[$pos + 1];
-					unset($blocks[$pos]);
-				} else {
-					// only block
-					$blocks[$pos] = $new_block;
-				}
-			}
-			$pos += count($new_blocks);
+		if (!$index & 1) continue;
+		$block = explode(' ', trim($block));
+		if ($block[0] !== 'include') continue;
+		$block[1] = trim($block[1]);
+		if (in_array($block[1], $includes)) {
+			$brick['page']['error']['level'] = E_USER_ERROR;
+			$brick['page']['error']['msg_text']
+				= 'Template %s includes itself';
+			$brick['page']['error']['msg_vars'] = [$block[1]];
+			return [$brick, $blocks];
 		}
+		$includes_template[] = $block[1];
+		$tpl = wrap_template($block[1], [], 'error');
+		$new_blocks = explode('%%%', $tpl);
+		list($brick, $new_blocks) = brick_include($brick, $new_blocks, array_merge($includes, $includes_template));
+		// there now are two or three text blocks adjacent, glue them together
+		if (count($new_blocks) > 1) {
+			if (isset($blocks[$pos - 1])) {
+				$first_new_block = array_shift($new_blocks);
+				$blocks[$pos - 1] .= $first_new_block;
+			}
+			if (isset($blocks[$pos + 1])) {
+				$last_new_block = array_pop($new_blocks);
+				if ($new_blocks) {
+					$blocks[$pos + 1] = $last_new_block.$blocks[$pos + 1];
+				} else {
+					$blocks[$pos - 1] .= $last_new_block.$blocks[$pos + 1];
+					unset($blocks[$pos + 1]);
+				}
+			}
+			array_splice($blocks, $pos, 1, $new_blocks);
+		} else {
+			$new_block = array_shift($new_blocks);
+			if (array_key_exists($pos - 1, $blocks) AND array_key_exists($pos + 1, $blocks)) {
+				// in the middle
+				$blocks[$pos - 1] .= $new_block.$blocks[$pos + 1];
+				unset($blocks[$pos]);
+				unset($blocks[$pos + 1]);
+			} elseif (array_key_exists($pos - 1, $blocks)) {
+				// at the beginning
+				$blocks[$pos - 1] .= $new_block;
+				unset($blocks[$pos]);
+			} elseif (array_key_exists($pos + 1, $blocks)) {
+				// at the end
+				$blocks[$pos + 1] = $new_block.$blocks[$pos + 1];
+				unset($blocks[$pos]);
+			} else {
+				// only block
+				$blocks[$pos] = $new_block;
+			}
+		}
+		$pos += count($new_blocks) - 1;
 	}
 	return [$brick, $blocks];
 }
