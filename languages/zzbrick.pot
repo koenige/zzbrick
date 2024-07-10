@@ -160,6 +160,12 @@ msgstr ""
 msgid "XML mode? for closing tags"
 msgstr ""
 
+#: zzbrick/page.inc.php:74
+#: zzbrick/request.inc.php:79
+#: zzbrick/request.inc.php:320
+msgid "The function “%s” is not supported."
+msgstr ""
+
 #: zzbrick/zzbrick.php:641
 msgid "Logo"
 msgstr ""

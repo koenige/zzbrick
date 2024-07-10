@@ -76,7 +76,7 @@ function brick_request($brick) {
 
 		if (!function_exists($brick['request_function'])) {
 			$brick['page']['error']['level'] = E_USER_ERROR;
-			$brick['page']['error']['msg_text'] = 'The function "%s" is not supported by the CMS.';
+			$brick['page']['error']['msg_text'] = 'The function “%s” is not supported.';
 			$brick['page']['error']['msg_vars'] = [$brick['request_function']];
 			$brick['text'] = false;
 			return $brick;
@@ -317,7 +317,7 @@ function brick_request_cms($script, $brick, $filetype = '') {
 		$brick = brick_request_file($script, $brick, $brick['subtype'] ?? 'htmlout');
 		if (!function_exists($brick['request_function'])) {
 			$content['error']['level'] = E_USER_ERROR;
-			$content['error']['msg_text'] = 'The function "%s" is not supported by the CMS.';
+			$content['error']['msg_text'] = 'The function “%s” is not supported.';
 			$content['error']['msg_vars'] = [$brick['request_function']];
 			return $content;
 		}

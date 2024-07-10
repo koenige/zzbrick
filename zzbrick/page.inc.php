@@ -71,7 +71,7 @@ function brick_page($brick) {
 		$request = 'page_'.strtolower($brick_var);
 		if (!function_exists($request)) {
 			$brick['page']['error']['level'] = E_USER_ERROR;
-			$brick['page']['error']['msg_text'] = 'The function "%s" is not supported by the CMS.';
+			$brick['page']['error']['msg_text'] = 'The function “%s” is not supported.';
 			$brick['page']['error']['msg_vars'] = [$request];
 			return $brick;
 		}
