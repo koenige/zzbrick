@@ -31,13 +31,6 @@ function brick_text($brick) {
 	$brick = brick_local_settings($brick);
 	if (!isset($brick['page']['text'][$brick['position']]))
 		$brick['page']['text'][$brick['position']] = [];
-	$function = end($brick['vars']);
-	if (in_array($function, wrap_setting('brick_formatting_functions'))) {
-		array_pop($brick['vars']);	
-		$function = brick_format_function_prefix($function);
-	} else {
-		$function = false;
-	}
 	if (count($brick['vars']) > 1 AND (strstr($brick['vars'][0], ' ') OR !empty($brick['in_quotes']))) {
 		$text = array_shift($brick['vars']);
 		$sprintf_params = $brick['vars'];
@@ -71,19 +64,19 @@ function brick_text($brick) {
 			} elseif ($is_setting) {
 				$params[] = wrap_setting($key);
 				$is_setting = false;
+			} elseif (in_array($key, wrap_setting('brick_formatting_functions'))) {
+				$function = brick_format_function_prefix($key);
+				$last = array_pop($params);
+				$params[] = $function($last);
 			} else {
 				if (!isset($item[$key])) continue;
 				$params[] = $item[$key];
 			}
 		}
-		if ($function)
-			foreach ($params as $index => $param)
-				$params[$index] = $function($param);
 		$text_params['values'] = $params;
 		$text = wrap_text($text, $text_params);
 	} else {
 		$text = wrap_text($text, $text_params);
-		if ($function) $text = $function($text);
 	}
 	
 	$brick['page']['text'][$brick['position']][] = $text;
