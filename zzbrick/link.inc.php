@@ -57,7 +57,7 @@ function brick_link($brick) {
 	} else {
 		array_unshift($vars, $link);
 		if (count($brick['vars']) === 3)
-			$template = '<a href="%s" %s>%s</a>';
+			$template = '<a href="%s" %3$s>%2$s</a>';
 		else
 			$template = '<a href="%s">%s</a>';
 	}
