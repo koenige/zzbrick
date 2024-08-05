@@ -57,13 +57,13 @@ function brick_text($brick) {
 			$item = &$brick['parameter'];
 		}
 		$params = [];
-		$is_setting = false;
+		$prefix_function = false;
 		foreach ($sprintf_params as $key) {
-			if ($key === 'setting') {
-				$is_setting = true;
-			} elseif ($is_setting) {
-				$params[] = wrap_setting($key);
-				$is_setting = false;
+			if (in_array($key, ['setting', 'path'])) {
+				$prefix_function = 'wrap_'.$key; // wrap_setting, wrap_path
+			} elseif ($prefix_function) {
+				$params[] = $prefix_function($key);
+				$prefix_function = false;
 			} elseif (in_array($key, wrap_setting('brick_formatting_functions'))) {
 				$function = brick_format_function_prefix($key);
 				$last = array_pop($params);
