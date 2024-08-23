@@ -832,9 +832,8 @@ function brick_local_settings($brick) {
 			$append = array_reverse($append);
 			$setting = implode('%20', $append);
 			// ok, we found something, so now we can remove the variables
-			for ($i = 0; $i < count($append) - 1; $i++) {
+			for ($i = 0; $i < count($append); $i++)
 				array_pop($brick['vars']);
-			}
 			$append = [];
 		} elseif (str_ends_with($setting, '"')) {
 			$append[] = $setting;
@@ -861,11 +860,10 @@ function brick_local_settings($brick) {
 				}
 			}
 		}
-		if ($new_settings) {
+		if ($new_settings)
 			$brick['local_settings'] = array_merge_recursive($brick['local_settings'], $new_settings);
-		}
 		$key = array_search($setting, $brick['vars']);
-		unset($brick['vars'][$key]);
+		if ($key !== false) unset($brick['vars'][$key]);
 	}
 	return $brick;
 }
