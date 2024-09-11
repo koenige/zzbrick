@@ -33,12 +33,13 @@ function brick_switch($brick) {
 	switch ($brick['vars'][0]) {
 		case 'end':
 			$brick['switch'] = NULL;
-			$brick['position'] = $brick['position_old'];
-			$brick['position_old'] = NULL;
+			$brick['position'] = $brick['position_switch'];
+			$brick['position_switch'] = NULL;
 			break;
 		default:
-			$brick['switch'] = $brick['parameter'][$brick['vars'][0]] ?? NULL;
-			$brick['position_old'] = $brick['position'];
+			$brick['switch'] = $brick['parameter'][$brick['vars'][0]]
+				?? $brick['loop_parameter'][$brick['vars'][0]] ?? NULL;
+			$brick['position_switch'] = $brick['position'];
 			break;
 	}
 	
