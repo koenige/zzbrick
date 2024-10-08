@@ -32,6 +32,7 @@ function brick_switch($brick) {
 
 	switch ($brick['vars'][0]) {
 		case 'end':
+		case '-':
 			$brick['switch'] = NULL;
 			$brick['position'] = $brick['position_switch'];
 			$brick['position_switch'] = NULL;
