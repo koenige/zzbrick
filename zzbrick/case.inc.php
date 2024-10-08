@@ -30,15 +30,12 @@
 function brick_case($brick) {
 	if (count($brick['vars']) !== 1) return $brick;
 
-	if ($brick['position'] === '_hidden_') {
-		if ($brick['vars'][0] === $brick['switch'])
-			$brick['position'] = $brick['position_switch'];
+	if ($brick['vars'][0] === $brick['switch']) {
+		$brick['position'] = $brick['position_switch'];
 	} else {
-		if ($brick['vars'][0] !== $brick['switch']) {
-			$brick['position'] = '_hidden_';
-			// initialize text at _hidden_ position
-			$brick['page']['text'][$brick['position']] = [];
-		}
+		$brick['position'] = '_hidden_';
+		// initialize text at _hidden_ position
+		$brick['page']['text'][$brick['position']] = [];
 	}
 
 	return $brick;
