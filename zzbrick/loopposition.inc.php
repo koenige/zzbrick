@@ -27,6 +27,7 @@
  * 		%%% loopposition %5 "<br>" %%% (all 5 lines)
  * 		%%% loopposition 5 "<br>" %%% (on line 5, counting starting with 1)
  *		%%% loopposition counter %%% returns current line number
+ *		%%% loopposition first setting xy %%% returns setting `xy`
  * @param array $brick
  * @return array $brick
  */
@@ -39,7 +40,9 @@ function brick_loopposition($brick) {
 	$function = NULL;
 	if (count($positions) !== 1 OR $positions[0] !== 'counter') {
 		// normally, two variables are required
-		if (count($brick['vars']) === 3 and function_exists(end($brick['vars'])))
+		if (count($brick['vars']) === 3 and $brick['vars'][1] === 'setting')
+			$brick['vars'][1] = wrap_setting(array_pop($brick['vars']));
+		elseif (count($brick['vars']) === 3 and function_exists(end($brick['vars'])))
 			$function = array_pop($brick['vars']);
 		if (count($brick['vars']) !== 2) return $brick;
 	} else {
