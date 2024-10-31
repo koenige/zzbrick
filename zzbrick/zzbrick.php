@@ -628,9 +628,12 @@ function brick_head_opengraph($tags, $page) {
 
 	if (empty($tags['og:image'])) {
 		$processed = false;
-		if (function_exists('mf_media_opengraph_image')) {
+		if (function_exists('mf_media_opengraph_image') AND !wrap_setting('opengraph_always_use_logo')) {
 			if (!empty($tags['image'])) {
 				$tags += mf_media_opengraph_image($tags['image']);
+				$processed = true;
+			} elseif (wrap_setting('opengraph') AND !empty($page['media']['images_overview'])) {
+				$tags += mf_media_opengraph_image(reset($page['media']['images_overview']));
 				$processed = true;
 			} elseif (wrap_setting('opengraph') AND !empty($page['media']['images'])) {
 				$tags += mf_media_opengraph_image(reset($page['media']['images']));
