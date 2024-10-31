@@ -8,7 +8,7 @@
  * http://www.zugzwang.org/projects/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2022 Gustaf Mossakowski
+ * @copyright Copyright © 2022, 2024 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -22,11 +22,12 @@
  * examples:
  *		%%% section gallery %%%
  *		%%% section downloads %%%
+ *		%%% section downloads main %%%
  * @param array $brick	Array from zzbrick
  * @return array $brick
  */
 function brick_section($brick) {
-	$data['section'] = $brick['vars'][0] ?? '';
+	$data['section'] = implode(' ', $brick['vars'] ?? []);
 	if (!empty($brick['section_close'])) {
 		$brick['section_close'] = '';
 		$brick['page']['text'][$brick['position']][] = wrap_template('section', ['close' => 1]);
