@@ -91,8 +91,7 @@
  			0 => ['url_path' => '/', 'title' => 'Page']
  		'language_link' => (string) link to same page in other language (...)
  		'dont_show_h1' => (bool) zzwrap: do not repeat page title in h1
- 		'authors' => (array) IDs of page authors, zzwrap will post process
- 			this ID list in wrap_get_authors()
+ 		'authors' => (array) IDs of page authors
 		'last_update' => (date) last update of page, might be used for 
 			last-modified header
 		'created' => (date) creation date of page
