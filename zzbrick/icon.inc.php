@@ -36,6 +36,12 @@ function brick_icon($brick) {
 		$content = file_get_contents($file);
 		if (strstr($content, '<?xml version="1.0" encoding="UTF-8"?>'))
 			$content = str_replace('<?xml version="1.0" encoding="UTF-8"?>', '', $content);
+		$title = basename($file);
+		if (strstr($title, '.'))
+			$title = substr($title, 0, strpos($title, '.'));
+		if (!strstr('role="img"', $content))
+			$content = str_replace('<svg', '<svg role="img" aria-label="'.$title.'"', $content);
+		$content = '<span class="svg-title">'.$title.'</span>'.$content;
 	}
 
 	$brick['page']['text'][$brick['position']][] = $content;
