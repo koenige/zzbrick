@@ -116,6 +116,7 @@ function brick_condition($brick) {
 			// we have it in $item, so return this.
 			$content = $item[$brick_var];
 			if ($content AND $operator === '|') break;
+			if (!$content AND $operator === '&') break;
 		} elseif ($operator === '&') {
 			$content = '';
 			break;
