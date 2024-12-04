@@ -28,7 +28,7 @@ function brick_icon($brick) {
 	if (count($brick['vars']) !== 1) return '';
 	
 	$icon = sprintf('icons/%s.svg', $brick['vars'][0]);
-	$files = wrap_collect_files($icon, 'media/custom/modules/themes');
+	$files = wrap_collect_files($icon, 'files/custom/modules/themes');
 	if (!$files) {
 		$content = '?';
 	} else {
