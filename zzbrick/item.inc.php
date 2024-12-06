@@ -57,7 +57,7 @@ function brick_item($brick) {
 			$format_function = array_shift($brick['vars']);
 			$format_function = brick_format_function_prefix($format_function);
 			if (function_exists($format_function)) {
-				if (strstr($content, '%%%') AND !wrap_setting('brick_no_format_inside')) {
+				if (!is_array($content) AND strstr($content, '%%%') AND !wrap_setting('brick_no_format_inside')) {
 					$content = brick_format($content);
 					$content = $content['text'];
 				}
