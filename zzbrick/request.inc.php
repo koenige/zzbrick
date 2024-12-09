@@ -391,7 +391,8 @@ function brick_request_file($script, $brick, $type = false) {
 	}
 	
 	if (!$function) {
-		// prefix cms_ is needed, e. g. for centrally defined functions like cms_login()
+		// prefix cms_ is needed, e. g. for centrally defined functions
+		// @deprecated
 		$brick['request_function'] = 'cms_'.($folder ? $folder.'/' : '').$script;
 		return $brick;
 	}
