@@ -5,7 +5,7 @@
  * Text blocks, translated if applicable
  *
  * Part of »Zugzwang Project«
- * https://www.zugzwang.org/projects/zzbrick
+ * https://www.zugzwang.org/modules/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
  * @copyright Copyright © 2009, 2014, 2019, 2021-2024 Gustaf Mossakowski

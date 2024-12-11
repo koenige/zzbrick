@@ -5,7 +5,7 @@
  * Content depending on position in loop
  *
  * Part of »Zugzwang Project«
- * http://www.zugzwang.org/projects/zzbrick
+ * https://www.zugzwang.org/modules/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
  * @copyright Copyright © 2010-2011, 2013, 2016-2017, 2019, 2024 Gustaf Mossakowski

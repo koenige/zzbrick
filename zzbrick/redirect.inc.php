@@ -5,7 +5,7 @@
  * Redirect to another URL
  *
  * Part of »Zugzwang Project«
- * https://www.zugzwang.org/projects/zzbrick
+ * https://www.zugzwang.org/modules/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
  * @copyright Copyright © 2009-2013, 2016, 2019, 2023-2024 Gustaf Mossakowski

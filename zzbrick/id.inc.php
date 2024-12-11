@@ -5,7 +5,7 @@
  * IDs
  *
  * Part of »Zugzwang Project«
- * https://www.zugzwang.org/projects/zzbrick
+ * https://www.zugzwang.org/modules/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
  * @copyright Copyright © 2023 Gustaf Mossakowski
