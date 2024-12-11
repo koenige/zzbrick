@@ -1,4 +1,4 @@
-# zzbrick module
+# zzbrick
 # Translations
 #
 # Part of »Zugzwang Project«
