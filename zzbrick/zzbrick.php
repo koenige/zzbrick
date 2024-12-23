@@ -627,7 +627,7 @@ function brick_head_opengraph($tags, $page) {
 
 	if (empty($tags['og:image'])) {
 		$processed = false;
-		if (function_exists('mf_media_opengraph_image') AND !wrap_setting('opengraph_always_use_logo')) {
+		if (function_exists('mf_media_opengraph_image') AND !wrap_setting('opengraph_use_logo')) {
 			if (!empty($tags['image'])) {
 				$tags += mf_media_opengraph_image($tags['image']);
 				$processed = true;
