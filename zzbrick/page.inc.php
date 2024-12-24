@@ -37,9 +37,6 @@ function brick_page($brick) {
 	
 	if (empty($brick['subtype'])) 
 		$brick['subtype'] = '';
-	if (in_array($brick['subtype'], wrap_setting('brick_page_shortcuts'))) {
-		array_unshift($brick['vars'], $brick['subtype']);
-	}
 
 	$page = &$brick['parameter'];
 	$pos = $brick['position'];
