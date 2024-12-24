@@ -93,7 +93,7 @@ msgid "shortcuts for page functions"
 msgstr ""
 
 #: configuration/settings.cfg
-msgid "shortcuts for request functions, that is you can write `%%% image blubb %%%` instead of `%%% request image blubb %%%`"
+msgid "shortcuts for brick functions, that is you can write `%%% image blubb %%%` instead of `%%% request image blubb %%%`"
 msgstr ""
 
 #: configuration/settings.cfg

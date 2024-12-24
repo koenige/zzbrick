@@ -18,7 +18,6 @@
  * 
  * files: zzbrick_request/{request}.inc.php
  * functions: cms_{$request}()
- * settings: brick_request_shortcuts
  * example: 
  *		%%% request news %%%
  *		%%% request news * %%% -- URL-parameters take place of asterisk
@@ -30,14 +29,10 @@ function brick_request($brick) {
 	// shortcuts
 	if (empty($brick['subtype'])) 
 		$brick['subtype'] = NULL;
-	if (in_array($brick['subtype'], wrap_setting('brick_request_shortcuts'))) {
-		array_unshift($brick['vars'], $brick['subtype']);
-		// to transport additional variables which are needed
-		// so %%% image 23 %%% may be as small as possible
-		if (in_array($brick['subtype'], wrap_setting('brick_request_url_params'))) {
-			$brick['vars'][] = '*';
-		}
-	}
+	// to transport additional variables which are needed
+	// so %%% image 23 %%% may be as small as possible
+	if (in_array($brick['subtype'], wrap_setting('brick_request_url_params')))
+		$brick['vars'][] = '*';
 
 	$brick = brick_local_settings($brick);
 	if (!empty($brick['local_settings']['brick_request_cms']))

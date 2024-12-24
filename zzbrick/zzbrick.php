@@ -909,6 +909,9 @@ function brick_format_placeholderblock($brick) {
 	// don't cut text after placeholders
 	$brick['cut_next_paragraph'] = false;
 
+	// shortcut?
+	$brick = brick_shortcut($brick);
+
 	// check whether $blocktype needs to be translated
 	$brick_types_translated = wrap_setting('brick_types_translated');
 	if (array_key_exists($brick['type'], $brick_types_translated)) {
@@ -944,6 +947,26 @@ function brick_format_placeholderblock($brick) {
 			 '.$brick['type'].' is not a valid parameter.</strong></p>';
 	}
 
+	return $brick;
+}
+
+/**
+ * check if it is a shortcut
+ *
+ * @param array $brick
+ * @return array
+ */
+function brick_shortcut($brick) {
+	// read shortcuts
+	$shortcuts = [];
+	foreach (wrap_setting('brick_shortcuts') as $shortcut) {
+		$shortcut = explode(' ', $shortcut);
+		$shortcuts[$shortcut[1]] = $shortcut[0];
+	}
+	// is type in shortcuts?
+	if (!array_key_exists($brick['type'], $shortcuts)) return $brick;
+	array_unshift($brick['vars'], $brick['type']);
+	$brick['type'] = $shortcuts[$brick['type']];
 	return $brick;
 }
 
