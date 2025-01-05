@@ -8,7 +8,7 @@
  * https://www.zugzwang.org/modules/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2009-2024 Gustaf Mossakowski
+ * @copyright Copyright © 2009-2025 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -111,6 +111,8 @@ function brick_forms($brick) {
 		$zz[$key] = $value;
 		$zz['init_ignore_log'][] = $key;
 	}
+	$zz['form_script'] = ($brick['subtype'] === 'forms' ? 'forms/' : '').$script;
+	$zz['init_ignore_log'][] = 'form_script';
 
 	if (!empty($_POST) AND !empty($_POST['httpRequest']) AND substr($_POST['httpRequest'], 0, 6) === 'zzform')
 		$brick['page'] = brick_xhr($_POST, $zz);
