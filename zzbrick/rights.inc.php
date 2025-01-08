@@ -8,7 +8,7 @@
  * https://www.zugzwang.org/modules/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2009, 2019, 2023-2024 Gustaf Mossakowski
+ * @copyright Copyright © 2009, 2019, 2023-2025 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -32,6 +32,8 @@
  * @return array $brick
  */
 function brick_rights($brick) {
+	if (!function_exists('brick_access_rights')) return $brick;
+
 	$rights_translated = wrap_setting('brick_rights_translated');
 	// default translations, cannot be changed
 	$rights_translated['on'] = '=';
