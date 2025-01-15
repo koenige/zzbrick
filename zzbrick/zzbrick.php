@@ -69,7 +69,7 @@
  * https://www.zugzwang.org/modules/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2009-2024 Gustaf Mossakowski
+ * @copyright Copyright © 2009-2025 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -564,12 +564,12 @@ function brick_head_format_html($page, $tags) {
 			foreach ($index as $attribute => $value) {
 				$head[$i] .= ' '.$attribute.'="'.$value.'"';
 			}
-			if (!empty(wrap_setting('xml_close_empty_tags'))) $head[$i] .= ' /';
+			if (wrap_setting('xml_close_empty_tags')) $head[$i] .= ' /';
 			$head[$i] .= '>';
 			$i++;
 		}
 	}
-	if ($tags['opengraph'] OR !empty(wrap_setting('opengraph'))) {
+	if ($tags['opengraph'] OR wrap_setting('opengraph')) {
 		$tags['meta'] = array_merge($tags['meta'], brick_head_opengraph($tags['opengraph'], $page));
 		$meta_description = false;
 		foreach ($tags['meta'] as $index => $meta_tag) {
@@ -592,7 +592,7 @@ function brick_head_format_html($page, $tags) {
 		$head[$i] = '<meta';
 		foreach ($index as $attribute => $value)
 			$head[$i] .= ' '.$attribute.'="'.$value.'"';
-		if (!empty(wrap_setting('xml_close_empty_tags'))) $head[$i] .= ' /';
+		if (wrap_setting('xml_close_empty_tags')) $head[$i] .= ' /';
 		$head[$i] .= '>';
 		$i++;
 	}

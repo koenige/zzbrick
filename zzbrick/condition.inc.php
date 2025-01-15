@@ -8,7 +8,7 @@
  * https://www.zugzwang.org/modules/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2009-2016, 2019, 2021-2024 Gustaf Mossakowski
+ * @copyright Copyright © 2009-2016, 2019, 2021-2025 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -101,7 +101,7 @@ function brick_condition($brick) {
 			$brick['page']['error']['level'] = E_USER_NOTICE;
 			$brick['page']['error']['msg_text']
 				= 'There’s an error in one of the conditions in the template `%s`: too many variables are present.';
-			if (!empty(wrap_setting('current_template'))) {
+			if (wrap_setting('current_template')) {
 				$brick['page']['error']['msg_vars'] = [wrap_setting('current_template')];
 			}
 		}
@@ -139,7 +139,7 @@ function brick_condition($brick) {
 		$brick['page']['error']['level'] = E_USER_NOTICE;
 		$brick['page']['error']['msg_text']
 			= 'There’s an error in the nesting of conditions in the template `%s`: There are more endifs than ifs.';
-		if (!empty(wrap_setting('current_template'))) {
+		if (wrap_setting('current_template')) {
 			$brick['page']['error']['msg_vars'] = [wrap_setting('current_template')];
 		}
 	}
