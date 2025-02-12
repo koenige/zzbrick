@@ -1010,7 +1010,7 @@ function brick_include($brick, $blocks = [], $includes = []) {
 	$includes_template = [];
 	// not replaced include because of error? has no blocks
 	// @see brick_format_placeholderblock()
-	if (empty($blocks)) return $brick;
+	if (empty($blocks)) return [$brick, $blocks];
 
 	if (count($blocks) === 1)
 		return [$brick, $blocks];
@@ -1030,8 +1030,12 @@ function brick_include($brick, $blocks = [], $includes = []) {
 			return [$brick, $blocks];
 		}
 		$includes_template[] = $block[1];
-		$tpl = wrap_template($block[1], [], 'error');
-		$new_blocks = explode('%%%', $tpl);
+		if (wrap_template_file($block[1], false)) {
+			$tpl = wrap_template($block[1], [], 'error');
+			$new_blocks = explode('%%%', $tpl);
+		} else {
+			$new_blocks = [];
+		}
 		list($brick, $new_blocks) = brick_include($brick, $new_blocks, array_merge($includes, $includes_template));
 		// there now are two or three text blocks adjacent, glue them together
 		if (count($new_blocks) > 1) {
