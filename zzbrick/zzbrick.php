@@ -1196,6 +1196,17 @@ function brick_merge_page_bricks($page, $content) {
 }
 
 /**
+ * check if a token is a registered formatting function
+ *
+ * @param string $token
+ * @return string
+ */
+function brick_format_function($token) {
+	if (!in_array($token, wrap_setting('brick_formatting_functions'))) return '';
+	return brick_format_function_prefix($token);
+}
+
+/**
  * add function prefix for brick_formatting_functions
  *
  * @param string $function

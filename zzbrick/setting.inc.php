@@ -8,7 +8,7 @@
  * https://www.zugzwang.org/modules/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2016, 2018-2024 Gustaf Mossakowski
+ * @copyright Copyright © 2016, 2018-2025 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -62,7 +62,9 @@ function brick_setting($brick) {
 			break;
 		}
 	}
-	if (!empty($brick['vars'][0]) AND $content) {
+	if ($content AND $function = brick_format_function($brick['vars'][0])) {
+		$brick['page']['text'][$pos][] = $function($content);
+	} elseif ($content AND !empty($brick['vars'][0])) {
 		// formatting to be done, there is some HTML and a value
 		$brick['vars'][0] = brick_translate($brick['vars'][0]);
 		$brick['page']['text'][$pos][] = 
