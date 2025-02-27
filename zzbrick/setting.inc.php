@@ -62,13 +62,15 @@ function brick_setting($brick) {
 			break;
 		}
 	}
-	if ($content AND $function = brick_format_function($brick['vars'][0])) {
-		$brick['page']['text'][$pos][] = $function($content);
-	} elseif ($content AND !empty($brick['vars'][0])) {
-		// formatting to be done, there is some HTML and a value
-		$brick['vars'][0] = brick_translate($brick['vars'][0]);
-		$brick['page']['text'][$pos][] = 
-			sprintf($brick['vars'][0], $content);
+	if ($content AND !empty($brick['vars'][0])) {
+		if ($function = brick_format_function($brick['vars'][0])) {
+			$brick['page']['text'][$pos][] = $function($content);
+		} else {
+			// formatting to be done, there is some HTML and a value
+			$brick['vars'][0] = brick_translate($brick['vars'][0]);
+			$brick['page']['text'][$pos][] = 
+				sprintf($brick['vars'][0], $content);
+		}
 	} else {
 		// no formatting or no value
 		$brick['page']['text'][$pos][] = $content;
