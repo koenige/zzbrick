@@ -147,7 +147,7 @@ function brick_condition($brick) {
 	switch ($condition) {
 	case '=': // if
 		if (!$show) break;
-		if ($content OR is_float($content) OR is_int($content)) {
+		if ($content OR is_float($content) OR is_int($content) OR $content === '0') {
 			$brick['condition_content_shown'][$i] = true;
 		} else {
 			$brick['condition_content_shown'][$i] = false;
@@ -156,7 +156,7 @@ function brick_condition($brick) {
 		break;
 	case ':=': // elseif
 		if (!$show) break;
-		if ($content OR is_float($content) OR is_int($content)) {
+		if ($content OR is_float($content) OR is_int($content) OR $content === '0') {
 			if (empty($brick['condition_content_shown'][$i])) {
 				$brick['condition_content_shown'][$i] = true;
 			} else {

@@ -1,0 +1,13 @@
+# zzbrick
+# changelog
+#
+# Part of »Zugzwang Project«
+# https://www.zugzwang.org/modules/zzbrick
+#
+# @author Gustaf Mossakowski <gustaf@koenige.org>
+# @copyright Copyright © 2025 Gustaf Mossakowski
+# @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
+#
+
+2025-03-01-1	bugfix	show bricks with '0' as value again
+2025-03-01-2	breaking	condition: consider brick with '0' as value to be true for condition again
