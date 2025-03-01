@@ -326,8 +326,7 @@ function brick_format($block, $parameter = false) {
 	unset($brick['page']);
 
 	// Standard position, remove if empty
-	if (!trim($page['text']['none']) AND $page['text']['none'] !== '0')
-		unset($page['text']['none']);
+	if (!strlen(trim($page['text']['none']))) unset($page['text']['none']);
 	// Hidden text? 403 access forbidden
 	if (!empty($page['text']['_hidden_']) AND trim($page['text']['_hidden_'])) {
 		$brick['access_forbidden'] = true;
@@ -377,7 +376,8 @@ function brick_format($block, $parameter = false) {
 		else $page['extra_'.$key] = true;
 	}
 	// make sure, 'text' is not an array if empty
-	if (empty($page['text']) AND is_array($page['text'])) $page['text'] = '';
+	if (!array_key_exists('text', $page)) $page['text'] = '';
+	elseif (empty($page['text']) AND is_array($page['text'])) $page['text'] = '';
 	return $page;
 }
 
