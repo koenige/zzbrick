@@ -80,9 +80,7 @@ function brick_item($brick) {
 				}
 			}
 			$format = brick_translate($format);
-			$brick['page']['text'][$pos][] = sprintf($format, $content);
-		} else {
-			$brick['page']['text'][$pos][] = $content;
+			$content = sprintf($format, $content);
 		}
 	} else {
 		// allow for (OR)
@@ -94,9 +92,12 @@ function brick_item($brick) {
 				// condition is false, choose last value
 				$content = $brick['vars'][2];
 			}
+		} else {
+			// no formatting or no value
+			// just check: can be empty array if array functions are used but there is no value
+			if (is_array($content)) $content = implode('', $content);
 		}
-		// no formatting or no value
-		$brick['page']['text'][$pos][] = $content;
 	}
+	$brick['page']['text'][$pos][] = $content;
 	return $brick;
 }
