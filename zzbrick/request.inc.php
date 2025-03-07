@@ -573,6 +573,16 @@ function brick_request_link(&$media, $placeholder, $field_name) {
 		}
 		return '%%% '.$area.' '.implode(' ', $placeholder).' %%%';
 	}
+
+	// local settings key=value?
+	$parsed = brick_local_settings(['vars' => $placeholder]);
+	if (array_key_exists('local_settings', $parsed)) {
+		$placeholder = $parsed['vars'];
+		$local_settings = $parsed['local_settings'];
+	} else {
+		$local_settings = [];
+	}
+
 	$no = array_shift($placeholder);
 	$media_sizes = wrap_setting('media_sizes');
 	foreach ($mediakeys as $mediakey) {
@@ -661,6 +671,7 @@ function brick_request_link(&$media, $placeholder, $field_name) {
 					]);
 				}
 			}
+			$medium += $local_settings;
 			return wrap_template($template, $medium);
 		}
 	}
