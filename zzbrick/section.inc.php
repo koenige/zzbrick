@@ -8,7 +8,7 @@
  * https://www.zugzwang.org/modules/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2022, 2024 Gustaf Mossakowski
+ * @copyright Copyright © 2022, 2024-2025 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -27,6 +27,9 @@
  * @return array $brick
  */
 function brick_section($brick) {
+	$brick = brick_local_settings($brick);
+
+	$data = $brick['local_settings'];
 	$data['section'] = implode(' ', $brick['vars'] ?? []);
 	if (!empty($brick['section_close'])) {
 		$brick['section_close'] = '';
