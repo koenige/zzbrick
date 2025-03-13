@@ -831,6 +831,7 @@ function brick_xhr_error($http_status, $reason, $data = []) {
 function brick_local_settings($brick) {
 	// get settings out of parameters
 	$brick['local_settings'] = [];
+	if (!array_key_exists('vars', $brick)) return $brick;
 	$url_settings = array_reverse($brick['vars']);
 	$append = [];
 	foreach ($url_settings as $setting) {
