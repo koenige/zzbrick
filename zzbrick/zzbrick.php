@@ -1237,6 +1237,8 @@ function brick_check_parameters($parameters) {
 		if (is_array($parameter)) continue;
 		if (!$parameter) continue;
 		if ($parameter === '*') continue;
+		// allow spaces, are recognized as iso8859-1
+		$parameter = str_replace('%20', '', $parameter);
 		if (strstr($parameter, '%')) {
 			// valid sequence?
 			if (strtolower(wrap_detect_encoding(urldecode($parameter))) === wrap_setting('character_set')) continue;
