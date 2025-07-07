@@ -22,6 +22,8 @@
  * @return array $brick
  */
 function brick_helplink($brick) {
+	if (!wrap_path('default_helptext')) return $brick;
+
 	$filename = implode('-', $brick['vars']);
 	$filename = strtolower($filename);
 
