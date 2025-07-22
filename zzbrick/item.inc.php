@@ -55,7 +55,9 @@ function brick_item($brick) {
 		if ($format_function = brick_format_function($brick['vars'][0])) {
 			array_shift($brick['vars']);
 			if (function_exists($format_function)) {
-				if (!is_array($content) AND strstr($content, '%%%') AND !wrap_setting('brick_no_format_inside')) {
+				// check against percents with space to avoid replacements in URLs
+				// there, space is either + or %20
+				if (!is_array($content) AND strstr($content, '%%% ') AND !wrap_setting('brick_no_format_inside')) {
 					$content = brick_format($content);
 					$content = $content['text'];
 				}
