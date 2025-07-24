@@ -34,7 +34,7 @@ function brick_condition($brick) {
 	static $i = 0;
 
 	$if = false;
-	$if_keywords = ['page', 'setting', 'cookie', 'path', 'lib'];
+	$if_keywords = ['page', 'setting', 'cookie', 'path', 'lib', 'form'];
 
 	if (count($brick['vars']) === 3 AND in_array($brick['vars'][1], $if_keywords))
 		$if = $brick['vars'][1];
@@ -58,10 +58,7 @@ function brick_condition($brick) {
 	$content = false;
 	if ($if) {
 		array_shift($brick['vars']);
-		if ($if === 'lib')
-			$item[$brick['vars'][0]] = is_dir(sprintf('%s/%s', wrap_setting('lib'), $brick['vars'][0]));
-		else
-			$item[$brick['vars'][0]] = brick_condition_if($if, $brick['vars'][0], $brick['parameter']);
+		$item[$brick['vars'][0]] = brick_condition_if($if, $brick['vars'][0], $brick['parameter']);
 	} elseif (!empty($brick['loop_parameter'])) {
 		$item = &$brick['loop_parameter'];
 	} else {
@@ -230,6 +227,9 @@ function brick_condition($brick) {
  */
 function brick_condition_if($if, $vars, $parameter) {
 	if ($if === 'cookie') return brick_condition_if_cookie($vars);
+	if ($if === 'lib') return is_dir(sprintf('%s/%s', wrap_setting('lib'), $vars));
+	if ($if === 'form') return wrap_static('zzform', $vars);
+
 	if (!is_array($parameter)) $parameter = [$parameter];
 	$parameter['brick_condition_if'] = true;
 	$req = brick_format('%%% '.$if.' '.$vars.' %%%', $parameter);
