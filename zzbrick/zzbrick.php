@@ -335,18 +335,9 @@ function brick_format($block, $parameter = false) {
 	
 	$fulltextformat = wrap_setting('brick_fulltextformat');
 	
-	// check if it's JSON, HTML or different
-	if (wrap_setting('send_as_json')) {
-		if (!in_array($page['content_type'], ['json', 'geojson'])) {
-			$page['content_type_original'] = $page['content_type'] ?? 'html';
-			$page['content_type'] = 'json';
-		}
-	}
 	if ($page['content_type'] AND $page['content_type'] !== 'html') {
 		// no formatting, if it's not HTML!
-		if (isset($page['content_type_original'])
-			AND $page['content_type_original'] !== 'html')
-			$fulltextformat = 'html';
+		$fulltextformat = 'html';
 		wrap_setting('brick_default_position', 'none');
 	}
 	
