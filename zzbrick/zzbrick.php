@@ -375,6 +375,23 @@ function brick_format($block, $parameter = false) {
 }
 
 /**
+ * shortcut for brick_format()
+ *
+ * @param mixed $blocks
+ * @param array $parameter
+ * @return string
+ */
+function brick($blocks, $parameter = []) {
+	if (!is_array($blocks)) $blocks = [$blocks];
+	if (is_string($parameter)) {
+		$blocks[] = 'value';
+		$parameter = ['value' => $parameter];
+	}
+	$page = brick_format('%%% '.implode(' ', $blocks).' %%%', $parameter);
+	return $page['text'];
+}
+
+/**
  * allow loop start 1, loop start 1-, loop start -2 etc.
  * to select only a subset of a loop
  *
