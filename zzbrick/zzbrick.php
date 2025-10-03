@@ -383,6 +383,15 @@ function brick_format($block, $parameter = false) {
  */
 function brick($blocks, $parameter = []) {
 	if (!is_array($blocks)) $blocks = [$blocks];
+	foreach ($blocks as $index => $block) {
+		if (is_numeric($index)) continue;
+		if (is_array($block)) {
+			unset($blocks[$index]);
+			continue;
+		}
+		$blocks[] = sprintf('%s=%s', $index, $block);
+		unset($blocks[$index]);
+	}
 	if (is_string($parameter)) {
 		$blocks[] = 'value';
 		$parameter = ['value' => $parameter];
