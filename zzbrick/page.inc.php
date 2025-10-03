@@ -32,6 +32,7 @@
  * @return array $brick
  */
 function brick_page($brick) {
+	$brick = brick_local_settings($brick);
 	if (empty($brick['vars'][0])) return $brick;
 	global $zz_page;
 	
@@ -77,7 +78,7 @@ function brick_page($brick) {
 
 	if ($request) {
 		// call function
-		$content = $request($brick['vars'], $page);
+		$content = $request($brick['vars'], $page, $brick['local_settings'] ?? []);
 		if (isset($page['media']) AND $page['media'] !== []) {
 			$brick['page']['media'] = $page['media'];
 		}
