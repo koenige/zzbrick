@@ -874,7 +874,8 @@ function brick_local_settings($brick) {
 		// if first part is inside quotes, it is not a setting
 		if (!empty($brick['in_quotes']) AND $setting === $brick['vars'][0]) continue;
 		if (strlen($setting) < 3) continue; // we need a=b at least
-		parse_str($setting, $new_settings);
+		// keep + signs! do not convert to space
+		parse_str(str_replace('+', '%2B', $setting), $new_settings);
 		foreach ($new_settings as $index => $new_setting) {
 			if (is_array($new_setting)) {
 				foreach ($new_setting as $nindex => $nnew_setting) {
