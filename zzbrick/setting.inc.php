@@ -58,6 +58,7 @@ function brick_setting($brick) {
 		// other special cases
 		switch ($brick_var) {
 		case 'charset':
+			wrap_error('Using `setting charset` is deprecated.', E_USER_DEPRECATED);
 			$content = wrap_setting('character_set');
 			break;
 		}
