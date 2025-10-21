@@ -26,8 +26,8 @@
  * 		%%% page pagetitle %%% 
  * 		%%% page lang %%% 
  * 		%%% page nav %%% 
- * 		%%% page year %%% 
- * 		%%% page last_update "<p>Page last updated at %s.</p>" %%% 
+ * 		%%% page year %%%
+ * 		%%% page subpages just_list_elements=1 %%%
  * @param array $brick
  * @return array $brick
  */
