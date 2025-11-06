@@ -53,7 +53,9 @@ function brick_setting($brick) {
 		AND array_key_exists(substr($brick_var, 7) , $zz_conf) AND !is_array($zz_conf[substr($brick_var, 7)])) {
 		$content = $zz_conf[substr($brick_var, 7)];
 	} elseif ($s = wrap_setting($brick_var)) {
-		$content = $s;
+		$cfg_file = wrap_cfg_files('settings');
+		if (!empty($cfg_file[$brick_var]['private'])) $content = '';
+		else $content = $s;
 	} else {
 		// other special cases
 		switch ($brick_var) {
