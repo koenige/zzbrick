@@ -34,7 +34,7 @@ function brick_condition($brick) {
 	static $i = 0;
 
 	$if = false;
-	$if_keywords = ['page', 'setting', 'cookie', 'path', 'lib', 'form'];
+	$if_keywords = ['page', 'setting', 'cookie', 'path', 'lib', 'form', 'server'];
 
 	if (count($brick['vars']) === 3 AND in_array($brick['vars'][1], $if_keywords))
 		$if = $brick['vars'][1];
