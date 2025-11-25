@@ -81,7 +81,6 @@ function brick_item($brick) {
 					$format = $values[$content];
 				}
 			}
-			$format = brick_translate($format);
 			$content = sprintf($format, $content);
 		}
 	} else {

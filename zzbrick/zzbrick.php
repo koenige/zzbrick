@@ -699,24 +699,6 @@ function brick_head_opengraph($tags, $page) {
 	return $meta;
 }
 
-/** 
- * check for translations in form of %{'Hello'}%
- * 
- * @param string $string
- * @return string translated string
- */
-function brick_translate($string) {
-	if (!strstr($string, "%{'")) return $string;
-	$string = preg_replace_callback(
-		"~%{'(.+?)'}%~",
-		function ($string) {
-			return wrap_text($string[1]);
-		},
-		$string
-	);
-	return $string;
-}
-
 /**
  * get filename from brick type and function
  * look in custom folder first, then in module folders

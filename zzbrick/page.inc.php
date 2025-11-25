@@ -115,7 +115,6 @@ function brick_page($brick) {
 	}
 	if (!empty($brick['vars'][0]) AND $content) {
 		// formatting to be done, there is some HTML and a value
-		$brick['vars'][0] = brick_translate($brick['vars'][0]);
 		$brick['page']['text'][$pos][] = 
 			sprintf($brick['vars'][0], $content);
 	} else {

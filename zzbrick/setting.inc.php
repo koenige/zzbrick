@@ -70,7 +70,6 @@ function brick_setting($brick) {
 			$brick['page']['text'][$pos][] = $function($content);
 		} else {
 			// formatting to be done, there is some HTML and a value
-			$brick['vars'][0] = brick_translate($brick['vars'][0]);
 			$brick['page']['text'][$pos][] = 
 				sprintf($brick['vars'][0], $content);
 		}
