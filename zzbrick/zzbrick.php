@@ -646,20 +646,20 @@ function brick_head_opengraph($tags, $page) {
 	$tags['og:description'] = $tags['og:description'] ?? $page['description'];
 
 	if (empty($tags['og:image'])) {
-		$processed = false;
+		$image = [];
 		if (function_exists('mf_media_opengraph_image') AND !wrap_setting('opengraph_use_logo')) {
 			if (!empty($tags['image'])) {
-				$tags += mf_media_opengraph_image($tags['image']);
-				$processed = true;
+				$image = mf_media_opengraph_image($tags['image']);
+				$tags += $image;
 			} elseif (wrap_setting('opengraph') AND !empty($page['media']['images_overview'])) {
-				$tags += mf_media_opengraph_image(reset($page['media']['images_overview']));
-				$processed = true;
+				$image = mf_media_opengraph_image(reset($page['media']['images_overview']));
+				$tags += $image;
 			} elseif (wrap_setting('opengraph') AND !empty($page['media']['images'])) {
-				$tags += mf_media_opengraph_image(reset($page['media']['images']));
-				$processed = true;
+				$image = mf_media_opengraph_image(reset($page['media']['images']));
+				$tags += $image;
 			}
 		}
-		if (!$processed AND wrap_setting('active_theme')) {
+		if (!$image AND wrap_setting('active_theme')) {
 		// default image: opengraph.png from theme folder
 			$filename = sprintf('%s/%s/opengraph.png', wrap_setting('themes_dir'), wrap_setting('active_theme'));
 			if (file_exists($filename)) {
