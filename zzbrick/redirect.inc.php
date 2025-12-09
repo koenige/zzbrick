@@ -8,7 +8,7 @@
  * https://www.zugzwang.org/modules/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2009-2013, 2016, 2019, 2023-2024 Gustaf Mossakowski
+ * @copyright Copyright © 2009-2013, 2016, 2019, 2023-2025 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -43,17 +43,7 @@ function brick_redirect($brick) {
 	if (brick_check_url($brick['vars'][0])) {
 		if (substr($brick['vars'][0], 0, 1) == '/') {
 			// Location needs an absolute URI
-			// HTTP_HOST must be canonical, best to do this via the webserver
-			if (!wrap_setting('host_base')) {
-				$host = $_SERVER['HTTP_HOST'];
-				// hostname may only contain ASCII letters, - and .
-				if (!preg_match('/^[a-zA-Z0-9-\.]+$/', $host)) $host = '';
-				if (!$host) $host = $_SERVER['SERVER_NAME'];
-				$base = (!empty($_SERVER['HTTPS']) ? 'https' : 'http').'://'.$host;
-			} else {
-				$base = wrap_setting('host_base');
-			}
-			$base .= wrap_setting('base');
+			$base = wrap_setting('host_base').wrap_setting('base');
 			$brick['vars'][0] = $base.$brick['vars'][0];
 		}
 		if (function_exists('wrap_redirect')) {
