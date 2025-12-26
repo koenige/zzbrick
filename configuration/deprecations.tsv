@@ -15,5 +15,6 @@
 #: Identifier	Search Text	Message	Exclude Pattern
 # exclude_pattern: files matching this pattern will be excluded from results (multiple patterns separated by semicolon)
 #
+2025-10-15-1	setting charset	use `setting character_set` instead	zzbrick/setting.inc.php
 2025-11-25-1	%{'	use %%% text "Some text" item %%% instead	
 
