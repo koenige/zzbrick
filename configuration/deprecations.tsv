@@ -19,6 +19,6 @@
 2024-12-24-2	code	brick_page_shortcuts	use `brick_shortcuts`	zzbrick/configuration/settings.cfg
 2024-12-24-3	code	%%% condition	use `%%% if`, `%%% endif` etc.	zzbrick/zzbrick/condition.inc.php
 2025-10-03-1	code_regex	%%% page \w+ "	use `if page` instead and enter HTML directly
-2025-10-16-1	code_regex	<script src="%%% setting behaviour_path %%%[a-z0-9/\.]+"></script>	use %%% script package/file.js %%%
+2025-10-16-1	code_regex	<script src="%%% setting behaviour_path %%%[a-z0-9/.-]+"></script>	use %%% script package/file.js %%%
 2025-10-15-1	code	setting charset	use `setting character_set` instead	zzbrick/setting.inc.php
 2025-11-25-1	code	%{'	use %%% text "Some text" item %%% instead	
