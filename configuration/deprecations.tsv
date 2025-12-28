@@ -12,9 +12,9 @@
 # @copyright Copyright © 2025 Gustaf Mossakowski
 # @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
 #
-#: Identifier	Search Text	Message	Exclude Pattern
+#: Identifier	Type	Search Text	Message	Exclude Pattern
 # exclude_pattern: files matching this pattern will be excluded from results (multiple patterns separated by semicolon)
 #
-2025-10-15-1	setting charset	use `setting character_set` instead	zzbrick/setting.inc.php
-2025-11-25-1	%{'	use %%% text "Some text" item %%% instead	
-
+2025-10-03-1	code_regex	/%%% page \w+ "/	use `if page` instead and enter HTML directly
+2025-10-15-1	code	setting charset	use `setting character_set` instead	zzbrick/setting.inc.php
+2025-11-25-1	code	%{'	use %%% text "Some text" item %%% instead	
