@@ -8,7 +8,7 @@
  * https://www.zugzwang.org/modules/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2009-2016, 2019, 2021-2025 Gustaf Mossakowski
+ * @copyright Copyright © 2009-2016, 2019, 2021-2026 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -34,7 +34,9 @@ function brick_condition($brick) {
 	static $i = 0;
 
 	$if = false;
-	$if_keywords = ['page', 'setting', 'cookie', 'path', 'lib', 'form', 'server'];
+	$if_keywords = [
+		'page', 'setting', 'cookie', 'path', 'lib', 'form', 'server', 'template'
+	];
 
 	if (count($brick['vars']) === 3 AND in_array($brick['vars'][1], $if_keywords))
 		$if = $brick['vars'][1];
@@ -229,6 +231,7 @@ function brick_condition_if($if, $vars, $parameter) {
 	if ($if === 'cookie') return brick_condition_if_cookie($vars);
 	if ($if === 'lib') return is_dir(sprintf('%s/%s', wrap_setting('lib'), $vars));
 	if ($if === 'form') return wrap_static('zzform', $vars);
+	if ($if === 'template') return wrap_template_file($vars, false);
 
 	if (!is_array($parameter)) $parameter = [$parameter];
 	$parameter['brick_condition_if'] = true;
