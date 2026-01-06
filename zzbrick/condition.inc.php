@@ -60,7 +60,8 @@ function brick_condition($brick) {
 	$content = false;
 	if ($if) {
 		array_shift($brick['vars']);
-		$item[$brick['vars'][0]] = brick_condition_if($if, $brick['vars'][0], $brick['parameter']);
+		$key = str_replace('-', '_', $brick['vars'][0]);
+		$item[$key] = brick_condition_if($if, $brick['vars'][0], $brick['parameter']);
 	} elseif (!empty($brick['loop_parameter'])) {
 		$item = &$brick['loop_parameter'];
 	} else {
@@ -81,7 +82,8 @@ function brick_condition($brick) {
 				$var = explode(' ', $var);
 				if (count($var) === 2) {
 					if (in_array($var[0], $if_keywords)) {
-						$item[$var[1]] = brick_condition_if($var[0], $var[1], $brick['parameter']);
+						$key = str_replace('-', '_', $var[1]);
+						$item[$key] = brick_condition_if($var[0], $var[1], $brick['parameter']);
 						$brick_vars[] = $var[1];
 					} else {
 						$brick_vars = [];
