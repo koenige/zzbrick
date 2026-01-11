@@ -232,7 +232,7 @@ function brick_condition($brick) {
 function brick_condition_if($if, $vars, $parameter) {
 	if ($if === 'cookie') return brick_condition_if_cookie($vars);
 	if ($if === 'lib') return is_dir(sprintf('%s/%s', wrap_setting('lib'), $vars));
-	if ($if === 'form') return wrap_static('zzform', $vars);
+	if ($if === 'form') return wrap_static('zzform_output', $vars);
 	if ($if === 'template') return wrap_template_file($vars, false);
 
 	if (!is_array($parameter)) $parameter = [$parameter];
