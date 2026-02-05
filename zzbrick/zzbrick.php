@@ -69,7 +69,7 @@
  * https://www.zugzwang.org/modules/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2009-2025 Gustaf Mossakowski
+ * @copyright Copyright © 2009-2026 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -833,6 +833,7 @@ function brick_local_settings($brick) {
 	// get settings out of parameters
 	$brick['local_settings'] = [];
 	if (!array_key_exists('vars', $brick)) return $brick;
+	if (!empty($brick['in_quotes'])) return $brick;
 	$url_settings = array_reverse($brick['vars']);
 	$append = [];
 	foreach ($url_settings as $setting) {
