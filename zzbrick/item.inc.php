@@ -8,7 +8,7 @@
  * https://www.zugzwang.org/modules/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2009-2010, 2019-2025 Gustaf Mossakowski
+ * @copyright Copyright © 2009-2010, 2019-2026 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -24,6 +24,7 @@
  * settings: -
  * examples: 
  * 		%%% item output %%% 
+ * 		%%% item output format=markdown %%% 
  * 		%%% item pagetitle %%% 
  * 		%%% item comments "%s comments" %%% 
  * 		%%% item comments "%s comments" | "string if empty" %%% 
@@ -32,6 +33,7 @@
  * @return array $brick
  */
 function brick_item($brick) {
+	$brick = brick_local_settings($brick);
 	if (empty($brick['vars'][0])) return false;
 
 	if (!empty($brick['loop_parameter'])) {
@@ -50,19 +52,23 @@ function brick_item($brick) {
 		// we have it in $item, so return this.
 		$content = $item[$brick_var];
 	}
-	if (!empty($brick['vars'][0]) AND ($content OR $content === 0 OR $content === '0')) {
+	if ((!empty($brick['vars'][0]) OR !empty($brick['local_settings']['format']))
+		AND ($content OR $content === 0 OR $content === '0')) {
 		// first variable might be formatting function
-		if ($format_function = brick_format_function($brick['vars'][0])) {
-			array_shift($brick['vars']);
-			if (function_exists($format_function)) {
-				// check against percents with space to avoid replacements in URLs
-				// there, space is either + or %20
-				if (!is_array($content) AND strstr($content, '%%% ') AND !wrap_setting('brick_no_format_inside')) {
-					$content = brick_format($content);
-					$content = $content['text'];
-				}
-				$content = $format_function($content);
+		if (!empty($brick['local_settings']['format'])) {
+			$format_function = brick_format_function($brick['local_settings']['format']);
+		} else {
+			$format_function = brick_format_function($brick['vars'][0]);
+			if ($format_function) array_shift($brick['vars']);
+		}
+		if ($format_function AND function_exists($format_function)) {
+			// check against percents with space to avoid replacements in URLs
+			// there, space is either + or %20
+			if (!is_array($content) AND strstr($content, '%%% ') AND !wrap_setting('brick_no_format_inside')) {
+				$content = brick_format($content);
+				$content = $content['text'];
 			}
+			$content = $format_function($content);
 		}
 		if (!empty($brick['vars'])) {
 			// formatting to be done, there is some HTML and a value
