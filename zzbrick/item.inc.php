@@ -89,21 +89,19 @@ function brick_item($brick) {
 			}
 			$content = sprintf($format, $content);
 		}
-	} else {
+	} elseif (count($brick['vars']) === 3 AND $brick['vars'][1] === '|') {
 		// allow for (OR)
-		if (count($brick['vars']) === 3 AND $brick['vars'][1] === '|') {
-			if ($content) {
-				// condition is true, choose first value (= nothing)
-				$content = '';
-			} else {
-				// condition is false, choose last value
-				$content = $brick['vars'][2];
-			}
+		if ($content) {
+			// condition is true, choose first value (= nothing)
+			$content = '';
 		} else {
-			// no formatting or no value
-			// just check: can be empty array if array functions are used but there is no value
-			if (is_array($content)) $content = implode('', $content);
+			// condition is false, choose last value
+			$content = $brick['vars'][2];
 		}
+	} else {
+		// no formatting or no value
+		// just check: can be empty array if array functions are used but there is no value
+		if (is_array($content)) $content = implode('', $content);
 	}
 	$brick['page']['text'][$pos][] = $content;
 	return $brick;
