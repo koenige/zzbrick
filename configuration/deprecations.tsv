@@ -24,4 +24,4 @@
 2025-11-25-1	code	%{'	use %%% text "Some text" item %%% instead
 2026-02-05-1	code_regex	%%% item \w+ wrap_text 	use `%%% translate item instead`
 2026-02-05-2	code_regex	%%% item \w+ wrap_[a-z0-9_]+ 	use format=… (without wrap prefix)
-2026-02-05-3	code_regex	%%% item \w+ [a-z0-9_]+\s	use format=…
+2026-02-05-3	code_regex	%%% item \w+ [a-z0-9_]+\s	use format=…	zzform/templates/zzform-list-filter.template.txt
