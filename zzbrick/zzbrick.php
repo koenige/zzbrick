@@ -1247,20 +1247,13 @@ function brick_merge_page_bricks($page, $content) {
  */
 function brick_format_function($token) {
 	if (!in_array($token, wrap_setting('brick_formatting_functions'))) return '';
-	return brick_format_function_prefix($token);
-}
-
-/**
- * add function prefix for brick_formatting_functions
- *
- * @param string $function
- * @return string
- */
-function brick_format_function_prefix($function) {
+	
 	$formatting_functions_prefix = wrap_setting('brick_formatting_functions_prefix');
-	if ($formatting_functions_prefix AND array_key_exists($function, $formatting_functions_prefix))
-		$function = $formatting_functions_prefix[$function].'_'.$function;
-	return $function;
+	if ($formatting_functions_prefix AND array_key_exists($token, $formatting_functions_prefix))
+		$token = $formatting_functions_prefix[$token].'_'.$token;
+	
+	if (!function_exists($token)) return '';
+	return $token;
 }
 
 /**
