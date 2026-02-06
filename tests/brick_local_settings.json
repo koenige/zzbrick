@@ -3,10 +3,12 @@
 	"data": [
 		{
 			"brick": {
-				"vars": ["title=Files", "publish=0"]
+				"vars": ["title=Files", "publish=0"],
+				"quoted_indices": []
 			},
 			"expected": {
 				"vars": [],
+				"quoted_indices": [],
 				"local_settings": {
 					"title": "Files",
 					"publish": "0"
@@ -15,10 +17,12 @@
 		},
 		{
 			"brick": {
-				"vars": ["item", "test", "key=\"some value in quotes\""]
+				"vars": ["item", "test", "key=\"some value in quotes\""],
+				"quoted_indices": []
 			},
 			"expected": {
 				"vars": ["item", "test"],
+				"quoted_indices": [],
 				"local_settings": {
 					"key": "some value in quotes"
 				}
@@ -26,10 +30,12 @@
 		},
 		{
 			"brick": {
-				"vars": ["path", "title=\"Multiple Words Here\"", "status=active"]
+				"vars": ["path", "title=\"Multiple Words Here\"", "status=active"],
+				"quoted_indices": []
 			},
 			"expected": {
 				"vars": ["path"],
+				"quoted_indices": [],
 				"local_settings": {
 					"title": "Multiple Words Here",
 					"status": "active"
@@ -38,10 +44,12 @@
 		},
 		{
 			"brick": {
-				"vars": ["tags=[tag1,tag2,tag3]", "count=5"]
+				"vars": ["tags=[tag1,tag2,tag3]", "count=5"],
+				"quoted_indices": []
 			},
 			"expected": {
 				"vars": [],
+				"quoted_indices": [],
 				"local_settings": {
 					"tags": ["tag1", "tag2", "tag3"],
 					"count": "5"
@@ -50,10 +58,12 @@
 		},
 		{
 			"brick": {
-				"vars": ["options[color]=blue", "options[size]=large", "name=test"]
+				"vars": ["options[color]=blue", "options[size]=large", "name=test"],
+				"quoted_indices": []
 			},
 			"expected": {
 				"vars": [],
+				"quoted_indices": [],
 				"local_settings": {
 					"options": {
 						"color": "blue",
@@ -65,24 +75,28 @@
 		},
 		{
 			"brick": {
-				"vars": ["items[0]=[a,b,c]", "items[1]=[x,y,z]"]
+				"vars": ["items[0]=[a,b,c]", "items[1]=[x,y,z]"],
+				"quoted_indices": []
 			},
 			"expected": {
 				"vars": [],
+				"quoted_indices": [],
 				"local_settings": {
-					"items": {
-						"0": ["a", "b", "c"],
-						"1": ["x", "y", "z"]
-					}
+					"items": [
+						["a", "b", "c"],
+						["x", "y", "z"]
+					]
 				}
 			}
 		},
 		{
 			"brick": {
-				"vars": ["first=1", "second=2", "third=3", "fourth=4"]
+				"vars": ["first=1", "second=2", "third=3", "fourth=4"],
+				"quoted_indices": []
 			},
 			"expected": {
 				"vars": [],
+				"quoted_indices": [],
 				"local_settings": {
 					"first": "1",
 					"second": "2",
@@ -93,10 +107,12 @@
 		},
 		{
 			"brick": {
-				"vars": ["table", "media", "title=Files", "publish=0", "type=image"]
+				"vars": ["table", "media", "title=Files", "publish=0", "type=image"],
+				"quoted_indices": []
 			},
 			"expected": {
 				"vars": ["table", "media"],
+				"quoted_indices": [],
 				"local_settings": {
 					"title": "Files",
 					"publish": "0",
@@ -106,10 +122,12 @@
 		},
 		{
 			"brick": {
-				"vars": ["url+encoding=test%2Bvalue"]
+				"vars": ["url+encoding=test%2Bvalue"],
+				"quoted_indices": []
 			},
 			"expected": {
 				"vars": [],
+				"quoted_indices": [],
 				"local_settings": {
 					"url+encoding": "test+value"
 				}
@@ -117,10 +135,12 @@
 		},
 		{
 			"brick": {
-				"vars": ["description=\"This is a longer description with multiple words\""]
+				"vars": ["description=\"This is a longer description with multiple words\""],
+				"quoted_indices": []
 			},
 			"expected": {
 				"vars": [],
+				"quoted_indices": [],
 				"local_settings": {
 					"description": "This is a longer description with multiple words"
 				}
@@ -129,20 +149,69 @@
 		{
 			"brick": {
 				"vars": [],
-				"in_quotes": true
+				"in_quotes": true,
+				"quoted_indices": []
 			},
 			"expected": {
 				"vars": [],
 				"in_quotes": true,
+				"quoted_indices": [],
 				"local_settings": []
 			}
 		},
 		{
 			"brick": {
-				"vars": ["no_equals", "just", "words"]
+				"vars": ["no_equals", "just", "words"],
+				"quoted_indices": []
 			},
 			"expected": {
 				"vars": ["no_equals", "just", "words"],
+				"quoted_indices": [],
+				"local_settings": []
+			}
+		},
+		{
+			"brick": {
+				"vars": ["item", "class", " class='%s'"],
+				"in_quotes": true,
+				"quoted_indices": {
+					"2": true
+				}
+			},
+			"expected": {
+				"vars": ["item", "class", " class='%s'"],
+				"in_quotes": true,
+				"quoted_indices": {
+					"2": true
+				},
+				"local_settings": []
+			}
+		},
+		{
+			"brick": {
+				"vars": ["item", "class", "class=\"%s\""],
+				"quoted_indices": []
+			},
+			"expected": {
+				"vars": ["item", "class"],
+				"quoted_indices": [],
+				"local_settings": {
+					"class": "%s"
+				}
+			}
+		},
+		{
+			"brick": {
+				"vars": ["item", "id", " id='%s'"],
+				"quoted_indices": {
+					"2": true
+				}
+			},
+			"expected": {
+				"vars": ["item", "id", " id='%s'"],
+				"quoted_indices": {
+					"2": true
+				},
 				"local_settings": []
 			}
 		}
@@ -159,6 +228,9 @@
 		"Plus sign encoding (+ should be preserved)",
 		"Multi-word quoted value split across array elements",
 		"Empty vars with in_quotes flag",
-		"Vars without equals signs (no settings to extract)"
+		"Vars without equals signs (no settings to extract)",
+		"Quoted string with = inside should not be treated as setting",
+		"Key-value pair with quoted value should be extracted as setting",
+		"Id formatting in Menu template"
 	]
 }

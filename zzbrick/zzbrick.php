@@ -172,6 +172,8 @@ function brick_format($block, $parameter = false) {
 							// uneven index values: %%%-blocks
 			$brick = array_merge($brick, brick_get_variables($block));
 			$brick['type'] = array_shift($brick['vars']);
+			// adjust quoted_indices after shifting vars
+			$brick['quoted_indices'] = brick_shift_quoted_indices($brick['quoted_indices'] ?? []);
 			$brick['type'] = trim($brick['type']);
 			if ($brick['type'] === 'loop') {
 				// loop means repeat a part of the block as long as there are still
@@ -427,6 +429,24 @@ function brick_loop_range(&$vars, $params) {
 }
 
 /**
+ * Adjust quoted_indices after array_shift on vars array
+ * 
+ * @param array $quoted_indices
+ * @return array adjusted indices (all decremented by 1)
+ */
+function brick_shift_quoted_indices($quoted_indices) {
+	if (empty($quoted_indices)) return [];
+	
+	$new_quoted_indices = [];
+	foreach ($quoted_indices as $old_index => $value) {
+		if ($old_index > 0) {
+			$new_quoted_indices[$old_index - 1] = $value;
+		}
+	}
+	return $new_quoted_indices;
+}
+
+/**
  * Transforms string into array of variables
  * 
  * Example: request news "John Doe" => 'request', 'news', 'John Doe'
@@ -441,11 +461,12 @@ function brick_get_variables($block) {
 		$variables = explode("\n", $block);
 		$variables = array_map('trim', $variables);
 		$variables = array_filter($variables); // remove empty lines
-		return ['vars' => array_values($variables), 'in_quotes' => false];
+		return ['vars' => array_values($variables), 'in_quotes' => false, 'quoted_indices' => []];
 	}
 	
 	// Parse character by character using state machine
 	$variables = [];
+	$quoted_indices = []; // track which tokens were quoted
 	$current_token = '';
 	$in_quotes = false;
 	$in_value_quotes = false; // for key="value with spaces"
@@ -490,7 +511,9 @@ function brick_get_variables($block) {
 			} elseif ($in_quotes) {
 				// Ending a standalone quoted string
 				// Add token even if empty (to handle "")
-				$variables[] = $current_token;
+				$index = count($variables);
+				$variables[$index] = $current_token;
+				$quoted_indices[$index] = true; // mark this index as quoted
 				$current_token = '';
 				$in_quotes = false;
 			} elseif ($in_value_quotes) {
@@ -519,7 +542,11 @@ function brick_get_variables($block) {
 		$variables[] = $current_token;
 	}
 	
-	return ['vars' => $variables, 'in_quotes' => $has_quoted_vars];
+	return [
+		'vars' => $variables,
+		'in_quotes' => $has_quoted_vars,
+		'quoted_indices' => $quoted_indices
+	];
 }
 
 /**
@@ -885,17 +912,15 @@ function brick_local_settings($brick) {
 	// get settings out of parameters
 	$brick['local_settings'] = [];
 	if (!array_key_exists('vars', $brick)) return $brick;
-	// @todo think about how to add support for combination of in_quotes and settings
-	// currently not possible because " id='%s'" template would be interpreted as setting
-	// maybe use template=" id='%s'" for that or format=
-	if (!empty($brick['in_quotes'])) return $brick;
-
 	foreach ($brick['vars'] as $key => $setting) {
 		// '=' is not an allowed symbol for a folder identifier
 		if (!strstr($setting, '=')) continue;
 		// if first part is inside quotes, it is not a setting
 		if (!empty($brick['in_quotes']) AND $setting === $brick['vars'][0]) continue;
 		if (strlen($setting) < 3) continue; // we need a=b at least
+		// check if this token was originally quoted (e.g. "key=value")
+		// quoted tokens are not settings, even if they contain =
+		if (!empty($brick['quoted_indices'][$key])) continue;
 		
 		// keep + signs! do not convert to space
 		parse_str(str_replace('+', '%2B', $setting), $new_settings);
