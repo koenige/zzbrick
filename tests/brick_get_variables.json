@@ -1,0 +1,137 @@
+{
+	"variables": ["block"],
+	"data": [
+		{
+			"block": "foo bar baz",
+			"expected": {
+				"vars": ["foo", "bar", "baz"],
+				"in_quotes": false
+			}
+		},
+		{
+			"block": "foo \"bar baz\" qux",
+			"expected": {
+				"vars": ["foo", "bar baz", "qux"],
+				"in_quotes": true
+			}
+		},
+		{
+			"block": "test=\"this is one token\"",
+			"expected": {
+				"vars": ["test=\"this is one token\""],
+				"in_quotes": false
+			}
+		},
+		{
+			"block": "foo=\"bar\" baz=\"qux test\" hello",
+			"expected": {
+				"vars": ["foo=\"bar\"", "baz=\"qux test\"", "hello"],
+				"in_quotes": false
+			}
+		},
+		{
+			"block": "regular \"quoted string\" key=\"value here\" another",
+			"expected": {
+				"vars": ["regular", "quoted string", "key=\"value here\"", "another"],
+				"in_quotes": true
+			}
+		},
+		{
+			"block": "\"test \\\"quote\\\"\"",
+			"expected": {
+				"vars": ["test \"quote\""],
+				"in_quotes": true
+			}
+		},
+		{
+			"block": "key=\"value with \\\"quotes\\\"\"",
+			"expected": {
+				"vars": ["key=\"value with \\\"quotes\\\"\""],
+				"in_quotes": false
+			}
+		},
+		{
+			"block": "foo    bar     baz",
+			"expected": {
+				"vars": ["foo", "bar", "baz"],
+				"in_quotes": false
+			}
+		},
+		{
+			"block": "single",
+			"expected": {
+				"vars": ["single"],
+				"in_quotes": false
+			}
+		},
+		{
+			"block": "\"single token\"",
+			"expected": {
+				"vars": ["single token"],
+				"in_quotes": true
+			}
+		},
+		{
+			"block": "foo \"\" bar",
+			"expected": {
+				"vars": ["foo", "", "bar"],
+				"in_quotes": true
+			}
+		},
+		{
+			"block": "line1\nline2\nline3",
+			"expected": {
+				"vars": ["line1", "line2", "line3"],
+				"in_quotes": false
+			}
+		},
+		{
+			"block": "action=\"forms contacts\" mode=\"edit\" id=\"123\" title=\"My Contact Form\"",
+			"expected": {
+				"vars": ["action=\"forms contacts\"", "mode=\"edit\"", "id=\"123\"", "title=\"My Contact Form\""],
+				"in_quotes": false
+			}
+		},
+		{
+			"block": "  foo bar baz  ",
+			"expected": {
+				"vars": ["foo", "bar", "baz"],
+				"in_quotes": false
+			}
+		},
+		{
+			"block": "foo\tbar\tbaz",
+			"expected": {
+				"vars": ["foo", "bar", "baz"],
+				"in_quotes": false
+			}
+		},
+		{
+			"block": "item id \" id='%s'\"",
+			"expected": {
+				"vars": ["item", "id", " id='%s'"],
+				"in_quotes": true
+			}
+		}
+
+
+	],
+	"legends": [
+		"Simple space-separated tokens",
+		"Standalone quoted string",
+		"Key-value pair with quoted value (single token)",
+		"Multiple key-value pairs with quoted values",
+		"Mixed: regular, quoted, and key-value",
+		"Escaped quotes inside quoted string",
+		"Escaped quotes inside key-value",
+		"Multiple spaces between tokens",
+		"Single token",
+		"Single quoted token",
+		"Empty quoted string",
+		"Newline separated (fallback behavior)",
+		"Complex real-world example",
+		"Leading and trailing whitespace",
+		"Tab separated",
+		"Leading space in quotes"
+	]
+}

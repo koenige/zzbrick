@@ -435,39 +435,91 @@ function brick_loop_range(&$vars, $params) {
  */
 function brick_get_variables($block) {
 	$block = trim($block); // allow whitespace around '%%%'
-	$block = str_replace('  ', ' ', $block); // allow lax definition
-	$variables = explode("\n", $block); // separated by newline
-	$in_quotes = false;
-	if (count($variables) === 1) {
-		$variables = explode(" ", $block); // or by space
-		// put variables with spaces, but enclosed in "" back together
-		unset($paste);
-		foreach ($variables as $index => $var) {
-			if (!isset($paste) AND substr($var, 0, 1) === '"'
-				AND substr($var, -1) === '"'
-				AND strlen($var) > 1) {
-				// beginning and ending with "
-				$var = substr($var, 1, -1);
-				$variables[$index] = $var;
-				$in_quotes = true;
-			} elseif (!isset($paste) AND substr($var, 0, 1) === '"') {
-				// beginning with "
-				$paste = substr($var, 1);
-				unset($variables[$index]);
-				$in_quotes = true;
-			} elseif (isset($paste) AND substr($var, -1) === '"') {
-				// ending with "
-				$variables[$index] = $paste.' '.substr($variables[$index], 0, -1);
-				unset($paste);
-			} elseif (isset($paste)) {
-				$paste .= ' '.$var;
-				unset($variables[$index]);
-			}
-		}
+	
+	// Check if separated by newlines
+	if (strpos($block, "\n") !== false) {
+		$variables = explode("\n", $block);
+		$variables = array_map('trim', $variables);
+		$variables = array_filter($variables); // remove empty lines
+		return ['vars' => array_values($variables), 'in_quotes' => false];
 	}
-	// get keys without gaps
-	$variables = array_values($variables);
-	return ['vars' => $variables, 'in_quotes' => $in_quotes];
+	
+	// Parse character by character using state machine
+	$variables = [];
+	$current_token = '';
+	$in_quotes = false;
+	$in_value_quotes = false; // for key="value with spaces"
+	$escaped = false;
+	$has_quoted_vars = false;
+	$length = strlen($block);
+	
+	for ($i = 0; $i < $length; $i++) {
+		$char = $block[$i];
+		
+		// Handle escape sequences
+		if ($escaped) {
+			// In value quotes (key="..."), preserve the backslash for escaped quotes
+			if ($in_value_quotes && $char === '"') {
+				$current_token .= '\\' . $char;
+			} else {
+				$current_token .= $char;
+			}
+			$escaped = false;
+			continue;
+		}
+		
+		if ($char === '\\') {
+			$escaped = true;
+			continue;
+		}
+		
+		// Handle quotes
+		if ($char === '"') {
+			if (!$in_quotes && !$in_value_quotes) {
+				// Starting a quoted section
+				// Check if this is a value quote (after =)
+				if (strlen($current_token) > 0 && substr($current_token, -1) === '=') {
+					// This is key="value" format, keep the quote and mark state
+					$current_token .= $char;
+					$in_value_quotes = true;
+				} else {
+					// This is a standalone quoted string, don't include quote in result
+					$in_quotes = true;
+					$has_quoted_vars = true;
+				}
+			} elseif ($in_quotes) {
+				// Ending a standalone quoted string
+				// Add token even if empty (to handle "")
+				$variables[] = $current_token;
+				$current_token = '';
+				$in_quotes = false;
+			} elseif ($in_value_quotes) {
+				// Ending a value quote in key="value"
+				$current_token .= $char;
+				$in_value_quotes = false;
+			}
+			continue;
+		}
+		
+		// Handle whitespace (separators when not in quotes)
+		if (($char === ' ' || $char === "\t") && !$in_quotes && !$in_value_quotes) {
+			if (strlen($current_token) > 0) {
+				$variables[] = $current_token;
+				$current_token = '';
+			}
+			continue;
+		}
+		
+		// Regular character
+		$current_token .= $char;
+	}
+	
+	// Add final token if any
+	if (strlen($current_token) > 0) {
+		$variables[] = $current_token;
+	}
+	
+	return ['vars' => $variables, 'in_quotes' => $has_quoted_vars];
 }
 
 /**
@@ -833,30 +885,18 @@ function brick_local_settings($brick) {
 	// get settings out of parameters
 	$brick['local_settings'] = [];
 	if (!array_key_exists('vars', $brick)) return $brick;
+	// @todo think about how to add support for combination of in_quotes and settings
+	// currently not possible because " id='%s'" template would be interpreted as setting
+	// maybe use template=" id='%s'" for that or format=
 	if (!empty($brick['in_quotes'])) return $brick;
-	$url_settings = array_reverse($brick['vars']);
-	$append = [];
-	foreach ($url_settings as $setting) {
-		// allow settings in quotation marks, but don’t do anything if there is
-		// no =" finally
-		if ($append) {
-			$append[] = $setting;
-			if (!strstr($setting, '="')) continue;
-			$append = array_reverse($append);
-			$setting = implode('%20', $append);
-			// ok, we found something, so now we can remove the variables
-			for ($i = 0; $i < count($append); $i++)
-				array_pop($brick['vars']);
-			$append = [];
-		} elseif (str_ends_with($setting, '"')) {
-			$append[] = $setting;
-			continue;
-		}
+
+	foreach ($brick['vars'] as $key => $setting) {
 		// '=' is not an allowed symbol for a folder identifier
 		if (!strstr($setting, '=')) continue;
 		// if first part is inside quotes, it is not a setting
 		if (!empty($brick['in_quotes']) AND $setting === $brick['vars'][0]) continue;
 		if (strlen($setting) < 3) continue; // we need a=b at least
+		
 		// keep + signs! do not convert to space
 		parse_str(str_replace('+', '%2B', $setting), $new_settings);
 		foreach ($new_settings as $index => $new_setting) {
@@ -876,8 +916,7 @@ function brick_local_settings($brick) {
 		}
 		if ($new_settings)
 			$brick['local_settings'] = array_merge_recursive($brick['local_settings'], $new_settings);
-		$key = array_search($setting, $brick['vars']);
-		if ($key !== false) unset($brick['vars'][$key]);
+		unset($brick['vars'][$key]);
 	}
 	return $brick;
 }

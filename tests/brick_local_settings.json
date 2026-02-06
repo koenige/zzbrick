@@ -1,0 +1,164 @@
+{
+	"variables": ["brick"],
+	"data": [
+		{
+			"brick": {
+				"vars": ["title=Files", "publish=0"]
+			},
+			"expected": {
+				"vars": [],
+				"local_settings": {
+					"title": "Files",
+					"publish": "0"
+				}
+			}
+		},
+		{
+			"brick": {
+				"vars": ["item", "test", "key=\"some value in quotes\""]
+			},
+			"expected": {
+				"vars": ["item", "test"],
+				"local_settings": {
+					"key": "some value in quotes"
+				}
+			}
+		},
+		{
+			"brick": {
+				"vars": ["path", "title=\"Multiple Words Here\"", "status=active"]
+			},
+			"expected": {
+				"vars": ["path"],
+				"local_settings": {
+					"title": "Multiple Words Here",
+					"status": "active"
+				}
+			}
+		},
+		{
+			"brick": {
+				"vars": ["tags=[tag1,tag2,tag3]", "count=5"]
+			},
+			"expected": {
+				"vars": [],
+				"local_settings": {
+					"tags": ["tag1", "tag2", "tag3"],
+					"count": "5"
+				}
+			}
+		},
+		{
+			"brick": {
+				"vars": ["options[color]=blue", "options[size]=large", "name=test"]
+			},
+			"expected": {
+				"vars": [],
+				"local_settings": {
+					"options": {
+						"color": "blue",
+						"size": "large"
+					},
+					"name": "test"
+				}
+			}
+		},
+		{
+			"brick": {
+				"vars": ["items[0]=[a,b,c]", "items[1]=[x,y,z]"]
+			},
+			"expected": {
+				"vars": [],
+				"local_settings": {
+					"items": {
+						"0": ["a", "b", "c"],
+						"1": ["x", "y", "z"]
+					}
+				}
+			}
+		},
+		{
+			"brick": {
+				"vars": ["first=1", "second=2", "third=3", "fourth=4"]
+			},
+			"expected": {
+				"vars": [],
+				"local_settings": {
+					"first": "1",
+					"second": "2",
+					"third": "3",
+					"fourth": "4"
+				}
+			}
+		},
+		{
+			"brick": {
+				"vars": ["table", "media", "title=Files", "publish=0", "type=image"]
+			},
+			"expected": {
+				"vars": ["table", "media"],
+				"local_settings": {
+					"title": "Files",
+					"publish": "0",
+					"type": "image"
+				}
+			}
+		},
+		{
+			"brick": {
+				"vars": ["url+encoding=test%2Bvalue"]
+			},
+			"expected": {
+				"vars": [],
+				"local_settings": {
+					"url+encoding": "test+value"
+				}
+			}
+		},
+		{
+			"brick": {
+				"vars": ["description=\"This is a longer description with multiple words\""]
+			},
+			"expected": {
+				"vars": [],
+				"local_settings": {
+					"description": "This is a longer description with multiple words"
+				}
+			}
+		},
+		{
+			"brick": {
+				"vars": [],
+				"in_quotes": true
+			},
+			"expected": {
+				"vars": [],
+				"in_quotes": true,
+				"local_settings": []
+			}
+		},
+		{
+			"brick": {
+				"vars": ["no_equals", "just", "words"]
+			},
+			"expected": {
+				"vars": ["no_equals", "just", "words"],
+				"local_settings": []
+			}
+		}
+	],
+	"legends": [
+		"Simple key=value settings",
+		"Quoted value with spaces (backward scanning)",
+		"Mixed quoted and unquoted settings",
+		"Array values using [item1,item2]",
+		"Multidimensional array with named indices",
+		"Multidimensional array with array values",
+		"Testing order preservation (4 settings)",
+		"Real-world example: forms table media * title=Files publish=0 type=image",
+		"Plus sign encoding (+ should be preserved)",
+		"Multi-word quoted value split across array elements",
+		"Empty vars with in_quotes flag",
+		"Vars without equals signs (no settings to extract)"
+	]
+}
