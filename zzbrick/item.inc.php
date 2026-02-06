@@ -54,22 +54,7 @@ function brick_item($brick) {
 	}
 	if ((!empty($brick['vars'][0]) OR !empty($brick['local_settings']['format']))
 		AND ($content OR $content === 0 OR $content === '0')) {
-		// first variable might be formatting function
-		if (!empty($brick['local_settings']['format'])) {
-			$format_function = brick_format_function($brick['local_settings']['format']);
-		} else {
-			$format_function = brick_format_function($brick['vars'][0]);
-			if ($format_function) array_shift($brick['vars']);
-		}
-		if ($format_function AND function_exists($format_function)) {
-			// check against percents with space to avoid replacements in URLs
-			// there, space is either + or %20
-			if (!is_array($content) AND strstr($content, '%%% ') AND !wrap_setting('brick_no_format_inside')) {
-				$content = brick_format($content);
-				$content = $content['text'];
-			}
-			$content = $format_function($content);
-		}
+		$content = brick_item_format($brick, $content);
 		if (!empty($brick['vars'])) {
 			// formatting to be done, there is some HTML and a value
 			$template = array_shift($brick['vars']);
@@ -91,6 +76,34 @@ function brick_item($brick) {
 	}
 	$brick['page']['text'][$pos][] = $content;
 	return $brick;
+}
+
+/**
+ * applies format function to content
+ *
+ * @param array $brick brick array (passed by reference to modify vars)
+ * @param string|array $content content to format
+ * @return string formatted content
+ */
+function brick_item_format(&$brick, $content) {
+	if (!empty($brick['local_settings']['format'])) {
+		$format_function = brick_format_function($brick['local_settings']['format']);
+	} else {
+		// @deprecated first variable might be formatting function
+		$format_function = brick_format_function($brick['vars'][0]);
+		if ($format_function) array_shift($brick['vars']);
+	}
+	if (!$format_function) return $content;
+	if (!function_exists($format_function)) return $content;
+
+	// check against percents with space to avoid replacements in URLs
+	// there, space is either + or %20
+	if (!is_array($content) AND strstr($content, '%%% ') AND !wrap_setting('brick_no_format_inside')) {
+		$content = brick_format($content);
+		$content = $content['text'];
+	}
+	$content = $format_function($content);
+	return $content;
 }
 
 /**
