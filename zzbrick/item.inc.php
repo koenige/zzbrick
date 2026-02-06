@@ -72,22 +72,8 @@ function brick_item($brick) {
 		}
 		if (!empty($brick['vars'])) {
 			// formatting to be done, there is some HTML and a value
-			$format = array_shift($brick['vars']);
-			if (!empty($brick['vars'])) {
-				// there are special settings for individual values
-				$key = false;
-				foreach ($brick['vars'] as $var) {
-					if ($key === false) $key = $var;
-					else {
-						$values[$key] = $var;
-						$key = false;
-					}
-				}
-				if (!empty($values) AND in_array($content, array_keys($values))) {
-					$format = $values[$content];
-				}
-			}
-			$content = sprintf($format, $content);
+			$template = array_shift($brick['vars']);
+			$content = brick_item_template($template, $brick['vars'], $content);
 		}
 	} elseif (count($brick['vars']) === 3 AND $brick['vars'][1] === '|') {
 		// allow for (OR)
@@ -105,4 +91,32 @@ function brick_item($brick) {
 	}
 	$brick['page']['text'][$pos][] = $content;
 	return $brick;
+}
+
+/**
+ * applies template with value-specific mappings
+ *
+ * @param string $template sprintf format string
+ * @param array $vars remaining variables with key-value pairs
+ * @param string|int $content content to format
+ * @return string formatted content
+ */
+function brick_item_template($template, $vars, $content) {
+	if (!empty($vars)) {
+		// there are special settings for individual values
+		$values = [];
+		$key = false;
+		foreach ($vars as $var) {
+			if ($key === false) {
+				$key = $var;
+			} else {
+				$values[$key] = $var;
+				$key = false;
+			}
+		}
+		if (!empty($values) AND in_array($content, array_keys($values))) {
+			$template = $values[$content];
+		}
+	}
+	return sprintf($template, $content);
 }
