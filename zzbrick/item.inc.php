@@ -86,15 +86,28 @@ function brick_item($brick) {
  * @return string formatted content
  */
 function brick_item_format(&$brick, $content) {
+	$format_functions = [];
 	if (!empty($brick['local_settings']['format'])) {
-		$format_function = brick_format_function($brick['local_settings']['format']);
+		if (!is_array($brick['local_settings']['format']))
+			$brick['local_settings']['format'] = [$brick['local_settings']['format']];
+		foreach ($brick['local_settings']['format'] as $function) {
+			$function = explode(':', $function);
+			$function[0] = brick_format_function($function[0]);
+			if (!$function[0]) continue;
+			$format_functions[] = [
+				'function' => array_shift($function),
+				'parameter' => $function
+			];
+		}
 	} else {
 		// @deprecated first variable might be formatting function
 		$format_function = brick_format_function($brick['vars'][0]);
-		if ($format_function) array_shift($brick['vars']);
+		if ($format_function) {
+			array_shift($brick['vars']);
+			$format_functions[]['function'] = $format_function;
+		}
 	}
-	if (!$format_function) return $content;
-	if (!function_exists($format_function)) return $content;
+	if (!$format_functions) return $content;
 
 	// check against percents with space to avoid replacements in URLs
 	// there, space is either + or %20
@@ -102,7 +115,12 @@ function brick_item_format(&$brick, $content) {
 		$content = brick_format($content);
 		$content = $content['text'];
 	}
-	$content = $format_function($content);
+	foreach ($format_functions as $format_function) {
+		if (array_key_exists('parameter', $format_function) AND $format_function['parameter'])
+			$content = $format_function['function']($content, ...$format_function['parameter']);
+		else
+			$content = $format_function['function']($content);
+	}
 	return $content;
 }
 
