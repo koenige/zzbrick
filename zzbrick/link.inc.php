@@ -8,7 +8,7 @@
  * https://www.zugzwang.org/modules/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2011, 2014, 2019, 2023-2024 Gustaf Mossakowski
+ * @copyright Copyright © 2011, 2014, 2019, 2023-2024, 2026 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -22,9 +22,9 @@
  *		'brick_nolink_template', in case URL = current
  * examples: 
  * 		%%% link /some/internal/link "Link text" %%% 
- * 		%%% link /some/internal/link "Link text" "title='title text'" %%% 
+ * 		%%% link /some/internal/link "Link text" title="title text" %%% 
  * 		%%% link start /some/internal/link %%%
- * 		%%% link start /some/internal/link "title='title text'" %%%
+ * 		%%% link start /some/internal/link title="title text" %%%
  * 		%%% link end %%% 
  * @param array $brick
  * @return array $brick
