@@ -231,6 +231,37 @@ function brick_format($block, $parameter = false) {
 						$params[$i] = array_shift($loop_parameter[$i]);
 						// remove clutter
 						if (!$loop_parameter[$i]) unset($loop_parameter[$i]);
+	
+						// simple loop fast path: if the loop body
+						// contains only text blocks and simple item
+						// lookups, render all iterations at once
+						// instead of per-block dispatch
+						$simple_loop = brick_loop_check_simple($blocks, $index);
+						if ($simple_loop) {
+							$all_data = [$params[$i]];
+							if (!empty($loop_parameter[$i])) {
+								foreach ($loop_parameter[$i] as $d)
+									$all_data[] = $d;
+							}
+							$output = '';
+							foreach ($all_data as $data_item) {
+								foreach ($simple_loop['segments'] as $seg)
+									$output .= $seg[0]
+										? ($data_item[$seg[1]] ?? '')
+										: $seg[1];
+							}
+							if (!empty($simple_loop['closing']))
+								$output .= $simple_loop['closing'];
+							$brick['page']['text'][$brick['position']][] = $output;
+							unset($loop_parameter[$i], $params[$i]);
+							unset($loop_counter[$i], $loop_all[$i]);
+							array_pop($loop_start);
+							$i--;
+							// advance pointer to loop end; main
+							// loop's next() will move past it
+							while (key($blocks) !== $simple_loop['end_index'])
+								next($blocks);
+						}
 					}
 				} elseif ($brick['vars'][0] !== 'end') {
 					// loop inside loop with no data: ignore this one and go on!
@@ -1310,4 +1341,66 @@ function brick_check_parameters($parameters) {
 		$return = false;
 	}
 	return $return;
+}
+
+/**
+ * Check if a loop body is simple enough for the fast path
+ *
+ * A "simple" loop body contains only text blocks and plain
+ * %%% item key %%% directives (no nested loops, conditionals,
+ * formatting, or other directive types). When detected, the
+ * caller can render all iterations with a foreach instead of
+ * processing each block through the full dispatch chain.
+ *
+ * @param array $blocks template blocks (not modified)
+ * @param int $loop_start_index index of the loop start directive
+ * @return array|false ['segments', 'end_index', 'closing'] or false
+ */
+function brick_loop_check_simple($blocks, $loop_start_index) {
+	$block_keys = array_keys($blocks);
+	$start_pos = array_search($loop_start_index, $block_keys);
+	if ($start_pos === false) return false;
+
+	$segments = [];
+	$end_index = NULL;
+	$closing = '';
+
+	for ($si = $start_pos + 1, $total = count($block_keys); $si < $total; $si++) {
+		$sk = $block_keys[$si];
+		$sb = $blocks[$sk];
+
+		if ($sk & 1) {
+			// directive block
+			$sp = preg_split('/\s+/', trim($sb), -1, PREG_SPLIT_NO_EMPTY);
+			if ($sp[0] === 'loop') {
+				if (isset($sp[1]) AND $sp[1] === 'end') {
+					$end_index = $sk;
+					if (isset($sp[2])) $closing = $sp[2];
+				}
+				// nested loop start or loop end: stop scanning
+				break;
+			}
+			// only plain %%% item key %%% is allowed
+			if ($sp[0] !== 'item' OR count($sp) !== 2
+				OR strpos($sp[1], '=') !== false)
+				return false;
+			$segments[] = [1, str_replace('-', '_', $sp[1])];
+		} else {
+			// text block: strip leading newline as
+			// brick_format_textblock() does for non-zero indices
+			$text = $sb;
+			if ($sk AND substr($text, 0, 1) === "\n"
+				AND substr($text, 0, 2) !== "\n\n")
+				$text = substr($text, 1);
+			if ($text !== '' AND $text !== false)
+				$segments[] = [0, $text];
+		}
+	}
+
+	if ($end_index === NULL OR empty($segments)) return false;
+	return [
+		'segments' => $segments,
+		'end_index' => $end_index,
+		'closing' => $closing
+	];
 }
