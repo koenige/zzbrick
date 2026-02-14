@@ -8,7 +8,7 @@
  * https://www.zugzwang.org/modules/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2009-2025 Gustaf Mossakowski
+ * @copyright Copyright © 2009-2026 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -53,6 +53,7 @@ function brick_forms($brick) {
 		break;
 	}
 	
+	$used_parameter = [];	
 	foreach ($brick['vars'] AS $index => $var) {
 		if ($var === '*') {
 			// replace * with full parameter list
@@ -64,20 +65,30 @@ function brick_forms($brick) {
 		} elseif ($var === '*[1]') {
 			$parameter = explode('/', $brick['parameter']);
 			array_splice($brick['vars'], $index, 1, $parameter[0]);
+			$used_parameter[] = $parameter[0];
 		} elseif ($var === '*[2]') {
 			$parameter = explode('/', $brick['parameter']);
 			array_splice($brick['vars'], $index, 1, $parameter[1]);
+			$used_parameter[] = $parameter[1];
 		} elseif ($var === '*[3]') {
 			$parameter = explode('/', $brick['parameter']);
 			array_splice($brick['vars'], $index, 1, $parameter[2]);
+			$used_parameter[] = $parameter[2];
 		} elseif ($var === '*[2+]') {
+			// @deprecated, since first variable (URL parameter) can be random
+			wrap_error('Do not use `*[2+]` anymore, because it allows first parameter to be random', E_USER_DEPRECATED);
 			$parameter = explode('/', $brick['parameter']);
-			array_shift($parameter); // remove first element
+			$used_parameter[] = array_shift($parameter); // remove first element
 			$parameter = implode('/', $parameter);
 			array_splice($brick['vars'], $index, 1, $parameter);
+			$used_parameter[] = $parameter;
 		}
 	}
 
+	if ($used_parameter AND implode('/', $used_parameter) !== $brick['parameter']) {
+		wrap_quit(404);
+	}
+	
 	// check whether script shall be made accessible from public
 	// @deprecated, use public=1 instead, see below
 	$auth = ((count($brick['vars']) > 1) AND end($brick['vars']) === 'public') ? false : true;
