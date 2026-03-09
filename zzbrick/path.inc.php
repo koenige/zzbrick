@@ -31,16 +31,10 @@ function brick_path($brick) {
 		$brick['page']['text'][$brick['position']][] = '';
 		return $brick;
 	}
+	$brick = brick_local_settings($brick);
 
 	// first var is area
 	$area = array_shift($brick['vars']);
-
-	// check for parameters
-	$path_params = [];
-	while (strstr(end($brick['vars']), '=')) {
-		parse_str(array_pop($brick['vars']), $my_params);
-		$path_params += $my_params;
-	}
 
 	// get values
 	$values = [];
@@ -57,9 +51,9 @@ function brick_path($brick) {
 	}
 
 	$testing = (!$values and !empty($brick['parameter']['brick_condition_if'])) ? true : false;
-	$text = wrap_path($area, $values, $path_params['check_rights'] ?? true, $testing);
-	if (array_key_exists('html', $path_params) AND $text)
-		$text = sprintf(trim($path_params['html'], '"'), $text);
+	$text = wrap_path($area, $values, $brick['local_settings']['check_rights'] ?? true, $testing);
+	if (array_key_exists('html', $brick['local_settings']) AND $text)
+		$text = sprintf(trim($brick['local_settings']['html'], '"'), $text);
 
 	$brick['page']['text'][$brick['position']][] = $text;
 	return $brick;
