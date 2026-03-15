@@ -8,7 +8,7 @@
  * https://www.zugzwang.org/modules/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2025 Gustaf Mossakowski
+ * @copyright Copyright © 2025-2026 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -22,7 +22,7 @@
  * @return array $brick
  */
 function brick_helplink($brick) {
-	if (!wrap_path('default_helptext', [], true, true)) return $brick;
+	if (!wrap_path('default_helptext', [], ['testing' => true])) return $brick;
 
 	$filename = implode('-', $brick['vars']);
 	$filename = strtolower($filename);

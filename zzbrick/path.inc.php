@@ -55,8 +55,11 @@ function brick_path($brick) {
 		$i++;
 	}
 
-	$testing = (!$values and !empty($brick['parameter']['brick_condition_if'])) ? true : false;
-	$text = wrap_path($area, $values, $brick['local_settings']['check_rights'] ?? true, $testing);
+	$settings = [
+		'testing' => (!$values and !empty($brick['parameter']['brick_condition_if'])) ? true : false,
+		'check_rights' => $brick['local_settings']['check_rights'] ?? true
+	];
+	$text = wrap_path($area, $values, $settings);
 	if (array_key_exists('html', $brick['local_settings']) AND $text)
 		$text = sprintf(trim($brick['local_settings']['html'], '"'), $text);
 
