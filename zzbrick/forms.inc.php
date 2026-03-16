@@ -126,18 +126,8 @@ function brick_forms($brick) {
 	$zz['form_script'] = ($brick['subtype'] === 'forms' ? 'forms/' : '').$script;
 	$zz['init_ignore_log'][] = 'form_script';
 
-	if (!empty($_POST) AND !empty($_POST['httpRequest']) AND substr($_POST['httpRequest'], 0, 6) === 'zzform')
-		$brick['page'] = brick_xhr($_POST, $zz);
-
-	// set allowed params
-	$brick['page']['query_strings'] = [
-		'mode', 'q', 'id', 'source_id', 'scope', 'filter', 'where', 'order',
-		'dir', 'delete', 'insert', 'update', 'noupdate', 'zzhash', 'export',
-		'add', 'group', 'nolist', 'limit', 'referer', 'file', 'thumbs',
-		'field', 'zz', 'focus', 'edit', 'show', 'revise', 'merge'
-	];
-
 	if (!empty($_POST) AND !empty($_POST['httpRequest']) AND substr($_POST['httpRequest'], 0, 6) === 'zzform') {
+		$brick['page'] = brick_xhr($_POST, $zz);
 		$text = $brick['page']['text'] ?? '';
 		unset($brick['page']['text']);
 		$brick['page']['text'][$brick['position']] = [$text];
@@ -145,18 +135,12 @@ function brick_forms($brick) {
 		$brick['page']['text'][$brick['position']] = [];
 		$brick['page']['replace_db_text'] = true;
 		$brick['page']['url_ending'] = 'ignore';
-		$brick['page']['query_strings'][] = 'field_no';
-		$brick['page']['query_strings'][] = 'subtable_no';
-		$brick['page']['query_strings'][] = 'rec';
-		$brick['page']['query_strings'][] = 'unrestricted';
-		$brick['page']['query_strings'][] = 'zz_id_value';
 		return $brick;
-	} else {
-		// some big search engine from the US looking for content
-		// JS library does not allow to put these into POST data
-		$brick['page']['query_strings_redirect'][] = 'rec';
-		$brick['page']['query_strings_redirect'][] = 'field_no';
 	}
+	// some big search engine from the US looking for content
+	// JS library does not allow to put these into POST data
+	$brick['page']['query_strings_redirect'][] = 'rec';
+	$brick['page']['query_strings_redirect'][] = 'field_no';
 
 	$ops = zzform($zz);
 	$ops = brick_forms_request($brick, $ops, $zz);
