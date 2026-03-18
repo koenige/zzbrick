@@ -2,6 +2,7 @@
 	"variables": ["brick"],
 	"data": [
 		{
+			"description": "Simple key=value settings",
 			"brick": {
 				"vars": ["title=Files", "publish=0"],
 				"quoted_indices": []
@@ -16,6 +17,7 @@
 			}
 		},
 		{
+			"description": "Quoted value with spaces (backward scanning)",
 			"brick": {
 				"vars": ["item", "test", "key=\"some value in quotes\""],
 				"quoted_indices": []
@@ -29,6 +31,7 @@
 			}
 		},
 		{
+			"description": "Mixed quoted and unquoted settings",
 			"brick": {
 				"vars": ["path", "title=\"Multiple Words Here\"", "status=active"],
 				"quoted_indices": []
@@ -43,6 +46,7 @@
 			}
 		},
 		{
+			"description": "Array values using [item1,item2]",
 			"brick": {
 				"vars": ["tags=[tag1,tag2,tag3]", "count=5"],
 				"quoted_indices": []
@@ -57,6 +61,7 @@
 			}
 		},
 		{
+			"description": "Multidimensional array with named indices",
 			"brick": {
 				"vars": ["options[color]=blue", "options[size]=large", "name=test"],
 				"quoted_indices": []
@@ -74,6 +79,7 @@
 			}
 		},
 		{
+			"description": "Multidimensional array with array values",
 			"brick": {
 				"vars": ["items[0]=[a,b,c]", "items[1]=[x,y,z]"],
 				"quoted_indices": []
@@ -90,6 +96,7 @@
 			}
 		},
 		{
+			"description": "Testing order preservation (4 settings)",
 			"brick": {
 				"vars": ["first=1", "second=2", "third=3", "fourth=4"],
 				"quoted_indices": []
@@ -106,6 +113,7 @@
 			}
 		},
 		{
+			"description": "Real-world example: forms table media * title=Files publish=0 type=image",
 			"brick": {
 				"vars": ["table", "media", "title=Files", "publish=0", "type=image"],
 				"quoted_indices": []
@@ -121,6 +129,7 @@
 			}
 		},
 		{
+			"description": "Plus sign encoding (+ should be preserved)",
 			"brick": {
 				"vars": ["url+encoding=test%2Bvalue"],
 				"quoted_indices": []
@@ -134,6 +143,7 @@
 			}
 		},
 		{
+			"description": "Multi-word quoted value split across array elements",
 			"brick": {
 				"vars": ["description=\"This is a longer description with multiple words\""],
 				"quoted_indices": []
@@ -147,6 +157,7 @@
 			}
 		},
 		{
+			"description": "Empty vars with in_quotes flag",
 			"brick": {
 				"vars": [],
 				"in_quotes": true,
@@ -160,6 +171,7 @@
 			}
 		},
 		{
+			"description": "Vars without equals signs (no settings to extract)",
 			"brick": {
 				"vars": ["no_equals", "just", "words"],
 				"quoted_indices": []
@@ -171,6 +183,7 @@
 			}
 		},
 		{
+			"description": "Quoted string with = inside should not be treated as setting",
 			"brick": {
 				"vars": ["item", "class", " class='%s'"],
 				"in_quotes": true,
@@ -188,6 +201,7 @@
 			}
 		},
 		{
+			"description": "Key-value pair with quoted value should be extracted as setting",
 			"brick": {
 				"vars": ["item", "class", "class=\"%s\""],
 				"quoted_indices": []
@@ -201,6 +215,7 @@
 			}
 		},
 		{
+			"description": "Id formatting in Menu template",
 			"brick": {
 				"vars": ["item", "id", " id='%s'"],
 				"quoted_indices": {
@@ -215,22 +230,5 @@
 				"local_settings": []
 			}
 		}
-	],
-	"legends": [
-		"Simple key=value settings",
-		"Quoted value with spaces (backward scanning)",
-		"Mixed quoted and unquoted settings",
-		"Array values using [item1,item2]",
-		"Multidimensional array with named indices",
-		"Multidimensional array with array values",
-		"Testing order preservation (4 settings)",
-		"Real-world example: forms table media * title=Files publish=0 type=image",
-		"Plus sign encoding (+ should be preserved)",
-		"Multi-word quoted value split across array elements",
-		"Empty vars with in_quotes flag",
-		"Vars without equals signs (no settings to extract)",
-		"Quoted string with = inside should not be treated as setting",
-		"Key-value pair with quoted value should be extracted as setting",
-		"Id formatting in Menu template"
 	]
 }
