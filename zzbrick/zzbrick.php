@@ -153,7 +153,7 @@ function brick_format($block, $parameter = false) {
 	// standardize line breaks
 	$block = str_replace(["\r\n", "\r"], "\n", $block);
 	// cut content and query blocks
-	$blocks = explode('%%%', $block); 
+	$blocks = explode('%%%', $block);
 	unset($block);
 	
 	$i = 0;
@@ -443,6 +443,14 @@ function brick($blocks, $parameter = []) {
  */
 function brick_loop_range(&$vars, $params) {
 	if (!$params) return [];
+	// non-arrays are reported after return; avoid array_slice() type errors
+	if (!is_array($params)) {
+		wrap_error(wrap_text(
+			'Template `%s`: Brick loop `%s` needs to get an array as input',
+			['values' => [wrap_setting('current_template'), implode(' ', $vars)]]
+		), E_USER_WARNING);
+		return [];
+	}
 	if (empty($vars[1])) return $params;
 	if (!preg_match('/^[0-9-]+$/', $vars[1])) return $params;
 	if (strstr('-', $vars[1]) > 1) return $params;
