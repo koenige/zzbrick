@@ -35,7 +35,8 @@ function brick_condition($brick) {
 
 	$if = false;
 	$if_keywords = [
-		'page', 'setting', 'cookie', 'path', 'lib', 'form', 'server', 'template'
+		'page', 'setting', 'cookie', 'path', 'lib', 'form', 'server', 'template',
+		'loopposition'
 	];
 
 	if (count($brick['vars']) === 3 AND in_array($brick['vars'][1], $if_keywords))
@@ -61,7 +62,7 @@ function brick_condition($brick) {
 	if ($if) {
 		array_shift($brick['vars']);
 		$key = str_replace('-', '_', $brick['vars'][0]);
-		$item[$key] = brick_condition_if($if, $brick['vars'][0], $brick['parameter']);
+		$item[$key] = brick_condition_if($if, $brick['vars'][0], $brick);
 	} elseif (!empty($brick['loop_parameter'])) {
 		$item = &$brick['loop_parameter'];
 	} else {
@@ -83,7 +84,7 @@ function brick_condition($brick) {
 				if (count($var) === 2) {
 					if (in_array($var[0], $if_keywords)) {
 						$key = str_replace('-', '_', $var[1]);
-						$item[$key] = brick_condition_if($var[0], $var[1], $brick['parameter']);
+						$item[$key] = brick_condition_if($var[0], $var[1], $brick);
 						$brick_vars[] = $var[1];
 					} else {
 						$brick_vars = [];
@@ -229,15 +230,19 @@ function brick_condition($brick) {
  * @param array $parameter
  * @return string
  */
-function brick_condition_if($if, $vars, $parameter) {
+function brick_condition_if($if, $vars, $brick) {
 	if ($if === 'cookie') return brick_condition_if_cookie($vars);
 	if ($if === 'lib') return is_dir(sprintf('%s/%s', wrap_setting('lib'), $vars));
 	if ($if === 'form') return wrap_static('zzform_output', $vars);
 	if ($if === 'template') return wrap_template_file($vars, false);
+	if ($if === 'loopposition') {
+		wrap_include('loopposition', 'zzbrick');
+		return brick_loopposition($brick);
+	}
 
-	if (!is_array($parameter)) $parameter = [$parameter];
-	$parameter['brick_condition_if'] = true;
-	$req = brick_format('%%% '.$if.' '.$vars.' %%%', $parameter);
+	if (!is_array($brick['parameter'])) $brick['parameter'] = [$brick['parameter']];
+	$brick['parameter']['brick_condition_if'] = true;
+	$req = brick_format('%%% '.$if.' '.$vars.' %%%', $brick['parameter']);
 	return $req['text'];
 }
 
