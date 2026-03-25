@@ -8,7 +8,7 @@
  * https://www.zugzwang.org/modules/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2010-2011, 2013, 2016-2017, 2019, 2024 Gustaf Mossakowski
+ * @copyright Copyright © 2010-2011, 2013, 2016-2017, 2019, 2024-2026 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -50,9 +50,34 @@ function brick_loopposition($brick) {
 		if (count($brick['vars']) !== 1) return $brick;
 	}
 
-	$display = false;
-	
+	$display = brick_loopposition_evaluate($brick, $brick['vars'][0]);
+	if ($display === false) return $brick;
+	if (empty($brick['page']['text'][$brick['position']]))
+		$brick['page']['text'][$brick['position']] = [];
+	if ($display === true) {
+		$brick['page']['text'][$brick['position']][] = $function ? $function($brick['vars'][1]) : $brick['vars'][1];
+	} else {
+		$brick['page']['text'][$brick['position']][] = $display;
+	}
+	return $brick;
+}
+
+/**
+ * evaluate loop position (first, last, …)
+ *
+ * Used by %%% condition … loopposition … %%%. Same rules as %%% loopposition … %%%.
+ *
+ * @param array $brick
+ * @param string $positions_spec first vars token, e.g. first, middle|last, %5
+ * @return mixed false if not in a loop or no match; true if matched; int for counter
+ */
+function brick_loopposition_evaluate($brick, $positions_spec) {
+	if (empty($brick['loop_counter']) OR $positions_spec === '') return false;
+
+	$positions = explode('|', $positions_spec);
 	$i = $brick['loop_all'] - $brick['loop_counter'] + 1;
+	$display = false;
+
 	foreach ($positions as $position) {
 		if ($position === 'first' AND $brick['loop_counter'] === $brick['loop_all']
 			AND $brick['loop_all'] != 1)
@@ -81,13 +106,6 @@ function brick_loopposition($brick) {
 			if (!($i % $num)) $display = true;
 		}
 	}
-	if ($display === false) return $brick;
-	if (empty($brick['page']['text'][$brick['position']]))
-		$brick['page']['text'][$brick['position']] = [];
-	if ($display === true) {
-		$brick['page']['text'][$brick['position']][] = $function ? $function($brick['vars'][1]) : $brick['vars'][1];
-	} else {
-		$brick['page']['text'][$brick['position']][] = $display;
-	}
-	return $brick;
+
+	return $display;
 }
