@@ -227,8 +227,8 @@ function brick_condition($brick) {
  *
  * @param string $if
  * @param string $vars
- * @param array $parameter
- * @return string
+ * @param array $brick
+ * @return mixed
  */
 function brick_condition_if($if, $vars, $brick) {
 	if ($if === 'cookie') return brick_condition_if_cookie($vars);
@@ -237,7 +237,7 @@ function brick_condition_if($if, $vars, $brick) {
 	if ($if === 'template') return wrap_template_file($vars, false);
 	if ($if === 'loopposition') {
 		wrap_include('loopposition', 'zzbrick');
-		return brick_loopposition($brick);
+		return brick_loopposition_evaluate($brick, $vars);
 	}
 
 	if (!is_array($brick['parameter'])) $brick['parameter'] = [$brick['parameter']];
