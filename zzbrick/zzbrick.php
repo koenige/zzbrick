@@ -160,6 +160,7 @@ function brick_format($block, $parameter = false) {
 	$loop_start = [];
 	$fast_forward = 0;
 	$loop_parameter = [];
+	$loop_snapshot = [];
 	$params = [];
 
 	// check for includes
@@ -217,6 +218,7 @@ function brick_format($block, $parameter = false) {
 						}
 						$loop_parameter[$i] = brick_loop_range($brick['vars'], $loop_parameter[$i]);
 					}
+					$loop_snapshot[$i] = array_values($loop_parameter[$i]);
 					$loop_counter[$i] = count($loop_parameter[$i]);
 					$loop_all[$i] = count($loop_parameter[$i]);
 					if (!$loop_parameter[$i]) {
@@ -254,7 +256,7 @@ function brick_format($block, $parameter = false) {
 								$output .= $simple_loop['closing'];
 							$brick['page']['text'][$brick['position']][] = $output;
 							unset($loop_parameter[$i], $params[$i]);
-							unset($loop_counter[$i], $loop_all[$i]);
+							unset($loop_counter[$i], $loop_all[$i], $loop_snapshot[$i]);
 							array_pop($loop_start);
 							$i--;
 							// advance pointer to loop end; main
@@ -292,6 +294,7 @@ function brick_format($block, $parameter = false) {
 							unset($params[$i]); // end of loop!
 							$there_was_data = true;
 						}
+						unset($loop_snapshot[$i]);
 						$i--;
 						// closing HTML if there is something
 						if (!empty($brick['vars'][1]) AND $there_was_data)
@@ -324,6 +327,7 @@ function brick_format($block, $parameter = false) {
 					}
 					$brick['loop_all'] = $loop_all[$i];
 					$brick['loop_counter'] = $loop_counter[$i];
+					$brick['loop_items'] = $loop_snapshot[$i];
 				} else {
 					$brick['loop_parameter'] = [];
 				}

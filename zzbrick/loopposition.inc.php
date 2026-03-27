@@ -27,6 +27,7 @@
  * 		%%% loopposition %5 "<br>" %%% (all 5 lines)
  * 		%%% loopposition 5 "<br>" %%% (on line 5, counting starting with 1)
  *		%%% loopposition counter %%% returns current line number
+ *		%%% loopposition first match=area "…" %%% (first row where `area` is truthy)
  *		%%% loopposition first setting xy %%% returns setting `xy`
  * @param array $brick
  * @return array $brick
@@ -36,6 +37,8 @@ function brick_loopposition($brick) {
 
 	if (empty($brick['loop_counter'])) return $brick;
 	if (count($brick['vars']) < 1) return $brick;
+
+	$brick = brick_local_settings($brick);
 	$positions = explode('|', $brick['vars'][0]);
 	$function = NULL;
 	if (count($positions) === 1 AND $positions[0] === 'counter') {
@@ -68,7 +71,7 @@ function brick_loopposition($brick) {
  * Used by %%% condition … loopposition … %%%. Same rules as %%% loopposition … %%%.
  *
  * @param array $brick
- * @param string $positions_spec first vars token, e.g. first, middle|last, %5
+ * @param string $positions_spec e.g. first, middle|last, %5
  * @return mixed false if not in a loop or no match; true if matched; int for counter
  */
 function brick_loopposition_evaluate($brick, $positions_spec) {
@@ -78,8 +81,15 @@ function brick_loopposition_evaluate($brick, $positions_spec) {
 	$positions = explode('|', $positions_spec);
 	$i = $brick['loop_all'] - $brick['loop_counter'] + 1;
 	$display = false;
+	$match_field = $brick['local_settings']['match'] ?? '';
 
 	foreach ($positions as $position) {
+		if ($match_field) {
+			if (!in_array($position, ['first', 'last'])) continue;
+			if (brick_loopposition_match($brick, $match_field, $position) === $i)
+				$display = true;
+			continue;
+		}
 		if ($position === 'first' AND $brick['loop_counter'] === $brick['loop_all']
 			AND $brick['loop_all'] != 1)
 			$display = true;
@@ -109,4 +119,24 @@ function brick_loopposition_evaluate($brick, $positions_spec) {
 	}
 
 	return $display;
+}
+
+/**
+ * get line number for first or last occurrence in loop where field is truthy
+ *
+ * @param array $brick
+ * @param string $field
+ * @param string $position
+ * @return int|null
+ */
+function brick_loopposition_match($brick, $field, $position) {
+	if (empty($brick['loop_items'])) return NULL;
+	$line_no = NULL;
+	foreach ($brick['loop_items'] as $index => $line) {
+		if (!is_array($line)) continue;
+		if (empty($line[$field])) continue;
+		$line_no = $index + 1;
+		if ($position === 'first') break;
+	}
+	return $line_no;
 }

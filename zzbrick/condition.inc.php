@@ -27,11 +27,14 @@
  * 		%%% condition ! %%% -- if !item , this will be shown
  * 		%%% condition itemcontent | itemcontent2 | itemcontent2 %%% -- OR
  * 		%%% condition itemcontent & itemcontent2 & itemcontent2 %%% -- AND
+ * 		%%% if loopposition first|last match=area %%% (`match=` via brick_local_settings)
  * @param array $brick	Array from zzbrick
  * @return array $brick
  */
 function brick_condition($brick) {
 	static $i = 0;
+
+	$brick = brick_local_settings($brick);
 
 	$if = false;
 	$if_keywords = [
