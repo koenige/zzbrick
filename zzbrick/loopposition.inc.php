@@ -38,16 +38,16 @@ function brick_loopposition($brick) {
 	if (count($brick['vars']) < 1) return $brick;
 	$positions = explode('|', $brick['vars'][0]);
 	$function = NULL;
-	if (count($positions) !== 1 OR $positions[0] !== 'counter') {
+	if (count($positions) === 1 AND $positions[0] === 'counter') {
+		// counter just requires itself as variable
+		if (count($brick['vars']) !== 1) return $brick;
+	} else {
 		// normally, two variables are required
 		if (count($brick['vars']) === 3 and $brick['vars'][1] === 'setting')
 			$brick['vars'][1] = wrap_setting(array_pop($brick['vars']));
 		elseif (count($brick['vars']) === 3 and function_exists(end($brick['vars'])))
 			$function = array_pop($brick['vars']);
 		if (count($brick['vars']) !== 2) return $brick;
-	} else {
-		// counter just requires itself as variable
-		if (count($brick['vars']) !== 1) return $brick;
 	}
 
 	$display = brick_loopposition_evaluate($brick, $brick['vars'][0]);
@@ -72,7 +72,8 @@ function brick_loopposition($brick) {
  * @return mixed false if not in a loop or no match; true if matched; int for counter
  */
 function brick_loopposition_evaluate($brick, $positions_spec) {
-	if (empty($brick['loop_counter']) OR $positions_spec === '') return false;
+	if (empty($brick['loop_counter'])) return false;
+	if ($positions_spec === '') return false;
 
 	$positions = explode('|', $positions_spec);
 	$i = $brick['loop_all'] - $brick['loop_counter'] + 1;
@@ -102,8 +103,8 @@ function brick_loopposition_evaluate($brick, $positions_spec) {
 		elseif (is_numeric($position) AND $position.'' === $i.'')
 			$display = true;
 		elseif (substr($position, 0, 1) === '%') {
-			$num = intval(substr($position, 1));
-			if (!($i % $num)) $display = true;
+			$divisor = intval(substr($position, 1));
+			if (!($i % $divisor)) $display = true;
 		}
 	}
 
