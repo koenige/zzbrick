@@ -127,7 +127,7 @@ function brick_condition($brick) {
 
 	// check if there it's a nested if and if there is a parent condition
 	// if so and it is false, do not show content for all clauses
-	if ($condition === '=' OR $condition === '!') {
+	if (in_array($condition, ['=', '!'], true)) {
 		$i++; // increase level
 		$brick['condition_content_shown'][$i] = false;
 	}
@@ -149,7 +149,7 @@ function brick_condition($brick) {
 	switch ($condition) {
 	case '=': // if
 		if (!$show) break;
-		if ($content OR is_float($content) OR is_int($content) OR $content === '0') {
+		if (brick_condition_value_truthy($content)) {
 			$brick['condition_content_shown'][$i] = true;
 		} else {
 			$brick['condition_content_shown'][$i] = false;
@@ -158,7 +158,7 @@ function brick_condition($brick) {
 		break;
 	case ':=': // elseif
 		if (!$show) break;
-		if ($content OR is_float($content) OR is_int($content) OR $content === '0') {
+		if (brick_condition_value_truthy($content)) {
 			if (empty($brick['condition_content_shown'][$i])) {
 				$brick['condition_content_shown'][$i] = true;
 			} else {
@@ -187,7 +187,7 @@ function brick_condition($brick) {
 		break;
 	case '!':
 		if (!$show) break;
-		if (!$content AND !is_float($content) AND !is_int($content)) {
+		if (!brick_condition_value_truthy($content)) {
 			$brick['condition_content_shown'][$i] = true;
 		} else {
 			$brick['condition_content_shown'][$i] = false;
@@ -220,6 +220,20 @@ function brick_condition($brick) {
 		$brick['access_blocked'] = 'condition';
 	}
 	return $brick;
+}
+
+/**
+ * Whether $content counts as true for if / elseif / unless (matches legacy OR chain).
+ *
+ * @param mixed $content
+ * @return bool
+ */
+function brick_condition_value_truthy($content) {
+	if ($content) return true;
+	if (is_float($content)) return true;
+	if (is_int($content)) return true;
+	if ($content === '0') return true;
+	return false;
 }
 
 /**
