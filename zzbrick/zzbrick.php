@@ -944,6 +944,8 @@ function brick_xhr_error($http_status, $reason, $data = []) {
  *
  * example: %%% forms table media * title=Files publish=0 %%%
  *
+ * After stripping settings, remaining `vars` are in order again (0, 1, 2, …).
+ *
  * @param array $brick
  * @return array $brick
  */
@@ -982,6 +984,7 @@ function brick_local_settings($brick) {
 			$brick['local_settings'] = array_merge_recursive($brick['local_settings'], $new_settings);
 		unset($brick['vars'][$key]);
 	}
+	$brick['vars'] = array_values($brick['vars']);
 	return $brick;
 }
 
@@ -1034,8 +1037,10 @@ function brick_format_placeholderblock($brick) {
 
 	// just interpret bricks if access is not blocked
 	// or if it is might get unblocked
-	if ($brick['access_blocked'] AND $brick['access_blocked'] !== $brick['type'])
+	if ($brick['access_blocked'] AND $brick['access_blocked'] !== $brick['type']) {
+		unset($brick['local_settings']);
 		return $brick;
+	}
 
 	// include file
 	$bricktype_file = __DIR__.'/'.$brick['type'].'.inc.php';
@@ -1055,6 +1060,8 @@ function brick_format_placeholderblock($brick) {
 			 '.$brick['type'].' is not a valid parameter.</strong></p>';
 	}
 
+	// per-placeholder options only; do not carry to the next %%% block
+	unset($brick['local_settings']);
 	return $brick;
 }
 
