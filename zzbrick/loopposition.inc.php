@@ -68,7 +68,7 @@ function brick_loopposition($brick) {
 /**
  * evaluate loop position (first, last, …)
  *
- * Used by %%% condition … loopposition … %%%. Same rules as %%% loopposition … %%%.
+ * Used by %%% if/unless loopposition … %%%. Same rules as %%% loopposition … %%%.
  *
  * @param array $brick
  * @param string $positions_spec e.g. first, middle|last, %5
