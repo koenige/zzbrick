@@ -8,7 +8,7 @@
  * https://www.zugzwang.org/modules/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2009-2016, 2019, 2022-2025 Gustaf Mossakowski
+ * @copyright Copyright © 2009-2016, 2019, 2022-2026 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -92,8 +92,9 @@ function brick_page($brick) {
 		} else {
 			$content = $page[$brick_var];
 		}
-	} elseif (!empty($zz_page['db']['parameters']['page_'.$brick_var])) {
-		$content = $zz_page['db']['parameters']['page_'.$brick_var];
+	} elseif (($page_parameters = wrap_page_field('parameters') ?? [])
+		&& ($page_parameters['page_'.$brick_var] ?? null)) {
+		$content = $page_parameters['page_'.$brick_var];
 	} else {
 		// other special cases
 		switch ($brick_var) {
@@ -108,8 +109,9 @@ function brick_page($brick) {
 			else $content = true;
 			break;
 		default:
-			if (empty($zz_page['db'][$brick_var])) break;
-			$content = $zz_page['db'][$brick_var];
+			$field = wrap_page_field($brick_var);
+			if (!$field) break;
+			$content = $field;
 			break;
 		}
 	}
