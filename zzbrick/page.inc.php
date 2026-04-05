@@ -102,7 +102,7 @@ function brick_page($brick) {
 			$content = date('Y');
 			break;
 		case 'url_path':
-			$content = $zz_page['url']['full']['path'];
+			$content = wrap_url('path');
 			break;
 		case 'logged_in':
 			if (empty($_SESSION['logged_in'])) $content = false;
