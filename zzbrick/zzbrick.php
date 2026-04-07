@@ -372,7 +372,8 @@ function brick_format($block, $parameter = false) {
 	
 	$fulltextformat = wrap_setting('brick_fulltextformat');
 	
-	if ($page['content_type'] AND $page['content_type'] !== 'html') {
+	$content_type = wrap_page_meta('content_type') ?? $page['content_type'] ?? 'html';
+	if ($content_type !== 'html') {
 		// no formatting, if it's not HTML!
 		$fulltextformat = 'html';
 		wrap_setting('brick_default_position', 'none');
@@ -408,11 +409,16 @@ function brick_format($block, $parameter = false) {
 	// make sure, 'text' is not an array if empty
 	if (!array_key_exists('text', $page)) $page['text'] = '';
 	elseif (empty($page['text']) AND is_array($page['text'])) $page['text'] = '';
-	if (!empty($page['query_strings'])) {
+	if (!empty($page['query_strings']))
 		wrap_page_meta('query_strings', $page['query_strings']);
-	}
-	if (!empty($page['query_strings_redirect'])) {
+	if (!empty($page['query_strings_redirect']))
 		wrap_page_meta('query_strings_redirect', $page['query_strings_redirect']);
+	if (!empty($page['content_type']) AND $page['content_type'] !== 'html') {
+		if (wrap_page_meta('content_type') && wrap_page_meta('content_type') !== $page['content_type'])
+			wrap_error(wrap_text('Different page content types detected: %s and %s.',
+				['values' => [wrap_page_meta('content_type'), $page['content_type']]]
+			));
+		wrap_page_meta('content_type', $page['content_type']);
 	}
 	return $page;
 }
@@ -1287,7 +1293,7 @@ function brick_merge_page_bricks($page, $content) {
 	];
 	foreach ($overwrite_bricks as $part) {
 		if (!empty($content[$part]))
-			$page[$part] = $content[$part];	
+			$page[$part] = $content[$part];
 	}
 	
 	// status is not overwritten if new status is 404
