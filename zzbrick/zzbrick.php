@@ -1152,17 +1152,26 @@ function brick_include($brick, $blocks = [], $includes = []) {
 		if (!$index & 1) continue;
 		$block = explode(' ', trim($block));
 		if ($block[0] !== 'include') continue;
-		$block[1] = trim($block[1]);
-		if (in_array($block[1], $includes)) {
+		$parsed = brick_local_settings(['vars' => array_slice($block, 1), 'quoted_indices' => []]);
+		if (!empty($parsed['local_settings']['value'])) {
+			// no loop parameters here, check just $brick['parameter']
+			$template_name = $brick['parameter'][$parsed['local_settings']['value']] ?? '';
+			// no template? we cannot include it (`if template` etc. would not work
+			// `include` is evaluated at first
+			if (!$template_name) continue;
+		} else {
+			$template_name = $block[1];
+		}
+		if (in_array($template_name, $includes)) {
 			$brick['page']['error']['level'] = E_USER_ERROR;
 			$brick['page']['error']['msg_text']
 				= 'Template %s includes itself';
-			$brick['page']['error']['msg_vars'] = [$block[1]];
+			$brick['page']['error']['msg_vars'] = [$template_name];
 			return [$brick, $blocks];
 		}
-		$includes_template[] = $block[1];
-		if (wrap_template_file($block[1], false)) {
-			$tpl = wrap_template($block[1], [], 'error');
+		$includes_template[] = $template_name;
+		if (wrap_template_file($template_name, false)) {
+			$tpl = wrap_template($template_name, [], 'error');
 			$new_blocks = explode('%%%', $tpl);
 		} else {
 			$new_blocks = [];
