@@ -408,6 +408,12 @@ function brick_format($block, $parameter = false) {
 	// make sure, 'text' is not an array if empty
 	if (!array_key_exists('text', $page)) $page['text'] = '';
 	elseif (empty($page['text']) AND is_array($page['text'])) $page['text'] = '';
+	if (!empty($page['query_strings'])) {
+		wrap_page_meta('query_strings', $page['query_strings']);
+	}
+	if (!empty($page['query_strings_redirect'])) {
+		wrap_page_meta('query_strings_redirect', $page['query_strings_redirect']);
+	}
 	return $page;
 }
 
@@ -900,7 +906,7 @@ function brick_xhr($xmlHttpRequest, $parameter) {
 		return $return; // allow to use brick_xhr_error() in XHR functions
 	}
 	if (!empty($return['_query_strings'])) {
-		$page['query_strings'] = $return['_query_strings'];
+		wrap_page_meta('query_strings', $return['_query_strings']);
 		unset($return['_query_strings']);
 	}
 	$page['text'] = json_encode($return);
@@ -1298,7 +1304,7 @@ function brick_merge_page_bricks($page, $content) {
 	// extra: for all individual needs, not standardized
 	$merge_bricks = [
 		'authors', 'media', 'head', 'extra', 'meta', 'link', 'error',
-		'query_strings', 'breadcrumbs', 'opengraph', 'data'
+		'query_strings', 'query_strings_redirect', 'breadcrumbs', 'opengraph', 'data'
 	];
 	foreach ($merge_bricks as $part) {
 		if (!empty($content[$part]) AND is_array($content[$part])) {
