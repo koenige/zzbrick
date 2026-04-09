@@ -48,23 +48,11 @@ function brick_page($brick) {
 	// is there a custom formatting for this?
 	// get name of function to be called, similar to brick_request
 	$request = false;
-	// first check own page-directory
-	$paths[] = $brick['path'];
-	$default_module_present = false;
-	foreach (wrap_setting('modules') as $module) {
-		// also check modules in alphabetical order
-		if ($module === 'default') {
-			$default_module_present = true;
-			continue;
-		}
-		$paths[] = wrap_setting('modules_dir').'/'.$module.'/'.$brick['module_path'];
-	}
-	if ($default_module_present)
-		$paths[] = wrap_setting('modules_dir').'/default/'.$brick['module_path'];
-	$filename = '/'.basename(strtolower($brick_var)).'.inc.php';
-	foreach ($paths as $path) {
-		if (!file_exists($script_filename = $path.$filename)) continue;
-		require_once $script_filename;
+
+	// first check own page-directory, then modules, last default
+	$paths = wrap_collect_files('zzbrick_page/'.basename(strtolower($brick_var)), 'custom/modules/default');
+	foreach ($paths as $script_path) {
+		require_once $script_path;
 		$request = 'page_'.strtolower($brick_var);
 		if (!function_exists($request)) {
 			$brick['page']['error']['level'] = E_USER_ERROR;
