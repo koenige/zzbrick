@@ -24,6 +24,7 @@
  *		%%% path area value %%%
  *		%%% path area setting setting_key value %%%
  *		%%% path area value check_rights=0 html="<a href='%s'>" %%%
+ *		%%% path area absolute=1 %%%  (absolute URL: host_base + path)
  * @param array $brick	Array from zzbrick
  * @return array $brick
  */
@@ -57,7 +58,8 @@ function brick_path($brick) {
 
 	$settings = [
 		'testing' => (!$values and !empty($brick['parameter']['brick_condition_if'])) ? true : false,
-		'check_rights' => $brick['local_settings']['check_rights'] ?? true
+		'check_rights' => $brick['local_settings']['check_rights'] ?? true,
+		'absolute' => $brick['local_settings']['absolute'] ?? false
 	];
 	$text = wrap_path($area, $values, $settings);
 	if (array_key_exists('html', $brick['local_settings']) AND $text)
