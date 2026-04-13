@@ -135,7 +135,6 @@ function brick_request($brick) {
  */
 function brick_request_params($variables, $parameter) {
 	$parameter_for_function = [];
-	$var_safe = [];
 
 	foreach ($variables as $var) {
 		if (str_ends_with($var, '*')) {
@@ -157,22 +156,10 @@ function brick_request_params($variables, $parameter) {
 			} else {
 				$parameter_for_function = $url_parameters;
 			}
-		} else {
-			if (strlen($var) > 1 AND substr($var, 0, 1) === '"' && substr($var, -1) === '"')
-				$parameter_for_function[] = substr($var, 1, -1);
-			elseif ((strlen($var) > 1 OR empty($var_safe)) AND substr($var, 0, 1) === '"')
-				$var_safe[] = substr($var, 1);
-			elseif ($var_safe && substr($var, -1) !== '"') 
-				$var_safe[] = $var;
-			elseif ($var_safe && substr($var, -1) === '"') {
-				$var_safe[] = substr($var, 0, -1);
-				$parameter_for_function[] = implode(" ", $var_safe);
-				$var_safe = [];
-			} elseif ($var OR $var === '0') {
-				// parameter like given to function but newly indexed
-				// ignore empty parameters
-				$parameter_for_function[] = $var;
-			}
+		} elseif ($var OR $var === '0') {
+			// parameter like given to function but newly indexed
+			// ignore empty parameters
+			$parameter_for_function[] = $var;
 		}
 	}
 
@@ -513,8 +500,7 @@ function brick_request_links(&$text, &$media, $field_name) {
 	foreach ($parts as $index => $part) {
 		if ($index & 1) {
 			$part = trim($part);
-			$medium = explode(' ', $part);
-			$medium = brick_request_params($medium, '');
+			$medium = brick_get_variables($part)['vars'];
 			$formatted .= brick_request_link($media, $medium, $field_name);
 		} else {
 			$formatted .= ltrim($part);
