@@ -61,23 +61,23 @@ function brick_forms($brick) {
 			// in 'vars' or we have the full script name in the url
 			// mixing is not possible because it will be difficult
 			// to say how many parameters are allowed)
-			array_splice($brick['vars'], $index, 1, $brick['parameter']);
+			array_splice($brick['vars'], $index, 1, wrap_brick('parameter'));
 		} elseif ($var === '*[1]') {
-			$parameter = explode('/', $brick['parameter']);
+			$parameter = explode('/', wrap_brick('parameter'));
 			array_splice($brick['vars'], $index, 1, $parameter[0]);
 			$used_parameter[] = $parameter[0];
 		} elseif ($var === '*[2]') {
-			$parameter = explode('/', $brick['parameter']);
+			$parameter = explode('/', wrap_brick('parameter'));
 			array_splice($brick['vars'], $index, 1, $parameter[1]);
 			$used_parameter[] = $parameter[1];
 		} elseif ($var === '*[3]') {
-			$parameter = explode('/', $brick['parameter']);
+			$parameter = explode('/', wrap_brick('parameter'));
 			array_splice($brick['vars'], $index, 1, $parameter[2]);
 			$used_parameter[] = $parameter[2];
 		} elseif ($var === '*[2+]') {
 			// @deprecated, since first variable (URL parameter) can be random
 			wrap_error('Do not use `*[2+]` anymore, because it allows first parameter to be random', E_USER_DEPRECATED);
-			$parameter = explode('/', $brick['parameter']);
+			$parameter = explode('/', wrap_brick('parameter'));
 			$used_parameter[] = array_shift($parameter); // remove first element
 			$parameter = implode('/', $parameter);
 			array_splice($brick['vars'], $index, 1, $parameter);
