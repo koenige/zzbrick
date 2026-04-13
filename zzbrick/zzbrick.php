@@ -143,6 +143,8 @@ function brick_format($block, $parameter = false) {
 		return $brick['page'];
 	}
 	$brick['parameter'] = $parameter;
+	if ($parameter && $parameter !== wrap_brick('parameter'))
+		$brick['data_context'] = $parameter;
 
 	// initialize text at given position
 	$brick['page']['text'][$brick['position']] = [];
