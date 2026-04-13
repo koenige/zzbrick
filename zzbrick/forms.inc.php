@@ -85,7 +85,7 @@ function brick_forms($brick) {
 		}
 	}
 
-	if ($used_parameter AND implode('/', $used_parameter) !== $brick['parameter']) {
+	if ($used_parameter AND implode('/', $used_parameter) !== wrap_brick('parameter')) {
 		wrap_quit(404);
 	}
 	
