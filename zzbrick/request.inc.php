@@ -8,7 +8,7 @@
  * https://www.zugzwang.org/modules/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2009-2012, 2014-2025 Gustaf Mossakowski
+ * @copyright Copyright © 2009-2012, 2014-2026 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -138,18 +138,16 @@ function brick_request_params($variables, $parameter) {
 	$var_safe = [];
 
 	foreach ($variables as $var) {
-		if ($var === '*' OR substr($var, -1) === '*') {
-			if (!$parameter AND $parameter !== '0' AND $parameter !== 0) {
+		if (str_ends_with($var, '*')) {
+			if (!$parameter AND $parameter !== '0') {
 				// return * as parameter, better than false, so you can
 				// catch this error and return with a 404
 				$parameter_for_function[] = '*';
 				continue;
 			}
 			$url_parameters = explode('/', $parameter);
-			if (substr($var, -1) === '*' AND count($url_parameters)) {
-				$url_parameters[0] = substr($var, 0, -1).$url_parameters[0];
-			}
-			if ($parameter_for_function AND count($url_parameters)) {
+			$url_parameters[0] = substr($var, 0, -1).$url_parameters[0];
+			if ($parameter_for_function) {
 				$parameter_for_function = array_merge(
 					$parameter_for_function, $url_parameters
 				);
@@ -170,7 +168,7 @@ function brick_request_params($variables, $parameter) {
 				$var_safe[] = substr($var, 0, -1);
 				$parameter_for_function[] = implode(" ", $var_safe);
 				$var_safe = [];
-			} elseif ($var OR $var === '0' OR $var === 0) {
+			} elseif ($var OR $var === '0') {
 				// parameter like given to function but newly indexed
 				// ignore empty parameters
 				$parameter_for_function[] = $var;
