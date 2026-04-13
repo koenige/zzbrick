@@ -8,7 +8,7 @@
  * https://www.zugzwang.org/modules/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2022-2025 Gustaf Mossakowski
+ * @copyright Copyright © 2022-2026 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -62,8 +62,8 @@ function brick_access($brick) {
 			// then check if in URL path
 			if (array_key_exists($parts[0], $brick['parameter']))
 				$replace = $brick['parameter'][$parts[0]];
-			elseif (wrap_setting('brick_url_parameter'))
-				$replace = wrap_setting('brick_url_parameter');
+			elseif (wrap_brick('parameter'))
+				$replace = wrap_brick('parameter');
 			if (!$replace) continue;
 			$details = str_replace('*', $replace, $var);
 			unset($brick['vars'][$id]);

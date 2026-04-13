@@ -143,9 +143,6 @@ function brick_format($block, $parameter = false) {
 		return $brick['page'];
 	}
 	$brick['parameter'] = $parameter;
-	// first call of brick_format(): parameters are from URL
-	if (wrap_setting('brick_url_parameter') === NULL)
-		wrap_setting('brick_url_parameter', $parameter);
 
 	// initialize text at given position
 	$brick['page']['text'][$brick['position']] = [];

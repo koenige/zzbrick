@@ -36,11 +36,12 @@ function brick_request($brick) {
 	
 	// get parameter for function
 	$filetype = '';
+	$brick_parameter = wrap_brick('parameter');
 	if (wrap_setting('brick_request_cms')) {
-		if (preg_match('/(.+)\.([a-z0-9]+)/i', wrap_setting('brick_url_parameter'), $matches)) {
+		if (preg_match('/(.+)\.([a-z0-9]+)/i', $brick_parameter, $matches)) {
 			// use last part behind dot as file extension
 			if (count($matches) === 3 AND in_array($matches[2], wrap_setting('brick_export_formats'))) {
-				wrap_setting('brick_url_parameter', $matches[1]);
+				$brick_parameter = $matches[1];
 				$filetype = $matches[2];
 			}
 		} else {
@@ -51,7 +52,7 @@ function brick_request($brick) {
 			}
 		}
 	}
-	$brick['vars'] = brick_request_params($brick['vars'], wrap_setting('brick_url_parameter'));
+	$brick['vars'] = brick_request_params($brick['vars'], $brick_parameter);
 	$brick = brick_placeholder_script($brick);
 	$script = array_shift($brick['vars']);
 

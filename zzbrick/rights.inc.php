@@ -8,7 +8,7 @@
  * https://www.zugzwang.org/modules/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2009, 2019, 2023-2025 Gustaf Mossakowski
+ * @copyright Copyright © 2009, 2019, 2023-2026 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -61,8 +61,8 @@ function brick_rights($brick) {
 		// is there an asterisk?
 		$details = '';
 		foreach ($brick['vars'] as $id => $var) {
-			if (substr($var, -1) === '*' AND wrap_setting('brick_url_parameter')) {
-				$details = str_replace('*', wrap_setting('brick_url_parameter'), $var);
+			if (substr($var, -1) === '*' AND wrap_brick('parameter')) {
+				$details = str_replace('*', wrap_brick('parameter'), $var);
 				unset($brick['vars'][$id]);
 			}
 		}

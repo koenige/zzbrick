@@ -28,3 +28,4 @@
 2026-02-13-1	code_regex	%%% link .+ "title=.+"	use title="" instead
 2026-02-13-2	code_regex	%%% path .+ "html=.+"	use html="" instead
 2026-04-12-1	code_regex	%%% setting host_base %%%%%% path 	use %%% path … absolute=1 %%% instead of concatenating host_base and path
+2026-04-13-1	code	brick_url_parameter	use wrap_brick('parameter')
