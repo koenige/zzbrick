@@ -145,7 +145,7 @@ function brick_item_template($template, $vars, $content) {
 				$key = false;
 			}
 		}
-		if (!empty($values) AND in_array($content, array_keys($values))) {
+		if (!empty($values) AND array_key_exists($content, $values)) {
 			$template = $values[$content];
 		}
 	}
