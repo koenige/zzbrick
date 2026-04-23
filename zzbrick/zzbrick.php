@@ -449,6 +449,27 @@ function brick($blocks, $parameter = []) {
 }
 
 /**
+ * shortcut for brick() with inline text formatting
+ *
+ * Use this when the result will be embedded into a context where block-level
+ * markdown formatting (e.g. automatic <p>…</p> wrapping) would be unwanted,
+ * such as page titles, link labels or breadcrumbs. The current value of
+ * brick_fulltextformat is saved and restored around the call so the override
+ * does not leak into the surrounding page rendering.
+ *
+ * @param mixed $blocks
+ * @param array $parameter
+ * @return string
+ */
+function brick_inline($blocks, $parameter = []) {
+	$old_textformat = wrap_setting('brick_fulltextformat');
+	wrap_setting('brick_fulltextformat', 'markdown_inline');
+	$text = brick($blocks, $parameter);
+	wrap_setting('brick_fulltextformat', $old_textformat);
+	return $text;
+}
+
+/**
  * allow loop start 1, loop start 1-, loop start -2 etc.
  * to select only a subset of a loop
  *
