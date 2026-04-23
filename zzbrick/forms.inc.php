@@ -148,9 +148,6 @@ function brick_forms($brick) {
 	if (!empty($ops['text'])) {
 		foreach ($ops['text'] as $position => $text)
 			$brick['page']['text'][$position][] = $text;
-		$position = 'text';
-	} else {
-		$position = $brick['position'];
 	}
 	
 	// Caching
@@ -168,7 +165,7 @@ function brick_forms($brick) {
 	// replace %%% placeholders from zzbrick just in case the whole output
 	// goes through brick_format() again
 	$ops['output'] = str_replace('%%%', '&#37;&#37;&#37;', $ops['output']);
-	$brick['page']['text'][$position][] = $ops['output'];
+	$brick['page']['text'][$brick['position']][] = $ops['output'];
 	if (!empty($ops['title'])) {
 		$brick['page']['title'] = $ops['title'];
 		$brick['page']['dont_show_h1'] = true;

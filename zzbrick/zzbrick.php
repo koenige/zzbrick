@@ -397,6 +397,14 @@ function brick_format($block, $parameter = false) {
 		foreach ($page['text'] AS $pos => $text) {
 			$page['text'][$pos] = brick_textformat($text, 'full', $fulltextformat);
 		}
+		// with multiple positions, 'none' would be rendered as 'text_none'
+		// by zzwrap and never reach a template placeholder; rename it to
+		// 'text' (the position that zzwrap treats as the main text block)
+		if (count($page['text']) > 1 AND isset($page['text']['none'])) {
+			if (!isset($page['text']['text'])) $page['text']['text'] = '';
+			$page['text']['text'] = $page['text']['none'].$page['text']['text'];
+			unset($page['text']['none']);
+		}
 	}
 	// get stuff for page head in order
 	$page = brick_head_format($page);
