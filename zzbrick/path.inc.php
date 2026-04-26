@@ -59,7 +59,7 @@ function brick_path($brick) {
 	$settings = [
 		'testing' => (!$values and !empty($brick['parameter']['brick_condition_if'])) ? true : false,
 		'check_rights' => $brick['local_settings']['check_rights'] ?? true,
-		'absolute' => $brick['local_settings']['absolute'] ?? false
+		'absolute' => $brick['local_settings']['absolute'] ?? wrap_setting('absolute_urls')
 	];
 	$text = wrap_path($area, $values, $settings);
 	if (array_key_exists('html', $brick['local_settings']) AND $text)

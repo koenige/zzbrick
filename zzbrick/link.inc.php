@@ -20,6 +20,7 @@
  * functions: -
  * settings:
  *		'brick_nolink_template', in case URL = current
+ *		'absolute_urls', if true href uses host_base for internal paths
  * examples: 
  * 		%%% link /some/internal/link "Link text" %%% 
  * 		%%% link /some/internal/link "Link text" title="title text" %%% 
@@ -55,6 +56,7 @@ function brick_link($brick) {
 	if (wrap_setting('request_uri') === $link) {
 		$template = wrap_setting('brick_nolink_template');
 	} else {
+		$link = wrap_path_add_absolute($link, wrap_setting('absolute_urls'));
 		array_unshift($vars, $link);
 		if (count($brick['vars']) === 3)
 			$template = '<a href="%s" %3$s>%2$s</a>';
