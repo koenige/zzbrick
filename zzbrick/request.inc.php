@@ -645,7 +645,7 @@ function brick_request_link(&$media, $placeholder, $field_name) {
 				array_multisort($media_sizes, SORT_DESC, SORT_REGULAR, array_column($media_sizes, 'width'));
 				foreach ($media_sizes as $size) {
 					if ($size['action'] === 'crop') continue; // no cropped images
-					$file = sprintf('%s/%s.%s.%s', wrap_setting('media_folder'), $medium['filename'], $size['path'], $medium['thumb_extension']);
+					$file = mf_media_filename($medium, $size['path'], true);
 					if (!file_exists($file)) continue;
 					$image = getimagesize($file);
 					$medium['files'][] = array_merge($medium, [
