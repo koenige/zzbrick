@@ -44,6 +44,8 @@ function brick_condition($brick) {
 
 	if (count($brick['vars']) === 3 AND in_array($brick['vars'][1], $if_keywords))
 		$if = $brick['vars'][1];
+	elseif (count($brick['vars']) === 4 AND $brick['vars'][1] === 'path')
+		$if = $brick['vars'][1];
 	
 	$condition_translated = wrap_setting('brick_condition_translated');
 	// default translations, cannot be changed
@@ -65,7 +67,8 @@ function brick_condition($brick) {
 	if ($if) {
 		array_shift($brick['vars']);
 		$key = str_replace('-', '_', $brick['vars'][0]);
-		$item[$key] = brick_condition_if($if, $brick['vars'][0], $brick);
+		$item[$key] = brick_condition_if($if, $brick['vars'], $brick);
+		unset($brick['vars'][1]); // parameter was evaluated
 	} elseif (!empty($brick['loop_parameter'])) {
 		$item = &$brick['loop_parameter'];
 	} else {
@@ -87,7 +90,7 @@ function brick_condition($brick) {
 				if (count($var) === 2) {
 					if (in_array($var[0], $if_keywords)) {
 						$key = str_replace('-', '_', $var[1]);
-						$item[$key] = brick_condition_if($var[0], $var[1], $brick);
+						$item[$key] = brick_condition_if($var[0], [$var[1]], $brick);
 						$brick_vars[] = $var[1];
 					} else {
 						$brick_vars = [];
@@ -243,24 +246,29 @@ function brick_condition_value_truthy($content) {
  * get content for if condition
  *
  * @param string $if
- * @param string $vars
+ * @param array $vars
  * @param array $brick
  * @return mixed
  */
 function brick_condition_if($if, $vars, $brick) {
-	if ($if === 'cookie') return brick_condition_if_cookie($vars);
-	if ($if === 'lib') return is_dir(sprintf('%s/%s', wrap_setting('lib'), $vars));
-	if ($if === 'form') return wrap_static('zzform_output', $vars);
-	if ($if === 'template') return wrap_template_file($vars, false);
+	$flat_vars = implode(' ', $vars);
+	if ($if === 'cookie') return brick_condition_if_cookie($flat_vars);
+	if ($if === 'lib') return is_dir(sprintf('%s/%s', wrap_setting('lib'), $flat_vars));
+	if ($if === 'form') return wrap_static('zzform_output', $flat_vars);
+	if ($if === 'template') return wrap_template_file($flat_vars, false);
 	if ($if === 'loopposition') {
 		wrap_include('loopposition', 'zzbrick');
-		return brick_loopposition_evaluate($brick, $vars);
+		return brick_loopposition_evaluate($brick, $flat_vars);
 	}
 
 	if (!is_array($brick['parameter'])) $brick['parameter'] = [$brick['parameter']];
 	$brick['parameter']['brick_condition_if'] = true;
-	$req = brick_format('%%% '.$if.' '.$vars.' %%%', $brick['parameter']);
-	return $req['text'];
+	if (count($vars) === 2) {
+		$items = $brick['loop_parameter'] ?? $brick['parameter'];
+		if (array_key_exists($vars[1], $items))
+			$vars[1] = $items[$vars[1]];
+	}
+	return brick(array_merge([$if], $vars), $brick['parameter']);
 }
 
 /**
