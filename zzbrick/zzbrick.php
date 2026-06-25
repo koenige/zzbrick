@@ -362,7 +362,7 @@ function brick_format($block, $parameter = false) {
 	unset($brick['page']);
 
 	// Standard position, remove if empty
-	if (!strlen(trim($page['text']['none']))) unset($page['text']['none']);
+	if (isset($page['text']['none']) AND !strlen(trim($page['text']['none']))) unset($page['text']['none']);
 	// Hidden text? 403 access forbidden
 	if (!empty($page['text']['_hidden_']) AND trim($page['text']['_hidden_'])) {
 		$brick['access_forbidden'] = true;

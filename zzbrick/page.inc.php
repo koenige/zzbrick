@@ -73,7 +73,7 @@ function brick_page($brick) {
 		// we have it in $page, so return this.
 		if (is_array($page[$brick_var])) {
 			$key = array_shift($brick['vars']);
-			if (!empty($page[$brick_var][$key])) {
+			if ($key AND !empty($page[$brick_var][$key])) {
 				$content = $page[$brick_var][$key];
 			}
 		} else {
