@@ -24,7 +24,7 @@
 function brick_id($brick) {
 	if (count($brick['vars']) !== 2) {
 		$brick['page']['error']['level'] = E_USER_NOTICE;
-		$brick['page']['error']['msg_text'] = 'brick id needs two parameters';
+		$brick['page']['error']['_msg'] = 'brick id needs two parameters';
 		return $brick;
 	}
 	

@@ -55,8 +55,8 @@ function brick_redirect($brick) {
 	}
 	// ok, it's not a URL, we do not care, send an error and return
 	$brick['page']['error']['level'] = E_USER_NOTICE;
-	$brick['page']['error']['msg_text'] = '"%s" is not a valid URI.';
-	$brick['page']['error']['msg_vars'] = [$brick['vars'][0]];
+	$brick['page']['error']['_msg'] = '“%s” is not a valid URI.';
+	$brick['page']['error']['_msg_values'] = [$brick['vars'][0]];
 	return $brick;
 }
 

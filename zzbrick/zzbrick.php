@@ -906,9 +906,9 @@ function brick_xhr($xmlHttpRequest, $parameter) {
 
 	// some checks
 	if (!preg_match('/^[a-z0-9_-]+$/', $function))
-		return brick_xhr_error(400, 'invalid characters', $xmlHttpRequest);
+		return brick_xhr_error(400, '“%s” is not a valid XHR function (invalid characters)', $xmlHttpRequest['httpRequest']);
 	if (isset($xmlHttpRequest['limit']) AND !is_numeric($xmlHttpRequest['limit']))
-		return brick_xhr_error(400, 'malformed request', $xmlHttpRequest);
+		return brick_xhr_error(400, 'Malformed values: (%s)', json_encode($xmlHttpRequest));
 
 	$file = wrap_setting('custom').'/zzbrick_xhr/'.$function.'.inc.php';
 	if (file_exists($file)) {
@@ -932,7 +932,7 @@ function brick_xhr($xmlHttpRequest, $parameter) {
 		}
 	}
 	if (!function_exists($function))
-		return brick_xhr_error(503, 'function not found', $xmlHttpRequest);
+		return brick_xhr_error(503, '“%s” is not a valid XHR function (function not found)', $xmlHttpRequest['httpRequest']);
 
 	$return = $function($xmlHttpRequest, $parameter);
 	if (!empty($return['_brick_xhr_error'])) {
@@ -953,33 +953,25 @@ function brick_xhr($xmlHttpRequest, $parameter) {
  * error message for XHR
  *
  * @param int $http_status
- * @param string $reason
- * @param array $data (optional)
+ * @param string $message
+ * @param string|array|int $data (optional)
  * @return array
  */
-function brick_xhr_error($http_status, $reason, $data = []) {
+function brick_xhr_error($http_status, $message, $data = []) {
 	$page['status'] = $http_status;
 	$page['error']['level'] = E_USER_NOTICE;
-	$page['error']['msg_text'] = 'XHR request abandoned. ';
 	$page['content_type'] = 'json';
 	$page['_brick_xhr_error'] = true;
 	wrap_setting('send_as_json', true);
 
-	switch ($reason) {
-	case 'function not found':
-	case 'invalid characters':
-		$page['error']['msg_text'] .= '"%s" is not a valid XHR function (%s)';
-		$page['error']['msg_vars'] = [$data['httpRequest'], $reason];
-		break;
-	case 'malformed request':
-		$page['error']['msg_text'] .= 'Malformed values: (%s)';
-		$page['error']['msg_vars'] = [json_encode($data)];
-		break;
-	default:
-		$page['error']['msg_text'] .= $reason;
-		$page['error']['msg_vars'] = $data;
-		break;
+	$values = [];
+	if (is_array($data)) {
+		$values = array_values($data);
+	} elseif ($data !== '' AND $data !== null) {
+		$values = [$data];
 	}
+	$page['error']['_msg'] = ['XHR request abandoned.', $message];
+	$page['error']['_msg_values'] = [[], $values];
 	return $page;
 }
 
@@ -1192,9 +1184,9 @@ function brick_include($brick, $blocks = [], $includes = []) {
 		}
 		if (in_array($template_name, $includes)) {
 			$brick['page']['error']['level'] = E_USER_ERROR;
-			$brick['page']['error']['msg_text']
+			$brick['page']['error']['_msg']
 				= 'Template %s includes itself';
-			$brick['page']['error']['msg_vars'] = [$template_name];
+			$brick['page']['error']['_msg_values'] = [$template_name];
 			return [$brick, $blocks];
 		}
 		$includes_template[] = $template_name;

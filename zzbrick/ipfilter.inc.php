@@ -66,7 +66,7 @@ function brick_ipfilter($brick) {
 			$ranges = wrap_setting('brick_ipv4_allowed_range');
 		if (!$ranges) {
 			$brick['page']['error']['level'] = E_USER_ERROR;
-			$brick['page']['error']['msg_text'] = 'No IP range defined';
+			$brick['page']['error']['_msg'] = 'No IP range defined';
 			$access = false;
 		} else {
 			$access = brick_check_if_in_ip_range($remote_ip, $ranges);

@@ -107,10 +107,10 @@ function brick_condition($brick) {
 		}
 		if ($error) {
 			$brick['page']['error']['level'] = E_USER_NOTICE;
-			$brick['page']['error']['msg_text']
+			$brick['page']['error']['_msg']
 				= 'There’s an error in one of the conditions in the template `%s`: too many variables are present.';
 			if (wrap_setting('current_template')) {
-				$brick['page']['error']['msg_vars'] = [wrap_setting('current_template')];
+				$brick['page']['error']['_msg_values'] = [wrap_setting('current_template')];
 			}
 		}
 	} else {
@@ -145,10 +145,10 @@ function brick_condition($brick) {
 	if ($i === 0) {
 		// this means the template is somehow wrong
 		$brick['page']['error']['level'] = E_USER_NOTICE;
-		$brick['page']['error']['msg_text']
+		$brick['page']['error']['_msg']
 			= 'There’s an error in the nesting of conditions in the template `%s`: There are more endifs than ifs.';
 		if (wrap_setting('current_template')) {
-			$brick['page']['error']['msg_vars'] = [wrap_setting('current_template')];
+			$brick['page']['error']['_msg_values'] = [wrap_setting('current_template')];
 		}
 	}
 

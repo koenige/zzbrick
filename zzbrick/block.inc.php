@@ -65,9 +65,9 @@ function brick_block_definition($brick) {
 	$type = array_shift($brick['vars']);
 	if (!in_array($type, ['default', 'definition'])) {
 		$brick['page']['error']['level'] = E_USER_WARNING;
-		$brick['page']['error']['msg_text']
+		$brick['page']['error']['_msg']
 			= 'Wrong type for block: %s is not possible';
-		$brick['page']['error']['msg_vars'] = [$type];
+		$brick['page']['error']['_msg_values'] = [$type];
 		return $brick;
 	}
 	$block = array_shift($brick['vars']);
