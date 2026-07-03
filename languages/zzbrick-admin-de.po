@@ -1,0 +1,183 @@
+# zzbrick module
+# Translations, admin
+#
+# Part of »Zugzwang Project«
+# https://www.zugzwang.org/modules/zzbrick
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Zugzwang Project -- zzbrick module\n"
+"POT-Creation-Date: 2026-07-03 11:59+0000\n"
+"PO-Revision-Date: \n"
+"Last-Translator: Gustaf Mossakowski <gustaf@koenige.org>\n"
+"Language-Team: \n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 3.9\n"
+
+#: configuration/package.cfg:15
+msgid "Brick template language: placeholders, loops, conditions, and assembly"
+msgstr ""
+"Brick-Templatesprache: Platzhalter, Schleifen, Bedingungen und Zusammenbau "
+"von Seiten"
+
+#: configuration/settings.cfg:20 configuration/settings.cfg:39
+#: configuration/settings.cfg:133 configuration/settings.cfg:170
+msgid ""
+"Similar to brick_types_translated, here you can translate '=', ':' and '-' "
+"to different text"
+msgstr ""
+
+#: configuration/settings.cfg:24
+msgid ""
+"File to include if authentication is needed for accessing the zzform "
+"scripts. might be false, then no file will be included."
+msgstr ""
+
+#: configuration/settings.cfg:30
+msgid "Function to call if authentication is needed"
+msgstr ""
+
+#: configuration/settings.cfg:36
+msgid "Source of input for request function (db, xml, json, false)"
+msgstr ""
+
+#: configuration/settings.cfg:43
+msgid "Directory prefix for the customised brick scripts"
+msgstr ""
+
+#: configuration/settings.cfg:47
+msgid ""
+"If a matrix of the content is wanted, here you can define a default position"
+msgstr ""
+
+#: configuration/settings.cfg:51
+msgid "Supported export formats"
+msgstr ""
+
+#: configuration/settings.cfg:60
+msgid "Functions allowed in templates to format values"
+msgstr ""
+
+#: configuration/settings.cfg:99
+msgid ""
+"Prefixes for formatting functions, per function, allows to use a shorthand "
+"version"
+msgstr ""
+
+#: configuration/settings.cfg:104
+msgid ""
+"Name of function to format the complete output of brick_format instead of "
+"formatting each paragraph separately with markdown"
+msgstr ""
+
+#: configuration/settings.cfg:109
+msgid "Allowed HTML rel attribute values"
+msgstr ""
+
+#: configuration/settings.cfg:129
+msgid ""
+"Default allowed range of IP addresses when no address is specified in "
+"ipfilter ('from', 'to' or 0 =>, 1 =>)"
+msgstr ""
+
+#: configuration/settings.cfg:137
+msgid ""
+"List of URLs, indexed by source, for retrieving JSON data from an external "
+"server"
+msgstr ""
+
+#: configuration/settings.cfg:142
+msgid "Default URL for retrieving JSON data from an external server"
+msgstr ""
+
+#: configuration/settings.cfg:146
+msgid "Directory prefix for brick scripts in modules"
+msgstr ""
+
+#: configuration/settings.cfg:150
+msgid "If active, do not format bricks inside bricks"
+msgstr ""
+
+#: configuration/settings.cfg:154
+msgid "HTML template for links in case URL is current URL"
+msgstr ""
+
+#: configuration/settings.cfg:162
+msgid ""
+"Use separate functions to get data from database, to process data and to "
+"output data (or use standard outputs like JSON)"
+msgstr ""
+
+#: configuration/settings.cfg:174
+msgid ""
+"Shortcuts for brick functions, that is you can write `%%% image blubb %%%` "
+"instead of `%%% request image blubb %%%`"
+msgstr ""
+
+#: configuration/settings.cfg:184
+msgid "Function to syndicate content from another server"
+msgstr ""
+
+#: configuration/settings.cfg:190
+msgid "File to include that defines `brick_syndication_function`"
+msgstr ""
+
+#: configuration/settings.cfg:195
+msgid ""
+"Here you can translate the first part of the zzbrick definition e. g. `%%% "
+"abfrage ... ... %%%` might be translated to request: "
+"`$setting['brick_types_translated']['abfrage'] = 'request'` this may also be "
+"used to define a certain subtype"
+msgstr ""
+
+#: configuration/settings.cfg:202
+msgid "String to separate contents of each field in CSV export"
+msgstr ""
+
+#: configuration/settings.cfg:206
+msgid "String to enclose values in CSV export"
+msgstr ""
+
+#: configuration/settings.cfg:210
+msgid "Create an Excel compatible export (different encoding)"
+msgstr ""
+
+#: configuration/settings.cfg:214
+msgid "Add field names in CSV export"
+msgstr ""
+
+#: configuration/settings.cfg:219
+msgid "List of characters to replace in CSV export"
+msgstr ""
+
+#: configuration/settings.cfg:223
+msgid "Show empty cells in CSV export"
+msgstr ""
+
+#: configuration/settings.cfg:227
+msgid "Initial installation date of zzbrick module (for updates)"
+msgstr ""
+
+#: configuration/settings.cfg:231
+msgid "Add OpenGraph tags to webpage"
+msgstr ""
+
+#: configuration/settings.cfg:236
+msgid "Global OpenGraph properties applied to all pages showing OpenGraph tags"
+msgstr ""
+
+#: configuration/settings.cfg:240
+msgid "Size in px of image for OpenGraph (Facebook, Twitter)"
+msgstr ""
+
+#: configuration/settings.cfg:245
+msgid "Use opengraph.png, not individual images from webpages"
+msgstr ""
+
+#: configuration/settings.cfg:250
+msgid "XML mode? for closing tags"
+msgstr ""

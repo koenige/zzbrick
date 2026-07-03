@@ -8,7 +8,7 @@
  * https://www.zugzwang.org/modules/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2023 Gustaf Mossakowski
+ * @copyright Copyright © 2023, 2026 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -24,7 +24,9 @@
 function brick_id($brick) {
 	if (count($brick['vars']) !== 2) {
 		$brick['page']['error']['level'] = E_USER_NOTICE;
-		$brick['page']['error']['_msg'] = 'brick id needs two parameters';
+		$brick['page']['error']['_msg']
+			= 'The “id” brick requires a table name and an identifier (e.g. “categories channel/e-mail”). Exactly two parameters are expected, but %d were given.';
+		$brick['page']['error']['_msg_values'] = [count($brick['vars'])];
 		return $brick;
 	}
 	
