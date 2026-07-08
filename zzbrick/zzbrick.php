@@ -1021,6 +1021,38 @@ function brick_local_settings($brick) {
 		unset($brick['vars'][$key]);
 	}
 	$brick['vars'] = array_values($brick['vars']);
+	if (!empty($brick['local_settings']['resolve'])) {
+		$brick = brick_local_settings_resolve($brick);
+	}
+	return $brick;
+}
+
+/**
+ * resolve a local setting field name from loop or page parameters
+ *
+ * `resolve=website_id` reads that field and stores the value in
+ * `local_settings['website_id']`.
+ *
+ * @param array $brick
+ * @return array $brick
+ */
+function brick_local_settings_resolve($brick) {
+	$field = $brick['local_settings']['resolve'];
+	unset($brick['local_settings']['resolve']);
+	if (!is_string($field)) return $brick;
+	if ($field === '') return $brick;
+
+	$sources = [];
+	if (!empty($brick['loop_parameter']) AND is_array($brick['loop_parameter']))
+		$sources[] = $brick['loop_parameter'];
+	if (!empty($brick['parameter']) AND is_array($brick['parameter']))
+		$sources[] = $brick['parameter'];
+	foreach ($sources as $source) {
+		if (!array_key_exists($field, $source)) continue;
+		if ($source[$field] === '' OR $source[$field] === NULL) continue;
+		$brick['local_settings']['website_id'] = $source[$field];
+		break;
+	}
 	return $brick;
 }
 
