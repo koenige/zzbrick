@@ -17,7 +17,7 @@
  * returns id value for identifier
  * 
  * examples: 
- * 		%%% id categories provider/e-mail %%% 
+ * 		%%% id categories channel/e-mail %%% 
  * @param array $brick
  * @return array $brick
  */
