@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Zugzwang Project -- zzbrick module\n"
-"POT-Creation-Date: 2026-07-03 11:59+0000\n"
+"POT-Creation-Date: 2026-07-14 17:50+0000\n"
 "PO-Revision-Date: \n"
 "Language-Team: \n"
 "Language: en\n"
@@ -111,50 +111,50 @@ msgstr ""
 msgid "Here you can translate the first part of the zzbrick definition e. g. `%%% abfrage ... ... %%%` might be translated to request: `$setting['brick_types_translated']['abfrage'] = 'request'` this may also be used to define a certain subtype"
 msgstr ""
 
-#: configuration/settings.cfg:202
+#: configuration/settings.cfg:203
 msgid "String to separate contents of each field in CSV export"
 msgstr ""
 
-#: configuration/settings.cfg:206
+#: configuration/settings.cfg:207
 msgid "String to enclose values in CSV export"
 msgstr ""
 
-#: configuration/settings.cfg:210
+#: configuration/settings.cfg:211
 msgid "Create an Excel compatible export (different encoding)"
 msgstr ""
 
-#: configuration/settings.cfg:214
+#: configuration/settings.cfg:215
 msgid "Add field names in CSV export"
 msgstr ""
 
-#: configuration/settings.cfg:219
+#: configuration/settings.cfg:220
 msgid "List of characters to replace in CSV export"
 msgstr ""
 
-#: configuration/settings.cfg:223
+#: configuration/settings.cfg:224
 msgid "Show empty cells in CSV export"
 msgstr ""
 
-#: configuration/settings.cfg:227
+#: configuration/settings.cfg:228
 msgid "Initial installation date of zzbrick module (for updates)"
 msgstr ""
 
-#: configuration/settings.cfg:231
+#: configuration/settings.cfg:232
 msgid "Add OpenGraph tags to webpage"
 msgstr ""
 
-#: configuration/settings.cfg:236
+#: configuration/settings.cfg:237
 msgid "Global OpenGraph properties applied to all pages showing OpenGraph tags"
 msgstr ""
 
-#: configuration/settings.cfg:240
+#: configuration/settings.cfg:241
 msgid "Size in px of image for OpenGraph (Facebook, Twitter)"
 msgstr ""
 
-#: configuration/settings.cfg:245
+#: configuration/settings.cfg:246
 msgid "Use opengraph.png, not individual images from webpages"
 msgstr ""
 
-#: configuration/settings.cfg:250
+#: configuration/settings.cfg:251
 msgid "XML mode? for closing tags"
 msgstr ""
