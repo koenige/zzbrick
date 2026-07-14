@@ -1341,29 +1341,31 @@ function brick_block_split($block, $brick = []) {
  * @param array $content
  * @return array merged $brick
  */
-function brick_merge_page_bricks($page, $content) {
+function brick_merge_page_bricks($page, $content, $skip_overwrite = false) {
 	static $status = false;
 
-	// get some content from the function and overwrite existing values
-	$overwrite_bricks = [
-		'title', 'dont_show_h1', 'language_link', 'error_type',
-		'last_update', 'style', 'project', 'dont_show_title_as_breadcrumb',
-		'created', 'headers', 'url_ending', 'no_output', 'template',
-		'content_type', 'redirect', 'send_as_json', 'url', 'h1',
-		'description'
-	];
-	foreach ($overwrite_bricks as $part) {
-		if (!empty($content[$part]))
-			$page[$part] = $content[$part];
-	}
-	
-	// status is not overwritten if new status is 404
-	if (!empty($content['status'])) {
-		// status is 200 per default, but if it was set once explicitly to 200
-		// keep it that way
-		if ($status !== 200) {
-			$page['status'] = $content['status'];
-			$status = $content['status'];
+	if (!$skip_overwrite) {
+		// get some content from the function and overwrite existing values
+		$overwrite_bricks = [
+			'title', 'dont_show_h1', 'language_link', 'error_type',
+			'last_update', 'style', 'project', 'dont_show_title_as_breadcrumb',
+			'created', 'headers', 'url_ending', 'no_output', 'template',
+			'content_type', 'redirect', 'send_as_json', 'url', 'h1',
+			'description'
+		];
+		foreach ($overwrite_bricks as $part) {
+			if (!empty($content[$part]))
+				$page[$part] = $content[$part];
+		}
+
+		// status is not overwritten if new status is 404
+		if (!empty($content['status'])) {
+			// status is 200 per default, but if it was set once explicitly to 200
+			// keep it that way
+			if ($status !== 200) {
+				$page['status'] = $content['status'];
+				$status = $content['status'];
+			}
 		}
 	}
 

@@ -62,6 +62,8 @@ function brick_request($brick) {
 	} else {
 		if ($brick['subtype'] === 'make') {
 			$brick = brick_request_file($script, $brick, 'make');
+		} elseif ($brick['subtype'] === 'show') {
+			$brick = brick_request_file($script, $brick, 'show');
 		} else {
 			$brick = brick_request_file($script, $brick);
 		}
@@ -80,6 +82,10 @@ function brick_request($brick) {
 	}
 
 	if (empty($content)) {
+		if ($brick['subtype'] === 'show') {
+			$brick['text'] = '';
+			return $brick;
+		}
 		$brick['text'] = false;
 		$brick['page']['status'] = 404;
 		return $brick;
@@ -123,7 +129,7 @@ function brick_request($brick) {
 		$brick['page']['text'][$brick['position']] = [];
 	}
 
-	$brick['page'] = brick_merge_page_bricks($brick['page'], $content);
+	$brick['page'] = brick_merge_page_bricks($brick['page'], $content, $brick['subtype'] === 'show');
 	return $brick;
 }
 
@@ -329,7 +335,8 @@ function brick_request_file($script, $brick, $type = false) {
 	$path = substr(wrap_setting('brick_module_dir'), 1);
 	switch ($type) {
 		case 'get': $path .= 'request_get'; break;
-		case 'make': $path .= $type; break;
+		case 'make':
+		case 'show': $path .= $type; break;
 		default: $path .= 'request'; break;
 	}
 
