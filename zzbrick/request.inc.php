@@ -333,11 +333,10 @@ function brick_request_file($script, $brick, $type = false) {
 		default: $path .= 'request'; break;
 	}
 
-	// check for alternatives
-	$filenames[1] = str_replace('_', '-', $script);
-	if ($pos = strpos($filenames[1], '-'))
-		$filenames[0] = substr($filenames[1], 0, $pos);
-	ksort($filenames);
+	// check for alternatives: try full name first, then prefix
+	$filenames[0] = str_replace('_', '-', $script);
+	if ($pos = strpos($filenames[0], '-'))
+		$filenames[1] = substr($filenames[0], 0, $pos);
 	
 	// custom?
 	$function = [];
