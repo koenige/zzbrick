@@ -22,13 +22,13 @@
  * @return array $brick
  */
 function brick_helplink($brick) {
-	if (!wrap_path('default_helptext', [], ['testing' => true])) return $brick;
+	if (!wrap_path('default_help', [], ['testing' => true])) return $brick;
 
 	$filename = implode('-', $brick['vars']);
 	$filename = strtolower($filename);
 
 	wrap_include('request', 'zzbrick');
-	$data = brick_request_data('helptexts', [$filename]);
+	$data = brick_request_data('help', [$filename]);
 	if (!$data) return $brick;
 
 	$brick['page']['text'][$brick['position']][] = wrap_template('helplink', $data);

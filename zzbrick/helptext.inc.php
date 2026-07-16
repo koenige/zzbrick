@@ -8,7 +8,7 @@
  * https://www.zugzwang.org/modules/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2025 Gustaf Mossakowski
+ * @copyright Copyright © 2025-2026 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -17,7 +17,7 @@
  * display help text(s)
  * 
  * examples: 
- * 		%%% help Name of the help text %%%
+ * 		%%% helptext Name of the help text %%%
  * @param array $brick
  * @return array $brick
  */
@@ -27,7 +27,7 @@ function brick_helptext($brick) {
 	$filename = strtolower($filename);
 
 	wrap_include('request', 'zzbrick');
-	$data = brick_request_data('helptexts', [$filename]);
+	$data = brick_request_data('help', [$filename]);
 	if (!$data) return $brick;
 	
 	$data += $brick['local_settings'];
