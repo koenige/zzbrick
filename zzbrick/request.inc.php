@@ -53,6 +53,12 @@ function brick_request($brick) {
 		}
 	}
 	$brick['vars'] = brick_request_params($brick['vars'], $brick_parameter);
+	if (empty($brick['vars'][1]) AND !empty($brick['local_settings']['field'])) {
+		if (!empty($brick['parameter'][$brick['local_settings']['field']]))
+			$brick['vars'][1] = $brick['parameter'][$brick['local_settings']['field']];
+		elseif (!empty($brick['loop_parameter'][$brick['local_settings']['field']]))
+			$brick['vars'][1] = $brick['loop_parameter'][$brick['local_settings']['field']];
+	}
 	$brick = brick_placeholder_script($brick);
 	$script = array_shift($brick['vars']);
 
