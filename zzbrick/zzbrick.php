@@ -422,9 +422,9 @@ function brick_format($block, $parameter = false) {
 		wrap_page_meta('query_strings_redirect', $page['query_strings_redirect']);
 	if (!empty($page['content_type']) AND $page['content_type'] !== 'html') {
 		if (wrap_page_meta('content_type') && wrap_page_meta('content_type') !== $page['content_type'])
-			wrap_error(wrap_text('Different page content types detected: %s and %s.',
+			wrap_error(['Different page content types detected: %s and %s.',
 				['values' => [wrap_page_meta('content_type'), $page['content_type']]]
-			));
+			]);
 		wrap_page_meta('content_type', $page['content_type']);
 	}
 	return $page;
@@ -489,10 +489,10 @@ function brick_loop_range(&$vars, $params) {
 	if (!$params) return [];
 	// non-arrays are reported after return; avoid array_slice() type errors
 	if (!is_array($params)) {
-		wrap_error(wrap_text(
+		wrap_error([
 			'Template `%s`: Brick loop `%s` needs to get an array as input',
 			['values' => [wrap_setting('current_template'), implode(' ', $vars)]]
-		), E_USER_WARNING);
+		], E_USER_WARNING);
 		return [];
 	}
 	if (empty($vars[1])) return $params;

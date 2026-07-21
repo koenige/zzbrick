@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Zugzwang Project -- zzbrick module\n"
-"POT-Creation-Date: 2026-07-14 17:50+0000\n"
+"POT-Creation-Date: 2026-07-21 13:38+0000\n"
 "PO-Revision-Date: \n"
 "Language-Team: \n"
 "Language: en\n"
@@ -37,8 +37,8 @@ msgid "No IP range defined"
 msgstr ""
 
 #: zzbrick/page.inc.php:59
-#: zzbrick/request.inc.php:73
-#: zzbrick/request.inc.php:303
+#: zzbrick/request.inc.php:79
+#: zzbrick/request.inc.php:309
 msgid "The function “%s” is not supported."
 msgstr ""
 
@@ -46,16 +46,8 @@ msgstr ""
 msgid "“%s” is not a valid URI."
 msgstr ""
 
-#: zzbrick/request.inc.php:237
+#: zzbrick/request.inc.php:243
 msgid "No input data for %s was found. Probably function `%s` is missing."
-msgstr ""
-
-#: zzbrick/zzbrick.php:425
-msgid "Different page content types detected: %s and %s."
-msgstr ""
-
-#: zzbrick/zzbrick.php:493
-msgid "Template `%s`: Brick loop `%s` needs to get an array as input"
 msgstr ""
 
 #: zzbrick/zzbrick.php:832
