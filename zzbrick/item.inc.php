@@ -91,7 +91,10 @@ function brick_item_format(&$brick, $content) {
 		if (!is_array($brick['local_settings']['format']))
 			$brick['local_settings']['format'] = [$brick['local_settings']['format']];
 		foreach ($brick['local_settings']['format'] as $function) {
+			// keep duplicated colons
+			$function = str_replace('::', "\0", $function);
 			$function = explode(':', $function);
+			$function = array_map(fn($part) => str_replace("\0", ':', $part), $function);
 			$function[0] = brick_format_function($function[0]);
 			if (!$function[0]) continue;
 			$format_functions[] = [
