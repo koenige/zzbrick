@@ -47,9 +47,9 @@ function mf_zzbrick_extract_scan_template($content, $relative_path, &$entries) {
 		if (!preg_match_all('/%%% text (.+?) %%%/', $line, $matches)) continue;
 		$reference = sprintf('%s:%d', $relative_path, $line_number + 1);
 		foreach ($matches[1] as $chunk) {
-			$msgid = mf_zzbrick_extract_template($chunk);
-			if ($msgid === null) continue;
-			wrap_extract_add($entries, $msgid, $reference, $pot);
+			$entry = mf_zzbrick_extract_template($chunk);
+			if ($entry === null) continue;
+			wrap_extract_add($entries, $entry['msgid'], $reference, $pot, $entry['context']);
 		}
 	}
 }
@@ -81,22 +81,30 @@ function mf_zzbrick_extract_scan_php($content, $relative_path, &$entries) {
 }
 
 /**
- * Build msgid from a %%% text … %%% template chunk
+ * Build msgid and msgctxt from a %%% text … %%% template chunk
+ *
+ * Local settings (e.g. context=club) are stripped via brick_local_settings().
  *
  * @param string $chunk inner part of the template text block
- * @return string|null
+ * @return array|null keys msgid, context; null if empty
  */
 function mf_zzbrick_extract_template($chunk) {
-	$parsed = brick_get_variables($chunk);
-	if (!$parsed['vars']) return null;
+	$brick = brick_local_settings(brick_get_variables($chunk));
+	if (!$brick['vars']) return null;
 
-	if (count($parsed['vars']) > 1
-		AND (str_contains($parsed['vars'][0], ' ')
-			OR !empty($parsed['in_quotes'])
-			OR !empty($parsed['quoted_indices'][0]))) {
-		return $parsed['vars'][0];
+	if (count($brick['vars']) > 1
+		AND (str_contains($brick['vars'][0], ' ')
+			OR !empty($brick['in_quotes'])
+			OR !empty($brick['quoted_indices'][0]))) {
+		$msgid = $brick['vars'][0];
+	} else {
+		$msgid = implode(' ', $brick['vars']);
 	}
-	return implode(' ', $parsed['vars']);
+
+	return [
+		'msgid' => $msgid,
+		'context' => $brick['local_settings']['context'] ?? '',
+	];
 }
 
 /**
