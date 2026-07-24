@@ -83,28 +83,79 @@ function mf_zzbrick_extract_scan_php($content, $relative_path, &$entries) {
 /**
  * Build msgid and msgctxt from a %%% text … %%% template chunk
  *
- * Local settings (e.g. context=club) are stripped via brick_local_settings().
+ * Local settings (e.g. context=club) are stripped from the end of the chunk only.
  *
  * @param string $chunk inner part of the template text block
  * @return array|null keys msgid, context; null if empty
  */
 function mf_zzbrick_extract_template($chunk) {
-	$brick = brick_local_settings(brick_get_variables($chunk));
-	if (!$brick['vars']) return null;
+	$parsed = brick_get_variables($chunk);
+	if (!$parsed['vars']) return null;
 
-	if (count($brick['vars']) > 1
-		AND (str_contains($brick['vars'][0], ' ')
-			OR !empty($brick['in_quotes'])
-			OR !empty($brick['quoted_indices'][0]))) {
-		$msgid = $brick['vars'][0];
+	$settings = mf_zzbrick_extract_template_settings($parsed);
+	$vars = $settings['vars'];
+
+	if (count($vars) > 1
+		AND (str_contains($vars[0], ' ')
+			OR !empty($parsed['in_quotes'])
+			OR !empty($parsed['quoted_indices'][0]))) {
+		$msgid = $vars[0];
 	} else {
-		$msgid = implode(' ', $brick['vars']);
+		$msgid = implode(' ', $vars);
 	}
 
 	return [
 		'msgid' => $msgid,
-		'context' => $brick['local_settings']['context'] ?? '',
+		'context' => $settings['context'],
 	];
+}
+
+/**
+ * Strip trailing brick local settings from parsed template vars
+ *
+ * Uses end-of-list tokens only (e.g. context=club). Unlike brick_local_settings(),
+ * tokens such as href="%url%" inside the message text are kept.
+ *
+ * @param array $parsed result of brick_get_variables()
+ * @return array keys vars (remaining message tokens), context
+ */
+function mf_zzbrick_extract_template_settings($parsed) {
+	$vars = $parsed['vars'];
+	$context = '';
+	$quoted_indices = $parsed['quoted_indices'] ?? [];
+
+	while ($vars) {
+		$index = count($vars) - 1;
+		$token = $vars[$index];
+		if (!mf_zzbrick_extract_template_setting_token($token, $quoted_indices, $index)) break;
+
+		parse_str(str_replace('+', '%2B', $token), $new_settings);
+		if (isset($new_settings['context'])) {
+			$context = $new_settings['context'];
+		}
+		array_pop($vars);
+	}
+
+	return [
+		'vars' => $vars,
+		'context' => $context,
+	];
+}
+
+/**
+ * Whether a parsed token is a trailing local setting (context=…, etc.)
+ *
+ * @param string $token
+ * @param array $quoted_indices
+ * @param int $index token index in vars
+ * @return bool
+ */
+function mf_zzbrick_extract_template_setting_token($token, $quoted_indices, $index) {
+	if (!empty($quoted_indices[$index])) return false;
+	if (!strstr($token, '=')) return false;
+	if (strlen($token) < 3) return false;
+	if (str_contains($token, '"') OR str_contains($token, "'")) return false;
+	return (bool) preg_match('/^[a-z][a-z0-9_.]*=/', $token);
 }
 
 /**
