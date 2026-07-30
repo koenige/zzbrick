@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Zugzwang Project -- zzbrick module\n"
-"POT-Creation-Date: 2026-07-21 13:38+0000\n"
+"POT-Creation-Date: 2026-07-30 17:10+0000\n"
 "PO-Revision-Date: \n"
 "Language-Team: \n"
 "Language: en\n"
@@ -147,19 +147,19 @@ msgstr ""
 msgid "Add OpenGraph tags to webpage"
 msgstr ""
 
-#: configuration/settings.cfg:237
+#: configuration/settings.cfg:239
 msgid "Global OpenGraph properties applied to all pages showing OpenGraph tags"
 msgstr ""
 
-#: configuration/settings.cfg:241
+#: configuration/settings.cfg:243
 msgid "Size in px of image for OpenGraph (Facebook, Twitter)"
 msgstr ""
 
-#: configuration/settings.cfg:246
+#: configuration/settings.cfg:248
 msgid "Use opengraph.png, not individual images from webpages"
 msgstr ""
 
-#: configuration/settings.cfg:251
+#: configuration/settings.cfg:256
 msgid "XML mode? for closing tags"
 msgstr ""
 
