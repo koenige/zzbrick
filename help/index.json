@@ -1,0 +1,29 @@
+{
+    "loopposition": [
+        {
+            "title": "loopposition",
+            "language": "en",
+            "package": "zzbrick",
+            "filename": "help/Loopposition.md",
+            "identifier": "loopposition",
+            "type": "md",
+            "audience": [
+                "programmer"
+            ]
+        }
+    ],
+    "text": [
+        {
+            "title": "Text",
+            "language": "en",
+            "package": "zzbrick",
+            "filename": "help/Text.md",
+            "identifier": "text",
+            "type": "md",
+            "audience": [
+                "editor",
+                "programmer"
+            ]
+        }
+    ]
+}

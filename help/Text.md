@@ -13,7 +13,7 @@
 # audience = editor, programmer
 -->
 
-# Text
+# text
 
 The `text` brick outputs translated text via `wrap_text()`. See
 [Translating Text](zzwrap/Translating Text.md) in zzwrap for PHP
