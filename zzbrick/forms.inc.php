@@ -207,17 +207,21 @@ function brick_forms_request($brick, $ops, $zz) {
 	$brick['module_path'] .= '_request';
 
 	// init list of scripts, always add module request scripts
-	if (empty($ops['page']['request'])) $ops['page']['request'] = [];
+	$brick_types = ['request', 'show'];
+	foreach ($brick_types as $brick_type)
+		if (empty($ops['page'][$brick_type])) $ops['page'][$brick_type] = [];
 	array_unshift($ops['page']['request'], 'zzformmap');
 
 	// request data from all scripts
 	require_once __DIR__.'/request.inc.php';
 	$pages = [];
-	foreach ($ops['page']['request'] as $function) {
-		$brick = brick_request_file($function, $brick);
-		if (empty($brick['request_function'])) continue;
-		if (!function_exists($brick['request_function'])) continue;
-		$pages[] = $brick['request_function']($brick['vars'], $settings, $ops);
+	foreach ($brick_types as $brick_type) {
+		foreach ($ops['page'][$brick_type] as $function) {
+			$brick = brick_request_file($function, $brick, $brick_type);
+			if (empty($brick['request_function'])) continue;
+			if (!function_exists($brick['request_function'])) continue;
+			$pages[] = $brick['request_function']($brick['vars'], $settings, $ops);
+		}
 	}
 	$text = [];
 	foreach ($pages as $page) {
