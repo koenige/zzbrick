@@ -217,7 +217,10 @@ function brick_forms_request($brick, $ops, $zz) {
 	$pages = [];
 	foreach ($brick_types as $brick_type) {
 		foreach ($ops['page'][$brick_type] as $function) {
-			$brick = brick_request_file($function, $brick, $brick_type);
+			if ($brick_type === 'request')
+				$brick = brick_request_file($function, $brick);
+			else
+				$brick = brick_request_file($function, $brick, $brick_type);
 			if (empty($brick['request_function'])) continue;
 			if (!function_exists($brick['request_function'])) continue;
 			$pages[] = $brick['request_function']($brick['vars'], $settings, $ops);
