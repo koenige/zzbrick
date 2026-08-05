@@ -8,7 +8,7 @@
  * https://www.zugzwang.org/modules/zzbrick
  *
  * @author Gustaf Mossakowski <gustaf@koenige.org>
- * @copyright Copyright © 2009, 2014, 2019, 2021-2025 Gustaf Mossakowski
+ * @copyright Copyright © 2009, 2014, 2019, 2021-2026 Gustaf Mossakowski
  * @license http://opensource.org/licenses/lgpl-3.0.html LGPL-3.0
  */
 
@@ -24,6 +24,7 @@
  * 		%%% text We like to use our CMS! %%%
  * 		%%% text "We found %d items" item_count %%%
  * 		%%% text "We found %d items" context=msgctxt %%%
+ * 		%%% text "%s hours" unbilled_time format=duration:second:H::i %%%
  * @param array $brick
  * @return array $brick
  */
@@ -69,7 +70,12 @@ function brick_text($brick) {
 				$params[] = $function($last);
 			} else {
 				if (!isset($item[$key])) continue;
-				$params[] = $item[$key];
+				$value = $item[$key];
+				if (!empty($brick['local_settings']['format'])
+					AND ($value OR $value === 0 OR $value === '0')) {
+					$value = brick_item_format($brick, $value);
+				}
+				$params[] = $value;
 			}
 		}
 		$text_params['values'] = $params;
