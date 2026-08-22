@@ -94,7 +94,9 @@ function brick_item_format(&$brick, $content) {
 			// keep duplicated colons
 			$function = str_replace('::', "\0", $function);
 			$function = explode(':', $function);
-			$function = array_map(fn($part) => str_replace("\0", ':', $part), $function);
+			$function = array_map(function ($part) {
+				return str_replace("\0", ':', $part);
+			}, $function);
 			$function[0] = brick_format_function($function[0]);
 			if (!$function[0]) continue;
 			$format_functions[] = [
