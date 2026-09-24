@@ -22,11 +22,14 @@
  *		'brick_nolink_template', in case URL = current
  *		'absolute_urls', if true href uses host_base for internal paths
  * examples: 
+ * 		%%% link / %%% 
+ * 		%%% link / brick_nolink_template="<h1>" %%% 
  * 		%%% link /some/internal/link "Link text" %%% 
  * 		%%% link /some/internal/link "Link text" title="title text" %%% 
  * 		%%% link start /some/internal/link %%%
  * 		%%% link start /some/internal/link title="title text" %%%
  * 		%%% link end %%% 
+ * 		%%% link end brick_nolink_template="</h1>" %%% 
  * @param array $brick
  * @return array $brick
  */
@@ -34,6 +37,7 @@ function brick_link($brick) {
 	if (count($brick['vars']) < 1) return $brick;
 	if (!isset($brick['page']['text'][$brick['position']]))
 		$brick['page']['text'][$brick['position']] = [];
+	$brick = brick_local_settings($brick);
 
 	$vars = $brick['vars'];
 	switch ($brick['vars'][0]) {
@@ -54,25 +58,31 @@ function brick_link($brick) {
 	$text = '';
 	$link = wrap_setting('base').$link;
 	if (wrap_setting('request_uri') === $link) {
-		$template = wrap_setting('brick_nolink_template');
+		$template = $brick['local_settings']['brick_nolink_template'] ?? wrap_setting('brick_nolink_template');
 	} else {
 		$link = wrap_path_add_absolute($link, wrap_setting('absolute_urls'));
 		array_unshift($vars, $link);
-		if (count($brick['vars']) === 3)
-			$template = '<a href="%s" %3$s>%2$s</a>';
-		else
+		if (!empty($brick['local_settings']['title'])) {
+			$vars[] = $brick['local_settings']['title'];
+			$template = '<a href="%s" title="%3$s">%2$s</a>';
+		} else {
 			$template = '<a href="%s">%s</a>';
+		}
 	}
 
-	switch ($brick['vars'][0]) {
-	case 'end':
-		$text = substr($template, strrpos($template, '%s') + 2);
-		break;
-	case 'start':
-		$template = substr($template, 0, strrpos($template, '%s'));
-	default:
-		$text = vsprintf($template, $vars);
-		break;
+	if (strstr($template, '%s')) {
+		switch ($brick['vars'][0]) {
+		case 'end':
+			$text = substr($template, strrpos($template, '%s') + 2);
+			break;
+		case 'start':
+			$template = substr($template, 0, strrpos($template, '%s'));
+		default:
+			$text = vsprintf($template, $vars);
+			break;
+		}
+	} else {
+		$text = $template;
 	}
 	
 	$brick['page']['text'][$brick['position']][] = $text;
