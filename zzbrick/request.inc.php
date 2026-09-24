@@ -503,10 +503,10 @@ function brick_csv_encode($data) {
  *
  * @param string $text (will change)
  * @param array $media (will change)
- * @param string $field_name
+ * @param string $field_name (optional)
  * @return void
  */
-function brick_request_links(&$text, &$media, $field_name) {
+function brick_request_links(&$text, &$media, $field_name = 'sequence') {
 	if (!$text) return;
 	$parts = explode('%%%', $text);
 	$formatted = '';
@@ -531,10 +531,10 @@ function brick_request_links(&$text, &$media, $field_name) {
  *		[1]: medium no
  *		[2]: (optional, unless last) position
  *		[last]: (optional) size
- * @param string $field_name
+ * @param string $field_name (optional)
  * @return string
  */
-function brick_request_link(&$media, $placeholder, $field_name) {
+function brick_request_link(&$media, $placeholder, $field_name = 'sequence') {
 	$area = array_shift($placeholder);
 	switch ($area) {
 	case 'bild':
