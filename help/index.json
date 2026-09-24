@@ -1,4 +1,18 @@
 {
+    "include": [
+        {
+            "title": "include",
+            "language": "en",
+            "package": "zzbrick",
+            "filename": "help/Include.md",
+            "identifier": "include",
+            "type": "md",
+            "audience": [
+                "editor",
+                "programmer"
+            ]
+        }
+    ],
     "loopposition": [
         {
             "title": "loopposition",
