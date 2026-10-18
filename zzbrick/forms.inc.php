@@ -149,18 +149,6 @@ function brick_forms($brick) {
 		foreach ($ops['text'] as $position => $text)
 			$brick['page']['text'][$position][] = $text;
 	}
-	
-	// Caching
-	$uncacheable = [
-		'q', 'delete', 'insert', 'update', 'noupdate', 'zzhash', 'mode',
-		'thumbs', 'edit', 'show', 'revise', 'merge'
-	];
-	foreach ($uncacheable as $query) {
-		if (!empty($_GET[$query])) {
-			wrap_setting('cache', false);
-			break;
-		}
-	}
 
 	// replace %%% placeholders from zzbrick just in case the whole output
 	// goes through brick_format() again
