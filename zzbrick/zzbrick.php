@@ -1360,9 +1360,13 @@ function brick_merge_page_bricks($page, $content, $skip_overwrite = false) {
 
 		// status is not overwritten if new status is 404
 		if (!empty($content['status'])) {
-			// status is 200 per default, but if it was set once explicitly to 200
-			// keep it that way
-			if ($status !== 200) {
+			if (!empty($content['status_fixed'])) {
+				// e. g. invalid query string: wins over an explicit 200
+				$page['status'] = $content['status'];
+				$page['status_fixed'] = true;
+			} elseif (empty($page['status_fixed']) AND $status !== 200) {
+				// status is 200 per default, but if it was set once explicitly to 200
+				// keep it that way
 				$page['status'] = $content['status'];
 				$status = $content['status'];
 			}
