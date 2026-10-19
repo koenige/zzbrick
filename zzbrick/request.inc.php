@@ -423,7 +423,7 @@ function brick_request_external($script, $params = []) {
 	if (!$url) return [];
 
 	if ($file = wrap_setting('brick_syndication_file')) require_once $file;
-	$data = wrap_setting('brick_syndication_function')($url, wrap_setting('brick_cms_input'));
+	$data = wrap_setting('brick_syndication_function')($url, ['type' => wrap_setting('brick_cms_input')]);
 	return $data;
 }
 
